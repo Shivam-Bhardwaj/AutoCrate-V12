@@ -3,7 +3,11 @@
     "allow": [
       "Bash(pytest:*)",
       "Bash(grep:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(python:*)",
+      "Bash(pyinstaller:*)",
+      "Bash(dir:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
