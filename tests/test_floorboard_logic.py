@@ -1,5 +1,5 @@
 import pytest
-from floorboard_logic import calculate_floorboard_layout
+from legacy.floorboard_logic import calculate_floorboard_layout
 
 # Standard available lumber widths for tests
 STD_LUMBER = [11.25, 9.25, 7.25, 5.5]

@@ -1,5 +1,5 @@
 import pytest
-from skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
+from legacy.skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
 
 # Test cases for calculate_skid_lumber_properties
 # Each tuple contains: (product_weight, allow_3x4_skids, expected_lumber_callout)

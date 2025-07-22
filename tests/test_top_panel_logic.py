@@ -1,5 +1,5 @@
 import pytest
-from top_panel_logic import calculate_top_panel_components
+from legacy.top_panel_logic import calculate_top_panel_components
 
 # Test cases for the top panel's intermediate cleats (which run across the width)
 # Each tuple contains: (width, length, cleat_width, expected_intermediate_count, expected_positions)

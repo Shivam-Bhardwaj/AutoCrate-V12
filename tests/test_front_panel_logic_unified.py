@@ -1,5 +1,5 @@
 import pytest
-from front_panel_logic_unified import calculate_front_panel_components
+from legacy.front_panel_logic_unified import calculate_front_panel_components
 
 # Define standard inputs for the tests
 WIDTH = 100.0

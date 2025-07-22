@@ -7,7 +7,12 @@
       "Bash(python:*)",
       "Bash(pyinstaller:*)",
       "Bash(dir:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(powershell:*)",
+      "Bash(del:*)",
+      "Bash(git restore:*)"
     ],
     "deny": []
   }

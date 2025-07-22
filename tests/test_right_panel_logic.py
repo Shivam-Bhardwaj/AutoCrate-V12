@@ -1,7 +1,7 @@
 import pytest
-from right_panel_logic import calculate_right_panel_components
-from left_panel_logic import calculate_left_panel_components
-import right_panel_logic
+from legacy.right_panel_logic import calculate_right_panel_components
+from legacy.left_panel_logic import calculate_left_panel_components
+import legacy.right_panel_logic as right_panel_logic
 from unittest.mock import patch
 
 def test_calculate_right_panel_components_mirrors_left_panel():
