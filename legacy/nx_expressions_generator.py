@@ -499,20 +499,20 @@ def generate_crate_expressions_logic(
         fp_inter_hc_sections = [] 
 
         # RECALCULATE horizontal cleat sections using actual vertical cleat positions.
-        # This is done only if there are intermediate VERTICAL cleats AND
-        # if horizontal splices (and thus initial horizontal cleat sections) were identified by front_panel_logic.py.
+        # This is done if horizontal splices (and thus initial horizontal cleat sections) were identified by front_panel_logic.py.
         # The Y position for these cleats should be based on actual plywood splices.
-        if fp_inter_vc_positions_centerline and fp_inter_hc_sections_original:
+        if fp_inter_hc_sections_original:
             # Use the Y position from the original calculation in front_panel_logic.py.
             # This Y position corresponds to the first horizontal plywood splice's centerline,
             # measured from the bottom edge of the panel (which is also Plywood_1's bottom edge, as Plywood_1_Y_Position is 0).
             actual_splice_y_pos = fp_inter_hc_sections_original[0]['y_pos_centerline']
             
             # Recalculate sections using the actual vertical cleat positions and the determined splice_y_pos
+            # Note: If there are no intermediate vertical cleats, pass empty list
             fp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
                 panel_width=front_panel_components_data['plywood']['width'],
                 cleat_member_width=fp_inter_hc_material_member_width,
-                intermediate_vc_positions=fp_inter_vc_positions_centerline,
+                intermediate_vc_positions=fp_inter_vc_positions_centerline if fp_inter_vc_positions_centerline else [],
                 splice_y_position=actual_splice_y_pos, # Use the Y from front_panel_logic's splice calculation
                 min_cleat_width=0.25
             )
@@ -546,12 +546,12 @@ def generate_crate_expressions_logic(
             bp_inter_vc_orientation_code = 1
 
         # RECALCULATE back panel horizontal cleat sections using actual vertical cleat positions
-        if bp_inter_vc_positions_centerline and bp_inter_hc_sections_original:
+        if bp_inter_hc_sections_original:
             actual_splice_y_pos = bp_inter_hc_sections_original[0]['y_pos_centerline']
             bp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
                 panel_width=back_panel_components_data['plywood']['width'],
                 cleat_member_width=bp_inter_hc_material_member_width,
-                intermediate_vc_positions=bp_inter_vc_positions_centerline,
+                intermediate_vc_positions=bp_inter_vc_positions_centerline if bp_inter_vc_positions_centerline else [],
                 splice_y_position=actual_splice_y_pos,
                 min_cleat_width=0.25
             )
@@ -575,12 +575,12 @@ def generate_crate_expressions_logic(
             lp_inter_vc_orientation_code = 1
 
         # RECALCULATE left panel horizontal cleat sections using actual vertical cleat positions
-        if lp_inter_vc_positions_centerline and lp_inter_hc_sections_original:
+        if lp_inter_hc_sections_original:
             actual_splice_y_pos = lp_inter_hc_sections_original[0]['y_pos_centerline']
             lp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
                 panel_width=left_panel_components_data['plywood']['length'],  # Left panel uses length as width
                 cleat_member_width=lp_inter_hc_material_member_width,
-                intermediate_vc_positions=lp_inter_vc_positions_centerline,
+                intermediate_vc_positions=lp_inter_vc_positions_centerline if lp_inter_vc_positions_centerline else [],
                 splice_y_position=actual_splice_y_pos,
                 min_cleat_width=0.25
             )
@@ -604,12 +604,12 @@ def generate_crate_expressions_logic(
             rp_inter_vc_orientation_code = 1
 
         # RECALCULATE right panel horizontal cleat sections using actual vertical cleat positions
-        if rp_inter_vc_positions_centerline and rp_inter_hc_sections_original:
+        if rp_inter_hc_sections_original:
             actual_splice_y_pos = rp_inter_hc_sections_original[0]['y_pos_centerline']
             rp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
                 panel_width=right_panel_components_data['plywood']['length'],  # Right panel uses length as width
                 cleat_member_width=rp_inter_hc_material_member_width,
-                intermediate_vc_positions=rp_inter_vc_positions_centerline,
+                intermediate_vc_positions=rp_inter_vc_positions_centerline if rp_inter_vc_positions_centerline else [],
                 splice_y_position=actual_splice_y_pos,
                 min_cleat_width=0.25
             )
@@ -655,17 +655,16 @@ def generate_crate_expressions_logic(
             
         # RECALCULATE top panel horizontal cleat sections using actual vertical cleat positions
         tp_inter_hc_sections = []
-        if tp_inter_positions_centerline and tp_inter_hc_count > 0:
+        if tp_inter_hc_count > 0 and tp_inter_hc_instances:
             # Get the splice Y position from the original instances
-            if tp_inter_hc_instances:
-                actual_splice_y_pos = tp_inter_hc_instances[0].get('y_pos_centerline', 0.0)
-                tp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
-                    panel_width=top_panel_components_data['plywood']['width'],
-                    cleat_member_width=tp_inter_hc_material_member_width,
-                    intermediate_vc_positions=tp_inter_positions_centerline,
-                    splice_y_position=actual_splice_y_pos,
-                    min_cleat_width=0.25
-                )
+            actual_splice_y_pos = tp_inter_hc_instances[0].get('y_pos_centerline', 0.0)
+            tp_inter_hc_sections = calculate_horizontal_cleat_sections_from_vertical_positions(
+                panel_width=top_panel_components_data['plywood']['width'],
+                cleat_member_width=tp_inter_hc_material_member_width,
+                intermediate_vc_positions=tp_inter_positions_centerline if tp_inter_positions_centerline else [],
+                splice_y_position=actual_splice_y_pos,
+                min_cleat_width=0.25
+            )
         
         # Update count and instances based on recalculated sections
         if tp_inter_hc_sections:
@@ -1296,6 +1295,7 @@ def calculate_vertical_cleat_positions(panel_width: float, vertical_splices: Lis
     """
     TARGET_SPACING = 24.0
     MIN_EDGE_CLEARANCE = cleat_member_width  # Minimum clearance from edge cleats
+    MIN_CLEAT_SPACING = 0.25  # Minimum gap between cleats to avoid interference
     
     # Calculate edge cleat positions (centerlines)
     left_edge_cleat_centerline = cleat_member_width / 2.0
@@ -1309,9 +1309,12 @@ def calculate_vertical_cleat_positions(panel_width: float, vertical_splices: Lis
     # CRITICAL: Add cleats at ALL vertical splice positions - structural integrity is mandatory
     # Splices must always have cleat support regardless of spacing considerations
     for splice_x in vertical_splices:
-        # Only exclude if splice would be exactly on an edge cleat centerline
-        if (abs(splice_x - left_edge_cleat_centerline) > 0.1 and 
-            abs(splice_x - right_edge_cleat_centerline) > 0.1):
+        # Check if splice cleat would have adequate clearance from edge cleats
+        left_clearance = splice_x - left_edge_cleat_centerline - cleat_member_width
+        right_clearance = right_edge_cleat_centerline - splice_x - cleat_member_width
+        
+        # Only add splice cleat if it has minimum clearance from both edge cleats
+        if left_clearance >= MIN_CLEAT_SPACING and right_clearance >= MIN_CLEAT_SPACING:
             cleat_positions.append(splice_x)
     
     # Sort splice-based cleat positions
@@ -1326,11 +1329,19 @@ def calculate_vertical_cleat_positions(panel_width: float, vertical_splices: Lis
         gap = cleat_pos - last_pos
         while gap > TARGET_SPACING:
             new_cleat_pos = last_pos + TARGET_SPACING
-            # Ensure new cleat doesn't conflict with edge cleats
-            if (new_cleat_pos - left_edge_cleat_centerline >= MIN_EDGE_CLEARANCE and 
-                right_edge_cleat_centerline - new_cleat_pos >= MIN_EDGE_CLEARANCE):
-                final_positions.append(new_cleat_pos)
-            last_pos = new_cleat_pos
+            # Ensure new cleat doesn't conflict with edge cleats or other cleats
+            left_clearance = new_cleat_pos - left_edge_cleat_centerline - cleat_member_width
+            right_clearance = right_edge_cleat_centerline - new_cleat_pos - cleat_member_width
+            
+            if left_clearance >= MIN_CLEAT_SPACING and right_clearance >= MIN_CLEAT_SPACING:
+                # Also check spacing from the next splice cleat
+                if cleat_pos - new_cleat_pos - cleat_member_width >= MIN_CLEAT_SPACING:
+                    final_positions.append(new_cleat_pos)
+                    last_pos = new_cleat_pos
+                else:
+                    break  # Can't fit cleat here, stop trying
+            else:
+                break  # Can't fit cleat here
             gap = cleat_pos - last_pos
         
         final_positions.append(cleat_pos)
@@ -1341,7 +1352,8 @@ def calculate_vertical_cleat_positions(panel_width: float, vertical_splices: Lis
     while gap > TARGET_SPACING:
         new_cleat_pos = last_pos + TARGET_SPACING
         # Ensure new cleat doesn't conflict with right edge cleat
-        if right_edge_cleat_centerline - new_cleat_pos >= MIN_EDGE_CLEARANCE:
+        right_clearance = right_edge_cleat_centerline - new_cleat_pos - cleat_member_width
+        if right_clearance >= MIN_CLEAT_SPACING:
             final_positions.append(new_cleat_pos)
             last_pos = new_cleat_pos
             gap = right_edge_cleat_centerline - last_pos
@@ -1356,32 +1368,36 @@ def calculate_vertical_cleat_material_needed(panel_width: float, panel_height: f
     """
     Calculate material needed to resolve vertical cleat spacing conflicts.
     """
+    MIN_CLEAT_SPACING = 0.25  # Minimum gap between cleats to avoid interference
+    
     # Generate plywood layout
     plywood_sheets = calculate_plywood_layout(panel_width, panel_height)
     
     # Extract vertical splice positions
     vertical_splices = extract_vertical_splice_positions(plywood_sheets)
     
-    # Calculate vertical cleat positions
-    vertical_cleat_positions = calculate_vertical_cleat_positions(panel_width, vertical_splices, cleat_member_width)
-    
-    if not vertical_cleat_positions:
+    if not vertical_splices:
         return 0.0
     
-    # Check for edge conflict with rightmost vertical cleat
-    rightmost_cleat = max(vertical_cleat_positions)
+    # Calculate edge cleat positions
+    left_edge_cleat_centerline = cleat_member_width / 2.0
     right_edge_cleat_centerline = panel_width - (cleat_member_width / 2.0)
     
-    # Calculate gap between rightmost intermediate cleat and right edge cleat
-    gap = right_edge_cleat_centerline - rightmost_cleat - cleat_member_width
+    # Check if any splice is too close to the right edge
+    material_needed = 0.0
+    for splice_x in vertical_splices:
+        # Check clearance from right edge cleat
+        right_clearance = right_edge_cleat_centerline - splice_x - cleat_member_width
+        
+        # If splice cleat would be too close to right edge cleat, calculate material needed
+        if right_clearance < MIN_CLEAT_SPACING:
+            # Calculate how much we need to extend the panel
+            extension_needed = MIN_CLEAT_SPACING - right_clearance + cleat_member_width
+            # Round up to nearest 0.25"
+            extension_needed = math.ceil(extension_needed / 0.25) * 0.25
+            material_needed = max(material_needed, extension_needed)
     
-    # If gap <= 0.25", calculate material needed
-    if gap <= 0.25:
-        minimum_extension = 0.25 + cleat_member_width - gap
-        material_needed = math.ceil(minimum_extension / 0.25) * 0.25
-        return material_needed
-    
-    return 0.0
+    return material_needed
 
 
 def update_panel_components_with_splice_cleats(panel_components: dict, panel_width: float, 

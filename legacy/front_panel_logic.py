@@ -363,7 +363,7 @@ def calculate_horizontal_cleat_sections(
     """
     Calculate horizontal cleat sections that fit between vertical cleats.
     Each section has a different width based on the actual gap between adjacent vertical cleats.
-    FIXED: Now checks for overlap with edge cleats and adjusts position accordingly.
+    FIXED: Now handles cases with no intermediate vertical cleats by creating a full-width section.
     
     Args:
         panel_width: Width of the panel in inches
@@ -412,6 +412,23 @@ def calculate_horizontal_cleat_sections(
         if section_width >= min_cleat_width:
             sections.append({
                 'x_pos': section_left_edge,  # Left edge position
+                'width': section_width,
+                'y_pos_centerline': splice_y_position,
+                'y_pos_bottom_edge': splice_y_position - (cleat_member_width / 2.0)
+            })
+    
+    # CRITICAL FIX: If no intermediate vertical cleats exist (only edge cleats),
+    # ensure we still have a horizontal cleat section spanning between the edge cleats
+    # This ensures horizontal splices are always supported per ASTM requirements
+    if len(intermediate_positions) == 0 and len(sections) == 0:
+        # Create a single section spanning between the two edge cleats
+        left_edge_cleat_right = (cleat_member_width / 2.0) + (cleat_member_width / 2.0)
+        right_edge_cleat_left = (panel_width - cleat_member_width / 2.0) - (cleat_member_width / 2.0)
+        section_width = right_edge_cleat_left - left_edge_cleat_right
+        
+        if section_width >= min_cleat_width:
+            sections.append({
+                'x_pos': left_edge_cleat_right,
                 'width': section_width,
                 'y_pos_centerline': splice_y_position,
                 'y_pos_bottom_edge': splice_y_position - (cleat_member_width / 2.0)
