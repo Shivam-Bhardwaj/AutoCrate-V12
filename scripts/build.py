@@ -343,10 +343,53 @@ VSVersionInfo(
         print("Build verification completed.")
         return True
     
+    def finalize_build(self):
+        """Move executable to bin folder and clean up build directories."""
+        print("Finalizing build...")
+        
+        # Create bin directory
+        bin_dir = self.project_root / "bin"
+        if not bin_dir.exists():
+            bin_dir.mkdir(parents=True, exist_ok=True)
+            print(f"  Created bin directory: {bin_dir}")
+        
+        # Move executable to bin folder
+        source_exe = self.dist_dir / "AutoCrate.exe"
+        target_exe = bin_dir / "AutoCrate.exe"
+        
+        if source_exe.exists():
+            if target_exe.exists():
+                target_exe.unlink()  # Remove existing executable
+            shutil.move(str(source_exe), str(target_exe))
+            print(f"  Moved executable to: {target_exe}")
+        else:
+            print("ERROR: Source executable not found!")
+            return False
+        
+        # Clean up build and dist directories
+        print("  Cleaning up build artifacts...")
+        if self.build_dir.exists():
+            shutil.rmtree(self.build_dir)
+            print(f"    Removed {self.build_dir}")
+        
+        if self.dist_dir.exists():
+            shutil.rmtree(self.dist_dir)
+            print(f"    Removed {self.dist_dir}")
+        
+        # Clean up temporary files
+        temp_files = [self.spec_file, self.project_root / "version_info.txt"]
+        for temp_file in temp_files:
+            if temp_file.exists():
+                temp_file.unlink()
+                print(f"    Removed {temp_file}")
+        
+        print("Build finalization completed.")
+        return True
+    
     def create_installer(self):
         """Create installer (placeholder for future implementation)."""
         print("Installer creation not implemented yet.")
-        print("Manual distribution files are ready in dist/ directory.")
+        print("Manual distribution files are ready.")
     
     def full_build(self, skip_tests=False, skip_clean=False):
         """Perform a complete build process."""
@@ -377,11 +420,16 @@ VSVersionInfo(
                 print("Build verification failed!")
                 return False
             
+            # Finalize build (move to bin and cleanup)
+            if not self.finalize_build():
+                print("Build finalization failed!")
+                return False
+            
             print("=" * 60)
             print("AutoCrate Build Completed Successfully!")
             print("=" * 60)
-            print(f"Executable location: {self.dist_dir / 'AutoCrate.exe'}")
-            print(f"Distribution directory: {self.dist_dir}")
+            print(f"Executable location: {self.project_root / 'bin' / 'AutoCrate.exe'}")
+            print("Build and distribution directories cleaned up.")
             
             return True
             
