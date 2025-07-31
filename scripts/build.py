@@ -359,9 +359,18 @@ VSVersionInfo(
         
         if source_exe.exists():
             if target_exe.exists():
-                target_exe.unlink()  # Remove existing executable
-            shutil.move(str(source_exe), str(target_exe))
-            print(f"  Moved executable to: {target_exe}")
+                try:
+                    target_exe.unlink()  # Remove existing executable
+                except PermissionError:
+                    print(f"  WARNING: Could not remove existing executable (may be running)")
+                    print(f"  Attempting to overwrite instead...")
+            try:
+                shutil.move(str(source_exe), str(target_exe))
+                print(f"  Moved executable to: {target_exe}")
+            except PermissionError:
+                print(f"  ERROR: Cannot move executable - it may be running")
+                print(f"  Please close AutoCrate.exe and run build again")
+                return False
         else:
             print("ERROR: Source executable not found!")
             return False

@@ -1559,7 +1559,11 @@ class CrateApp:
            
             # Create expressions folder if it doesn't exist
             import os
-            expressions_dir = "expressions"
+            # Use absolute path to ensure expressions folder is created in project root
+            project_root = os.path.dirname(os.path.abspath(__file__))
+            if project_root.endswith('legacy'):
+                project_root = os.path.dirname(project_root)  # Go up one level from legacy folder
+            expressions_dir = os.path.join(project_root, "expressions")
             if not os.path.exists(expressions_dir):
                 os.makedirs(expressions_dir)
                 self.log_message(f"Created expressions directory: {expressions_dir}")
