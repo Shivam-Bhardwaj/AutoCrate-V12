@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, mock_open
-from legacy.plywood_layout_generator import (
+from autocrate.plywood_layout_generator import (
     calculate_layout, generate_nx_expressions, read_panel_dimensions_from_exp,
     write_exp_file, main, MAX_PLYWOOD_INSTANCES
 )
@@ -130,11 +130,11 @@ def test_write_exp_file_error(capsys):
     assert "Error writing to output.exp: Write error" in captured.out
 
 
-@patch("legacy.plywood_layout_generator.argparse.ArgumentParser.parse_args")
-@patch("legacy.plywood_layout_generator.read_panel_dimensions_from_exp")
-@patch("legacy.plywood_layout_generator.calculate_layout")
-@patch("legacy.plywood_layout_generator.generate_nx_expressions")
-@patch("legacy.plywood_layout_generator.write_exp_file")
+@patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.parse_args")
+@patch("autocrate.plywood_layout_generator.read_panel_dimensions_from_exp")
+@patch("autocrate.plywood_layout_generator.calculate_layout")
+@patch("autocrate.plywood_layout_generator.generate_nx_expressions")
+@patch("autocrate.plywood_layout_generator.write_exp_file")
 def test_main_with_input_file(mock_write, mock_generate, mock_calculate, mock_read_dims, mock_args, capsys):
     # Setup mocks
     mock_args.return_value = type('args', (), {
@@ -163,10 +163,10 @@ def test_main_with_input_file(mock_write, mock_generate, mock_calculate, mock_re
     assert "Plywood layout: 1 sheets required" in captured.out
 
 
-@patch("legacy.plywood_layout_generator.argparse.ArgumentParser.parse_args")
-@patch("legacy.plywood_layout_generator.calculate_layout")
-@patch("legacy.plywood_layout_generator.generate_nx_expressions")
-@patch("legacy.plywood_layout_generator.write_exp_file")
+@patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.parse_args")
+@patch("autocrate.plywood_layout_generator.calculate_layout")
+@patch("autocrate.plywood_layout_generator.generate_nx_expressions")
+@patch("autocrate.plywood_layout_generator.write_exp_file")
 def test_main_with_manual_dimensions(mock_write, mock_generate, mock_calculate, mock_args, capsys):
     # Setup mocks
     mock_args.return_value = type('args', (), {
@@ -192,7 +192,7 @@ def test_main_with_manual_dimensions(mock_write, mock_generate, mock_calculate, 
     assert "Panel dimensions: 60.0 × 120.0 inches" in captured.out
 
 
-@patch("legacy.plywood_layout_generator.argparse.ArgumentParser.parse_args")
+@patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.parse_args")
 def test_main_manual_dimensions_missing_values(mock_args):
     # Setup mocks - missing height
     mock_args.return_value = type('args', (), {
@@ -204,15 +204,15 @@ def test_main_manual_dimensions_missing_values(mock_args):
     })
     
     # Mock parser.error to raise SystemExit (as argparse does)
-    with patch("legacy.plywood_layout_generator.argparse.ArgumentParser.error", side_effect=SystemExit(2)):
+    with patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.error", side_effect=SystemExit(2)):
         with pytest.raises(SystemExit):
             main()
 
 
-@patch("legacy.plywood_layout_generator.argparse.ArgumentParser.parse_args")
-@patch("legacy.plywood_layout_generator.calculate_layout")
-@patch("legacy.plywood_layout_generator.generate_nx_expressions")
-@patch("legacy.plywood_layout_generator.write_exp_file")
+@patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.parse_args")
+@patch("autocrate.plywood_layout_generator.calculate_layout")
+@patch("autocrate.plywood_layout_generator.generate_nx_expressions")
+@patch("autocrate.plywood_layout_generator.write_exp_file")
 def test_main_with_too_many_sheets(mock_write, mock_generate, mock_calculate, mock_args, capsys):
     # Setup mocks
     mock_args.return_value = type('args', (), {
@@ -239,8 +239,8 @@ def test_main_with_too_many_sheets(mock_write, mock_generate, mock_calculate, mo
     assert "Only the first 10 sheets will be included in the output." in captured.out
 
 
-@patch("legacy.plywood_layout_generator.argparse.ArgumentParser.parse_args")
-@patch("legacy.plywood_layout_generator.read_panel_dimensions_from_exp")
+@patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.parse_args")
+@patch("autocrate.plywood_layout_generator.read_panel_dimensions_from_exp")
 def test_main_read_dimensions_error(mock_read_dims, mock_args):
     # Setup mocks
     mock_args.return_value = type('args', (), {
@@ -253,6 +253,6 @@ def test_main_read_dimensions_error(mock_read_dims, mock_args):
     mock_read_dims.side_effect = ValueError("Test error reading file")
     
     # Mock parser.error to raise SystemExit
-    with patch("legacy.plywood_layout_generator.argparse.ArgumentParser.error", side_effect=SystemExit(2)):
+    with patch("autocrate.plywood_layout_generator.argparse.ArgumentParser.error", side_effect=SystemExit(2)):
         with pytest.raises(SystemExit):
             main()

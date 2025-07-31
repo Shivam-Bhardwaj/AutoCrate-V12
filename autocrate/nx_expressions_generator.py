@@ -1567,8 +1567,8 @@ class CrateApp:
             else:
                 # Running as script - use project root
                 exe_dir = os.path.dirname(os.path.abspath(__file__))
-                if exe_dir.endswith('legacy'):
-                    exe_dir = os.path.dirname(exe_dir)  # Go up one level from legacy folder
+                if exe_dir.endswith('autocrate'):
+                    exe_dir = os.path.dirname(exe_dir)  # Go up one level from autocrate folder
             expressions_dir = os.path.join(exe_dir, "expressions")
             if not os.path.exists(expressions_dir):
                 os.makedirs(expressions_dir)

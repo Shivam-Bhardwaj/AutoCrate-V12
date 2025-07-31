@@ -1,6 +1,6 @@
 import pytest
-from legacy.end_panel_logic import calculate_end_panel_components
-import legacy.end_panel_logic as end_panel_logic
+from autocrate.end_panel_logic import calculate_end_panel_components
+import autocrate.end_panel_logic as end_panel_logic
 from unittest.mock import patch
 
 # Test cases for calculate_end_panel_components

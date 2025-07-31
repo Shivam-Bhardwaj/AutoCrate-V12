@@ -1,5 +1,16 @@
 # AutoCrate Changelog
 
+## [12.0.5] - 2025-07-31
+
+### Changed
+- **Project Structure Consolidation**: Consolidated dual codebase structure to eliminate confusion between `legacy/` and `src/` folders
+  - Moved all working code from `legacy/` to main `autocrate/` folder
+  - Removed incomplete `src/autocrate/` refactor attempt that had import issues
+  - Updated build system to use `autocrate/nx_expressions_generator.py` as entry point
+  - Updated all test imports to use `autocrate.` module paths
+  - All 78 tests pass with new consolidated structure
+  - Single source of truth for easier maintenance and development
+
 ## [12.0.4] - 2025-07-31
 
 ### Fixed

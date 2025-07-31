@@ -1,5 +1,5 @@
 import pytest
-from legacy.left_panel_logic import calculate_left_panel_components
+from autocrate.left_panel_logic import calculate_left_panel_components
 
 # Test cases for the left panel's intermediate vertical cleats
 # Each tuple contains: (length, height, cleat_width, expected_intermediate_count, expected_positions)

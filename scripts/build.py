@@ -35,7 +35,7 @@ class AutoCrateBuild:
         
         self.build_info = {
             'timestamp': datetime.now().isoformat(),
-            'version': '12.0.4',
+            'version': '12.0.5',
             'python_version': sys.version,
         }
     
@@ -63,9 +63,9 @@ class AutoCrateBuild:
         print("Creating PyInstaller spec file...")
         
         # Use forward slashes and raw strings to avoid Unicode escape issues
-        main_script = str(self.project_root / "legacy" / "nx_expressions_generator.py").replace('\\', '/')
+        main_script = str(self.project_root / "autocrate" / "nx_expressions_generator.py").replace('\\', '/')
         project_root_str = str(self.project_root).replace('\\', '/')
-        legacy_dir_str = str(self.project_root / "legacy").replace('\\', '/')
+        autocrate_dir_str = str(self.project_root / "autocrate").replace('\\', '/')
         version_file_str = str(self.project_root / "version_info.txt").replace('\\', '/')
         
         spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
@@ -73,19 +73,19 @@ class AutoCrateBuild:
 import sys
 from pathlib import Path
 
-# Add legacy directory to path for imports
-legacy_path = r"{legacy_dir_str}"
-sys.path.insert(0, legacy_path)
+# Add autocrate directory to path for imports
+autocrate_path = r"{autocrate_dir_str}"
+sys.path.insert(0, autocrate_path)
 
 block_cipher = None
 
 a = Analysis(
     [r"{main_script}"],
-    pathex=[r"{project_root_str}", r"{legacy_dir_str}"],
+    pathex=[r"{project_root_str}", r"{autocrate_dir_str}"],
     binaries=[],
     datas=[
-        # Include legacy modules
-        (r"{legacy_dir_str}", "legacy"),
+        # Include autocrate modules
+        (r"{autocrate_dir_str}", "autocrate"),
     ],
     hiddenimports=[
         'tkinter',
@@ -97,18 +97,18 @@ a = Analysis(
         'math',
         'traceback',
         'typing',
-        # Include legacy modules
-        'legacy.front_panel_logic',
-        'legacy.back_panel_logic',
-        'legacy.left_panel_logic',
-        'legacy.right_panel_logic',
-        'legacy.top_panel_logic',
-        'legacy.end_panel_logic',
-        'legacy.skid_logic',
-        'legacy.floorboard_logic',
-        'legacy.plywood_layout_generator',
-        'legacy.front_panel_logic_unified',
-        'legacy.nx_expressions_generator',
+        # Include autocrate modules
+        'autocrate.front_panel_logic',
+        'autocrate.back_panel_logic',
+        'autocrate.left_panel_logic',
+        'autocrate.right_panel_logic',
+        'autocrate.top_panel_logic',
+        'autocrate.end_panel_logic',
+        'autocrate.skid_logic',
+        'autocrate.floorboard_logic',
+        'autocrate.plywood_layout_generator',
+        'autocrate.front_panel_logic_unified',
+        'autocrate.nx_expressions_generator',
         # Direct imports (for backward compatibility)
         'front_panel_logic',
         'back_panel_logic',
@@ -177,8 +177,8 @@ exe = EXE(
 # Version information for AutoCrate.exe
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(12, 0, 4, 0),
-    prodvers=(12, 0, 4, 0),
+    filevers=(12, 0, 5, 0),
+    prodvers=(12, 0, 5, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -193,12 +193,12 @@ VSVersionInfo(
         u'040904B0',
         [StringStruct(u'CompanyName', u'AutoCrate Development Team'),
         StringStruct(u'FileDescription', u'AutoCrate - Automated CAD Design Tool'),
-        StringStruct(u'FileVersion', u'12.0.4.0'),
+        StringStruct(u'FileVersion', u'12.0.5.0'),
         StringStruct(u'InternalName', u'AutoCrate'),
         StringStruct(u'LegalCopyright', u'© 2024 AutoCrate Development Team'),
         StringStruct(u'OriginalFilename', u'AutoCrate.exe'),
         StringStruct(u'ProductName', u'AutoCrate'),
-        StringStruct(u'ProductVersion', u'12.0.4.0')])
+        StringStruct(u'ProductVersion', u'12.0.5.0')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

@@ -13,7 +13,11 @@
       "Bash(powershell:*)",
       "Bash(del:*)",
       "Bash(git restore:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(copy:*)",
+      "Bash(cp:*)",
+      "Bash(git rm:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

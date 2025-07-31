@@ -1,5 +1,5 @@
 import pytest
-from legacy.front_panel_logic_unified import calculate_front_panel_components
+from autocrate.front_panel_logic_unified import calculate_front_panel_components
 
 # Define standard inputs for the tests
 WIDTH = 100.0

@@ -1,10 +1,10 @@
 import pytest
-from legacy.front_panel_logic import (
+from autocrate.front_panel_logic import (
     calculate_front_panel_components,
     calculate_horizontal_splice_positions,
     calculate_horizontal_cleat_sections
 )
-import legacy.front_panel_logic as front_panel_logic
+import autocrate.front_panel_logic as front_panel_logic
 from unittest.mock import patch
 
 # Test cases for calculate_front_panel_components focusing on intermediate vertical cleats

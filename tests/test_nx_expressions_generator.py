@@ -1,6 +1,6 @@
 import pytest
 import os
-from legacy.nx_expressions_generator import generate_crate_expressions_logic
+from autocrate.nx_expressions_generator import generate_crate_expressions_logic
 
 # A helper function to parse the generated .exp file
 def parse_exp_file(filepath):
