@@ -35,7 +35,7 @@ class AutoCrateBuild:
         
         self.build_info = {
             'timestamp': datetime.now().isoformat(),
-            'version': '12.0.2',
+            'version': '12.0.3',
             'python_version': sys.version,
         }
     
@@ -62,25 +62,30 @@ class AutoCrateBuild:
         """Create PyInstaller spec file with proper configuration."""
         print("Creating PyInstaller spec file...")
         
+        # Use forward slashes and raw strings to avoid Unicode escape issues
+        main_script = str(self.project_root / "legacy" / "nx_expressions_generator.py").replace('\\', '/')
+        project_root_str = str(self.project_root).replace('\\', '/')
+        legacy_dir_str = str(self.project_root / "legacy").replace('\\', '/')
+        version_file_str = str(self.project_root / "version_info.txt").replace('\\', '/')
+        
         spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 
 import sys
 from pathlib import Path
 
-# Add src directory to path
-src_path = str(Path(SPECPATH) / "src")
-sys.path.insert(0, src_path)
+# Add legacy directory to path for imports
+legacy_path = r"{legacy_dir_str}"
+sys.path.insert(0, legacy_path)
 
 block_cipher = None
 
 a = Analysis(
-    ['{self.src_dir / "autocrate" / "gui" / "main_app.py"}'],
-    pathex=[str(self.project_root), str(self.src_dir)],
+    [r"{main_script}"],
+    pathex=[r"{project_root_str}", r"{legacy_dir_str}"],
     binaries=[],
     datas=[
-        # Include configuration files
-        ('{self.src_dir / "autocrate" / "config"}', 'autocrate/config'),
-        # Include any resource files
+        # Include legacy modules
+        (r"{legacy_dir_str}", "legacy"),
     ],
     hiddenimports=[
         'tkinter',
@@ -88,15 +93,24 @@ a = Analysis(
         'tkinter.filedialog',
         'tkinter.messagebox',
         'tkinter.simpledialog',
-        # Include all AutoCrate modules
-        'autocrate',
-        'autocrate.core',
-        'autocrate.gui', 
-        'autocrate.utils',
-        'autocrate.config',
-        'autocrate.exceptions',
-        # Include original modules for compatibility
-        'front_panel_logic_unified',
+        'datetime',
+        'math',
+        'traceback',
+        'typing',
+        # Include legacy modules
+        'legacy.front_panel_logic',
+        'legacy.back_panel_logic',
+        'legacy.left_panel_logic',
+        'legacy.right_panel_logic',
+        'legacy.top_panel_logic',
+        'legacy.end_panel_logic',
+        'legacy.skid_logic',
+        'legacy.floorboard_logic',
+        'legacy.plywood_layout_generator',
+        'legacy.front_panel_logic_unified',
+        'legacy.nx_expressions_generator',
+        # Direct imports (for backward compatibility)
+        'front_panel_logic',
         'back_panel_logic',
         'left_panel_logic',
         'right_panel_logic',
@@ -105,6 +119,8 @@ a = Analysis(
         'skid_logic',
         'floorboard_logic',
         'plywood_layout_generator',
+        'front_panel_logic_unified',
+        'nx_expressions_generator',
     ],
     hookspath=[],
     hooksconfig={{}},
@@ -143,8 +159,8 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='{self.project_root / "autocrate_icon.ico" if (self.project_root / "autocrate_icon.ico").exists() else None}',
-    version_file='{self.project_root / "version_info.txt" if (self.project_root / "version_info.txt").exists() else None}',
+    icon=None,
+    version_file=r"{version_file_str}",
 )
 '''
         
@@ -161,8 +177,8 @@ exe = EXE(
 # Version information for AutoCrate.exe
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(12, 0, 2, 0),
-    prodvers=(12, 0, 2, 0),
+    filevers=(12, 0, 3, 0),
+    prodvers=(12, 0, 3, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
