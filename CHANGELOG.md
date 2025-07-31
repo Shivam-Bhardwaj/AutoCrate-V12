@@ -1,5 +1,17 @@
 # AutoCrate Changelog
 
+## [12.0.6] - 2025-07-31
+
+### Added
+- **Quick Test Suite Button**: Added new "Quick Test Suite" button to GUI for rapid testing of corner cases and edge scenarios
+  - Generates 10 test cases covering various product dimensions and edge conditions
+  - Includes the original horizontal splice bug test case (20x20x100)
+  - Test cases include: very tall/thin, standard plywood sizes, large/heavy, small/light, maximum size, perfect cube, etc.
+  - Creates `quick_test_expressions/` folder with descriptive filenames
+  - Uses current GUI settings for material parameters
+  - Provides detailed progress logging and success/failure summary
+  - Useful for regression testing and validating fixes across different scenarios
+
 ## [12.0.5] - 2025-07-31
 
 ### Changed

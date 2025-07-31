@@ -1538,7 +1538,9 @@ class CrateApp:
         # Output Section
         output_frame = ttk.LabelFrame(main_frame, text="Output", padding="10")
         output_frame.grid(row=4, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Button(output_frame, text="Generate NX Expressions", command=self.generate_expressions).grid(row=0, column=0, columnspan=2, pady=10)
+        ttk.Button(output_frame, text="Generate NX Expressions", command=self.generate_expressions).grid(row=0, column=0, pady=10, padx=(0, 5))
+        ttk.Button(output_frame, text="Quick Test Suite", command=self.run_quick_test_suite).grid(row=0, column=1, pady=10, padx=(5, 0))
+        output_frame.columnconfigure(0, weight=1)
         output_frame.columnconfigure(1, weight=1)
 
         # Status Section
@@ -1588,6 +1590,109 @@ class CrateApp:
             else: self.log_message(f"ERROR: {message}"); messagebox.showerror("Error", message)
         except ValueError as e: self.log_message(f"INPUT ERROR: {e}"); messagebox.showerror("Input Error", f"Invalid input: {e}")
         except Exception as e: self.log_message(f"UNEXPECTED ERROR: {e}"); messagebox.showerror("Error", f"Unexpected error: {e}")
+
+    def run_quick_test_suite(self):
+        """Generate multiple test cases for corner cases and edge scenarios."""
+        try:
+            import os
+            import sys
+            
+            # Create quick test expressions folder
+            if getattr(sys, 'frozen', False):
+                # Running as executable
+                exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+            else:
+                # Running as script - use project root
+                exe_dir = os.path.dirname(os.path.abspath(__file__))
+                if exe_dir.endswith('autocrate'):
+                    exe_dir = os.path.dirname(exe_dir)  # Go up one level from autocrate folder
+            
+            quick_test_dir = os.path.join(exe_dir, "quick_test_expressions")
+            if not os.path.exists(quick_test_dir):
+                os.makedirs(quick_test_dir)
+                self.log_message(f"Created quick test directory: {quick_test_dir}")
+            
+            # Define test cases with corner cases and edge scenarios
+            test_cases = [
+                # Format: (product_weight, product_length, product_width, product_height, clearance, description)
+                (1000, 20, 20, 100, 1.0, "Very Tall Thin - Horizontal Splice Bug Test"),
+                (500, 96, 48, 30, 2.0, "Standard Plywood Size"),
+                (2000, 120, 120, 48, 1.5, "Large Square Heavy"),
+                (100, 12, 8, 24, 0.5, "Very Small Light"),
+                (5000, 200, 150, 60, 3.0, "Very Large Heavy"),
+                (800, 30, 30, 80, 1.0, "Medium Square Tall"),
+                (1500, 100, 50, 40, 2.5, "Long Narrow"),
+                (300, 48, 48, 48, 1.0, "Perfect Cube"),
+                (10000, 240, 200, 72, 4.0, "Maximum Size Heavy"),
+                (50, 6, 6, 12, 0.25, "Minimum Size Light"),
+            ]
+            
+            self.log_message("Starting Quick Test Suite generation...")
+            self.log_message(f"Generating {len(test_cases)} test cases...")
+            
+            # Use current GUI settings for common parameters
+            panel_thickness = float(self.panel_thickness_entry.get())
+            cleat_thickness = float(self.cleat_thickness_entry.get()) 
+            cleat_member_width = float(self.cleat_member_width_entry.get())
+            clearance_above = float(self.clearance_above_entry.get())
+            ground_clearance = float(self.ground_clearance_entry.get())
+            floorboard_thickness = float(self.floorboard_thickness_entry.get())
+            max_gap = float(self.max_gap_entry.get())
+            min_custom = float(self.min_custom_entry.get())
+            selected_lumber = [width for width, var in self.lumber_vars.items() if var.get()]
+            plywood_selections = {"FP": True, "BP": True, "LP": True, "RP": True, "TP": True}
+            
+            successful_tests = 0
+            failed_tests = 0
+            
+            for i, (weight, length, width, height, clearance, description) in enumerate(test_cases, 1):
+                try:
+                    # Generate filename
+                    filename = f"QuickTest_{i:02d}_{length:.0f}x{width:.0f}x{height:.0f}_{description.replace(' ', '_').replace('-', '')}.exp"
+                    output_filename = os.path.join(quick_test_dir, filename)
+                    
+                    self.log_message(f"Test {i}/10: {description}")
+                    
+                    # Generate expressions
+                    success, message = generate_crate_expressions_logic(
+                        weight, length, width, clearance, self.allow_3x4_skids_var.get(),
+                        panel_thickness, cleat_thickness, cleat_member_width, height,
+                        clearance_above, ground_clearance, floorboard_thickness,
+                        selected_lumber, max_gap, min_custom, self.force_custom_var.get(),
+                        output_filename, plywood_selections
+                    )
+                    
+                    if success:
+                        successful_tests += 1
+                        self.log_message(f"  ✓ Generated: {filename}")
+                    else:
+                        failed_tests += 1
+                        self.log_message(f"  ✗ Failed: {message}")
+                        
+                except Exception as e:
+                    failed_tests += 1
+                    self.log_message(f"  ✗ Error in test {i}: {e}")
+            
+            # Summary
+            self.log_message("=" * 50)
+            self.log_message(f"Quick Test Suite Complete!")
+            self.log_message(f"Successful: {successful_tests}/{len(test_cases)}")
+            self.log_message(f"Failed: {failed_tests}/{len(test_cases)}")
+            self.log_message(f"Output directory: {quick_test_dir}")
+            
+            if failed_tests == 0:
+                messagebox.showinfo("Quick Test Suite", 
+                    f"All {successful_tests} test cases generated successfully!\n\n"
+                    f"Files saved to: quick_test_expressions/")
+            else:
+                messagebox.showwarning("Quick Test Suite", 
+                    f"Generated {successful_tests} test cases successfully.\n"
+                    f"{failed_tests} tests failed - see log for details.\n\n"
+                    f"Files saved to: quick_test_expressions/")
+                    
+        except Exception as e:
+            self.log_message(f"QUICK TEST ERROR: {e}")
+            messagebox.showerror("Quick Test Error", f"Error running quick test suite: {e}")
 
 def calculate_horizontal_cleat_sections_from_vertical_positions(
     panel_width: float,
