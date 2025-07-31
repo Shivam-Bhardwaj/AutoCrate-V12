@@ -35,7 +35,7 @@ class AutoCrateBuild:
         
         self.build_info = {
             'timestamp': datetime.now().isoformat(),
-            'version': '12.0.3',
+            'version': '12.0.4',
             'python_version': sys.version,
         }
     
@@ -177,8 +177,8 @@ exe = EXE(
 # Version information for AutoCrate.exe
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(12, 0, 3, 0),
-    prodvers=(12, 0, 3, 0),
+    filevers=(12, 0, 4, 0),
+    prodvers=(12, 0, 4, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -193,12 +193,12 @@ VSVersionInfo(
         u'040904B0',
         [StringStruct(u'CompanyName', u'AutoCrate Development Team'),
         StringStruct(u'FileDescription', u'AutoCrate - Automated CAD Design Tool'),
-        StringStruct(u'FileVersion', u'12.0.2.0'),
+        StringStruct(u'FileVersion', u'12.0.4.0'),
         StringStruct(u'InternalName', u'AutoCrate'),
         StringStruct(u'LegalCopyright', u'© 2024 AutoCrate Development Team'),
         StringStruct(u'OriginalFilename', u'AutoCrate.exe'),
         StringStruct(u'ProductName', u'AutoCrate'),
-        StringStruct(u'ProductVersion', u'12.0.2.0')])
+        StringStruct(u'ProductVersion', u'12.0.4.0')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]
