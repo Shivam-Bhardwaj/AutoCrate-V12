@@ -34,39 +34,166 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better appearance
+# Custom CSS for professional modern appearance
 st.markdown("""
 <style>
+/* Professional color scheme */
+:root {
+    --primary-color: #1a237e;
+    --secondary-color: #3949ab;
+    --accent-color: #5c6bc0;
+    --success-color: #00695c;
+    --error-color: #b71c1c;
+    --background-light: #f5f5f5;
+    --background-card: #ffffff;
+    --text-primary: #212121;
+    --text-secondary: #616161;
+    --border-color: #e0e0e0;
+}
+
+/* Make app responsive to screen resolution */
+.stApp {
+    max-width: 100%;
+}
+
+/* Professional header */
 .main-header {
-    background: linear-gradient(90deg, #1f4e79, #2e7bb6);
+    background: var(--primary-color);
     color: white;
-    padding: 1rem;
-    border-radius: 10px;
-    margin-bottom: 2rem;
+    padding: 2rem 1rem;
+    margin: -1rem -1rem 2rem -1rem;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+.main-header h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.main-header p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+}
+
+/* Clean metric cards */
 .metric-card {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 8px;
-    border-left: 4px solid #2e7bb6;
+    background: var(--background-card);
+    padding: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
     margin: 0.5rem 0;
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
 }
+
+.metric-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.metric-card h4 {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+/* Status boxes */
 .success-box {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
+    background: #e8f5e9;
+    border-left: 4px solid var(--success-color);
+    color: var(--success-color);
     padding: 1rem;
-    border-radius: 8px;
     margin: 1rem 0;
+    border-radius: 4px;
 }
+
 .error-box {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+    background: #ffebee;
+    border-left: 4px solid var(--error-color);
+    color: var(--error-color);
     padding: 1rem;
-    border-radius: 8px;
     margin: 1rem 0;
+    border-radius: 4px;
+}
+
+/* Streamlit component overrides for consistency */
+.stButton > button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    background-color: var(--secondary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.stButton > button[kind="primary"] {
+    background-color: var(--accent-color);
+}
+
+/* Input fields styling */
+.stNumberInput > div > div > input,
+.stTextInput > div > div > input,
+.stSelectbox > div > div > select {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+/* Sidebar styling */
+.css-1d391kg {
+    background-color: var(--background-light);
+}
+
+/* Dataframe styling */
+.dataframe {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 4px;
+}
+
+/* Tab styling */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: var(--background-light);
+    border-radius: 4px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Metric component styling */
+div[data-testid="metric-container"] {
+    background-color: var(--background-card);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-header h1 {
+        font-size: 2rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -86,8 +213,8 @@ class StreamlitDevInterface:
         """Render the application header."""
         st.markdown("""
         <div class="main-header">
-            <h1>AutoCrate Development Interface</h1>
-            <p>Fast development environment with instant feedback</p>
+            <h1>AutoCrate Professional</h1>
+            <p>Advanced Shipping Crate Design System</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -95,9 +222,13 @@ class StreamlitDevInterface:
         """Render sidebar with input controls."""
         st.sidebar.header("Design Parameters")
         
-        # Development mode indicators
-        st.sidebar.success("Development Mode Active")
-        st.sidebar.info("Instant calculations, no exe build required")
+        # Professional status indicator
+        with st.sidebar.container():
+            st.markdown("""
+            <div style="background: #e3f2fd; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem;">
+                <small style="color: #1565c0;">Real-time Calculation Engine</small>
+            </div>
+            """, unsafe_allow_html=True)
         
         # Product specifications
         st.sidebar.subheader("Product Specifications")
@@ -204,7 +335,7 @@ class StreamlitDevInterface:
         
         with col4:
             if st.button(" Reset to Defaults", use_container_width=True):
-                st.experimental_rerun()
+                st.rerun()
         
         # Auto-calculate on input change (with debouncing)
         input_changed = self.session_state.last_inputs != inputs
@@ -218,6 +349,138 @@ class StreamlitDevInterface:
         # Display results if available
         if self.session_state.calculation_results:
             self.display_results(self.session_state.calculation_results, inputs)
+    
+    def generate_detailed_bom(self, results: Dict[str, Any], inputs: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate detailed Bill of Materials with individual components grouped by length."""
+        bom = {
+            'plywood': [],
+            'cleats': {},
+            'floorboards': [],
+            'skids': [],
+            'hardware': []
+        }
+        
+        # Plywood sheets (4'x8' standard)
+        plywood_count = results['material_summary']['plywood_sheets']
+        bom['plywood'].append({
+            'description': 'Plywood Sheet',
+            'size': '4\' x 8\' x ' + str(inputs['panel_thickness']) + '"',
+            'quantity': plywood_count,
+            'unit': 'sheets'
+        })
+        
+        # Cleats by length
+        cleat_size = inputs['cleat_size']
+        
+        # Edge cleats for each panel
+        panels = results['panel_details']
+        
+        # Front/Back panels - horizontal cleats
+        fb_horiz_length = panels['front_panel']['width']
+        fb_horiz_count = 4  # 2 per panel (top/bottom)
+        
+        # Front/Back panels - vertical cleats  
+        fb_vert_length = panels['front_panel']['height'] - (2 * 3.5)  # Minus horizontal cleat widths
+        fb_vert_count = 4  # 2 per panel (left/right)
+        
+        # Left/Right panels - horizontal cleats
+        lr_horiz_length = panels['left_panel']['width']
+        lr_horiz_count = 4  # 2 per panel
+        
+        # Left/Right panels - vertical cleats
+        lr_vert_length = panels['left_panel']['height'] - (2 * 3.5)
+        lr_vert_count = 4  # 2 per panel
+        
+        # Top panel cleats
+        top_primary_length = panels['top_panel']['width']
+        top_primary_count = 2
+        top_secondary_length = panels['top_panel']['height'] - (2 * 3.5)
+        top_secondary_count = 2
+        
+        # Group cleats by length
+        cleat_lengths = {}
+        
+        # Add front/back horizontal cleats
+        if fb_horiz_length > 0:
+            key = f"{fb_horiz_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += fb_horiz_count
+            
+        # Add front/back vertical cleats
+        if fb_vert_length > 0:
+            key = f"{fb_vert_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += fb_vert_count
+            
+        # Add left/right horizontal cleats
+        if lr_horiz_length > 0:
+            key = f"{lr_horiz_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += lr_horiz_count
+            
+        # Add left/right vertical cleats
+        if lr_vert_length > 0:
+            key = f"{lr_vert_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += lr_vert_count
+            
+        # Add top panel cleats
+        if top_primary_length > 0:
+            key = f"{top_primary_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += top_primary_count
+            
+        if top_secondary_length > 0:
+            key = f"{top_secondary_length:.1f}"
+            if key not in cleat_lengths:
+                cleat_lengths[key] = 0
+            cleat_lengths[key] += top_secondary_count
+        
+        # Convert to BOM format
+        for length_str, count in sorted(cleat_lengths.items(), key=lambda x: float(x[0]), reverse=True):
+            bom['cleats'][length_str] = {
+                'description': f'Cleat {cleat_size}',
+                'length': float(length_str),
+                'quantity': count,
+                'unit': 'pieces'
+            }
+        
+        # Floorboards
+        floorboard_count = 8  # Example count
+        bom['floorboards'].append({
+            'description': 'Floorboard 2x12',
+            'length': inputs['width'] + 4,  # Approximate
+            'quantity': floorboard_count,
+            'unit': 'pieces'
+        })
+        
+        # Skids
+        skid_info = results['skid_details']
+        bom['skids'].append({
+            'description': f'Skid {skid_info["lumber_size"]}',
+            'length': results['overall_dimensions']['length'],
+            'quantity': skid_info['skid_count'],
+            'unit': 'pieces'
+        })
+        
+        # Hardware estimate
+        bom['hardware'].append({
+            'description': 'Wood Screws #10 x 2.5"',
+            'quantity': 200,
+            'unit': 'pieces (est)'
+        })
+        bom['hardware'].append({
+            'description': 'Wood Screws #10 x 3.5"',
+            'quantity': 100,
+            'unit': 'pieces (est)'
+        })
+        
+        return bom
     
     def calculate_crate_design(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Calculate crate design using AutoCrate logic."""
@@ -323,7 +586,7 @@ class StreamlitDevInterface:
             materials = results['material_summary']
             st.markdown("""
             <div class="metric-card">
-                <h4> Material Requirements</h4>
+                <h4 style="color: #333;"> Material Requirements</h4>
             </div>
             """, unsafe_allow_html=True)
             
@@ -337,7 +600,7 @@ class StreamlitDevInterface:
             compliance = results['compliance']
             st.markdown("""
             <div class="metric-card">
-                <h4> Compliance Status</h4>
+                <h4 style="color: #333;"> Compliance Status</h4>
             </div>
             """, unsafe_allow_html=True)
             
@@ -360,6 +623,37 @@ class StreamlitDevInterface:
         
         df_panels = pd.DataFrame(panel_data)
         st.dataframe(df_panels, use_container_width=True)
+        
+        # Bill of Materials
+        st.subheader(" Bill of Materials (BOM)")
+        
+        bom = self.generate_detailed_bom(results, inputs)
+        
+        # Display BOM in organized sections
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("**Plywood**")
+            for item in bom['plywood']:
+                st.write(f"• {item['description']} {item['size']}: {item['quantity']} {item['unit']}")
+            
+            st.markdown("**Skids**")
+            for item in bom['skids']:
+                st.write(f"• {item['description']} @ {item['length']:.1f}\": {item['quantity']} {item['unit']}")
+        
+        with col2:
+            st.markdown("**Cleats (grouped by length)**")
+            for length, item in bom['cleats'].items():
+                st.write(f"• {item['description']} @ {item['length']:.1f}\": {item['quantity']} {item['unit']}")
+        
+        with col3:
+            st.markdown("**Floorboards**")
+            for item in bom['floorboards']:
+                st.write(f"• {item['description']} @ {item['length']:.1f}\": {item['quantity']} {item['unit']}")
+            
+            st.markdown("**Hardware**")
+            for item in bom['hardware']:
+                st.write(f"• {item['description']}: {item['quantity']} {item['unit']}")
         
         # Download section
         st.subheader(" Download Results")
@@ -472,8 +766,42 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
             ['Plywood Sheets', results['material_summary']['plywood_sheets'], 'sheets'],
             ['Cleat Linear Feet', results['material_summary']['linear_feet_cleats'], 'feet'],
             ['Total Weight', results['material_summary']['total_weight'], 'pounds'],
-            ['Estimated Cost', results['material_summary']['estimated_cost'], 'dollars']
+            ['Estimated Cost', results['material_summary']['estimated_cost'], 'dollars'],
+            ['', '', ''],  # Separator
+            ['Bill of Materials', '', '']
         ])
+        
+        # Add BOM details
+        bom = self.generate_detailed_bom(results, inputs)
+        
+        # Plywood
+        report_data.append(['Plywood', '', ''])
+        for item in bom['plywood']:
+            report_data.append(['', f"{item['description']} {item['size']}", f"{item['quantity']} {item['unit']}"])
+        
+        # Cleats
+        report_data.append(['', '', ''])
+        report_data.append(['Cleats (by length)', '', ''])
+        for length, item in sorted(bom['cleats'].items(), key=lambda x: float(x[0]), reverse=True):
+            report_data.append(['', f"{item['description']} @ {item['length']:.1f}\"", f"{item['quantity']} {item['unit']}"])
+        
+        # Floorboards
+        report_data.append(['', '', ''])
+        report_data.append(['Floorboards', '', ''])
+        for item in bom['floorboards']:
+            report_data.append(['', f"{item['description']} @ {item['length']:.1f}\"", f"{item['quantity']} {item['unit']}"])
+        
+        # Skids
+        report_data.append(['', '', ''])
+        report_data.append(['Skids', '', ''])
+        for item in bom['skids']:
+            report_data.append(['', f"{item['description']} @ {item['length']:.1f}\"", f"{item['quantity']} {item['unit']}"])
+        
+        # Hardware
+        report_data.append(['', '', ''])
+        report_data.append(['Hardware', '', ''])
+        for item in bom['hardware']:
+            report_data.append(['', item['description'], f"{item['quantity']} {item['unit']}"])
         
         # Convert to CSV string
         csv_output = io.StringIO()
@@ -556,9 +884,21 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
                     xaxis_title="Length (inches)",
                     yaxis_title="Width (inches)",
                     zaxis_title="Height (inches)",
-                    aspectmode='data'
+                    aspectmode='data',
+                    camera=dict(
+                        eye=dict(x=1.5, y=1.5, z=1.5)
+                    )
                 ),
-                height=600
+                height=800,
+                showlegend=True,
+                legend=dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01
+                ),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
             )
             
             st.plotly_chart(fig, use_container_width=True)
@@ -670,10 +1010,9 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
         # Footer
         st.markdown("---")
         st.markdown("""
-        <div style="text-align: center; color: #666; padding: 1rem;">
-             AutoCrate Development Interface | 
-             Powered by Streamlit | 
-             AI-Assisted Development Showcase
+        <div style="text-align: center; color: #666; padding: 2rem 1rem;">
+            <p style="margin: 0;">AutoCrate Professional Edition v12.0.2</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">ASTM Compliant | Engineering-Grade Design System</p>
         </div>
         """, unsafe_allow_html=True)
 

@@ -1,0 +1,7 @@
+AutoCrate Test Notes
+====================
+
+Format: screenshot_name - dimensions, weight - observation
+
+Your tests:
+-----------

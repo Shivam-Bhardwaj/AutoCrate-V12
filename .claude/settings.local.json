@@ -30,7 +30,8 @@
       "Bash(cmd /c:*)",
       "Bash(move dev_interface.py dev_interface_backup.py)",
       "Bash(move dev_interface_fixed.py dev_interface.py)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(awk:*)"
     ],
     "deny": []
   }

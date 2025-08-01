@@ -27,7 +27,7 @@ echo This may take 2-3 minutes...
 echo.
 
 REM Fast build with optimizations
-python -m PyInstaller ^|
+python -m PyInstaller ^
     --noconfirm ^
     --onefile ^
     --windowed ^
@@ -42,7 +42,7 @@ python -m PyInstaller ^|
     --hidden-import security.windows_security ^
     --hidden-import security.auth_manager ^
     --hidden-import security.audit_logger ^
-    nx_expressions_generator.py
+    autocrate\nx_expressions_generator.py
 
 if errorlevel 1 (
     echo.
