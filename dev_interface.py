@@ -28,7 +28,7 @@ except ImportError as e:
 
 # Configure Streamlit
 st.set_page_config(
-    page_title="AutoCrate Development Interface",
+    page_title="AutoCrate",
     page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -213,7 +213,7 @@ class StreamlitDevInterface:
         """Render the application header."""
         st.markdown("""
         <div class="main-header">
-            <h1>AutoCrate Professional</h1>
+            <h1>AutoCrate</h1>
             <p>Advanced Shipping Crate Design System</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1011,7 +1011,7 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
         st.markdown("---")
         st.markdown("""
         <div style="text-align: center; color: #666; padding: 2rem 1rem;">
-            <p style="margin: 0;">AutoCrate Professional Edition v12.0.2</p>
+            <p style="margin: 0;">AutoCrate v12.2.1</p>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">ASTM Compliant | Engineering-Grade Design System</p>
         </div>
         """, unsafe_allow_html=True)
