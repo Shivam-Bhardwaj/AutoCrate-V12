@@ -1,0 +1,45 @@
+# AutoCrate Streamlit Development Dependencies
+# Additional packages for the hybrid development approach
+
+# Streamlit and web interface
+streamlit>=1.28.0
+streamlit-option-menu>=0.3.6
+streamlit-aggrid>=0.3.4
+
+# Data visualization for development interface
+plotly>=5.15.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+altair>=5.0.0
+
+# Enhanced data handling
+pandas>=2.1.0
+numpy>=1.24.0
+
+# File watching for hot reload
+watchdog>=3.0.0
+
+# Development utilities
+ipywidgets>=8.1.0
+jupyter>=1.0.0
+
+# Performance monitoring
+psutil>=5.9.0
+memory-profiler>=0.61.0
+
+# Additional development tools
+rich>=13.5.0  # Better console output
+typer>=0.9.0  # CLI enhancements
+click>=8.1.0  # Command line interface
+
+# HTTP client for API testing
+requests>=2.31.0
+httpx>=0.24.0
+
+# Image processing for screenshots
+Pillow>=10.0.0
+
+# Configuration management
+pydantic-settings>=2.0.0
+toml>=0.10.2
+python-dotenv>=1.0.0

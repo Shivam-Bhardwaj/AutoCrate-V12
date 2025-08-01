@@ -38,7 +38,7 @@ class DocumentationGenerator:
     
     def generate_api_docs(self) -> bool:
         """Generate API documentation using sphinx-apidoc."""
-        print("🔧 Generating API documentation...")
+        print("[INFO] Generating API documentation...")
         
         try:
             # Remove existing API docs
@@ -58,19 +58,19 @@ class DocumentationGenerator:
             
             result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode != 0:
-                print(f"❌ Error generating API docs: {result.stderr}")
+                print(f"[ERROR] Error generating API docs: {result.stderr}")
                 return False
             
-            print("✅ API documentation generated successfully")
+            print("[SUCCESS] API documentation generated successfully")
             return True
             
         except Exception as e:
-            print(f"❌ Exception during API doc generation: {e}")
+            print(f"[ERROR] Exception during API doc generation: {e}")
             return False
     
     def build_html_docs(self) -> bool:
         """Build HTML documentation using Sphinx."""
-        print("🏗️  Building HTML documentation...")
+        print("Building HTML documentation...")
         
         try:
             cmd = [
@@ -83,19 +83,19 @@ class DocumentationGenerator:
             
             result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode != 0:
-                print(f"❌ Error building HTML docs: {result.stderr}")
+                print(f"[ERROR] Error building HTML docs: {result.stderr}")
                 return False
             
-            print("✅ HTML documentation built successfully")
+            print("[SUCCESS] HTML documentation built successfully")
             return True
             
         except Exception as e:
-            print(f"❌ Exception during HTML build: {e}")
+            print(f"[ERROR] Exception during HTML build: {e}")
             return False
     
     def generate_screenshots(self) -> bool:
         """Generate screenshots of the AutoCrate GUI."""
-        print("📸 Generating GUI screenshots...")
+        print("Generating GUI screenshots...")
         
         try:
             # Import GUI modules
@@ -108,7 +108,7 @@ class DocumentationGenerator:
             try:
                 import nx_expressions_generator
             except ImportError:
-                print("⚠️  Could not import AutoCrate GUI module")
+                print("[WARNING] Could not import AutoCrate GUI module")
                 return False
             
             def capture_gui():
@@ -125,15 +125,15 @@ class DocumentationGenerator:
                     root.mainloop()
                     
                 except Exception as e:
-                    print(f"⚠️  GUI screenshot failed: {e}")
+                    print(f"[WARNING] GUI screenshot failed: {e}")
             
             # Run GUI capture
             capture_gui()
-            print("✅ Screenshots generated successfully")
+            print("[SUCCESS] Screenshots generated successfully")
             return True
             
         except Exception as e:
-            print(f"❌ Exception during screenshot generation: {e}")
+            print(f"[ERROR] Exception during screenshot generation: {e}")
             return False
     
     def _capture_window(self, window: tk.Tk, filename: str):
@@ -156,14 +156,14 @@ class DocumentationGenerator:
             # Save screenshot
             screenshot_path = self.screenshots_dir / f"{filename}.png"
             screenshot.save(screenshot_path)
-            print(f"  📷 Saved screenshot: {screenshot_path}")
+            print(f"  Saved screenshot: {screenshot_path}")
             
         except Exception as e:
-            print(f"  ⚠️  Failed to capture {filename}: {e}")
+            print(f"  [WARNING] Failed to capture {filename}: {e}")
     
     def create_tutorial_content(self) -> bool:
         """Create interactive tutorial content."""
-        print("📚 Creating tutorial content...")
+        print("Creating tutorial content...")
         
         try:
             tutorial_content = self._generate_tutorial_markdown()
@@ -174,11 +174,11 @@ class DocumentationGenerator:
             with open(tutorial_file, 'w', encoding='utf-8') as f:
                 f.write(tutorial_content)
             
-            print("✅ Tutorial content created successfully")
+            print("[SUCCESS] Tutorial content created successfully")
             return True
             
         except Exception as e:
-            print(f"❌ Exception during tutorial creation: {e}")
+            print(f"[ERROR] Exception during tutorial creation: {e}")
             return False
     
     def _generate_tutorial_markdown(self) -> str:
@@ -188,7 +188,7 @@ class DocumentationGenerator:
 
 *Generated automatically on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Launch AutoCrate
 
@@ -219,7 +219,7 @@ The application will generate:
 - Material quantity report
 - Structural compliance summary
 
-## 🎯 Advanced Features
+## Advanced Features
 
 ### Panel Optimization
 
@@ -235,7 +235,7 @@ Built-in validation against:
 - Material specifications
 - Safety factors
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -257,7 +257,7 @@ For technical support and feature requests:
     
     def generate_changelog(self) -> bool:
         """Generate automated changelog from git history."""
-        print("📝 Generating changelog...")
+        print("Generating changelog...")
         
         try:
             # Get git log
@@ -271,7 +271,7 @@ For technical support and feature requests:
             
             result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_root)
             if result.returncode != 0:
-                print(f"⚠️  Could not generate git changelog: {result.stderr}")
+                print(f"[WARNING] Could not generate git changelog: {result.stderr}")
                 return False
             
             # Create changelog content
@@ -302,16 +302,16 @@ For detailed development history, see the [AI Collaboration Log](AI_COLLABORATIO
             with open(changelog_file, 'w', encoding='utf-8') as f:
                 f.write(changelog_content)
             
-            print("✅ Changelog generated successfully")
+            print("[SUCCESS] Changelog generated successfully")
             return True
             
         except Exception as e:
-            print(f"❌ Exception during changelog generation: {e}")
+            print(f"[ERROR] Exception during changelog generation: {e}")
             return False
     
     def run_full_generation(self) -> bool:
         """Run complete documentation generation process."""
-        print("🚀 Starting full documentation generation...")
+        print("Starting full documentation generation...")
         start_time = time.time()
         
         steps = [
@@ -328,13 +328,13 @@ For detailed development history, see the [AI Collaboration Log](AI_COLLABORATIO
             if step_func():
                 success_count += 1
             else:
-                print(f"⚠️  {step_name} completed with warnings")
+                print(f"[WARNING] {step_name} completed with warnings")
         
         elapsed = time.time() - start_time
-        print(f"\n🎉 Documentation generation completed!")
-        print(f"   ✅ {success_count}/{len(steps)} steps successful")
-        print(f"   ⏱️  Elapsed time: {elapsed:.1f} seconds")
-        print(f"   📁 Output: {self.build_dir / 'html' / 'index.html'}")
+        print(f"\nDocumentation generation completed!")
+        print(f"   [SUCCESS] {success_count}/{len(steps)} steps successful")
+        print(f"   [TIME] Elapsed time: {elapsed:.1f} seconds")
+        print(f"   Output: {self.build_dir / 'html' / 'index.html'}")
         
         return success_count == len(steps)
 

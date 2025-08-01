@@ -19,7 +19,18 @@
       "Bash(git rm:*)",
       "Bash(sed:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(start_dev.bat)",
+      "Bash(cmd /c \"C:\\Users\\Curio\\OneDrive\\Desktop\\AutoCrate V12\\AutoCrate v12.0.2\\start_dev.bat\")",
+      "Bash(pip install:*)",
+      "Bash(timeout:*)",
+      "Bash(set AUTOCRATE_DEV_MODE=1)",
+      "Bash(set AUTOCRATE_SKIP_SECURITY=1)",
+      "Bash(set AUTOCRATE_USE_MOCK_DATA=1)",
+      "Bash(cmd /c:*)",
+      "Bash(move dev_interface.py dev_interface_backup.py)",
+      "Bash(move dev_interface_fixed.py dev_interface.py)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

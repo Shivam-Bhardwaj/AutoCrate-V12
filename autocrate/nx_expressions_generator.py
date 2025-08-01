@@ -1664,14 +1664,14 @@ class CrateApp:
                     
                     if success:
                         successful_tests += 1
-                        self.log_message(f"  ✓ Generated: {filename}")
+                        self.log_message(f"  [SUCCESS] Generated: {filename}")
                     else:
                         failed_tests += 1
-                        self.log_message(f"  ✗ Failed: {message}")
+                        self.log_message(f"  [FAILED] {message}")
                         
                 except Exception as e:
                     failed_tests += 1
-                    self.log_message(f"  ✗ Error in test {i}: {e}")
+                    self.log_message(f"  [ERROR] Test {i} failed: {e}")
             
             # Summary
             self.log_message("=" * 50)

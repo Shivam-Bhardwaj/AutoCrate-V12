@@ -1,4 +1,4 @@
-# AutoCrate v12 🏗️ - AI Development Showcase
+# AutoCrate v12 - AI Development Showcase
 
 **Professional CAD Automation Tool for Custom Shipping Crate Design**  
 *A Demonstration of AI-Assisted Software Development*
@@ -9,33 +9,33 @@
 [![AI Collaboration](https://img.shields.io/badge/AI-Collaboration%20Demo-blue.svg)](https://claude.ai/code)
 [![Code Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](coverage.html)
 
-## 🎯 Overview
+## Overview
 
 AutoCrate is a sophisticated Python application that automates the design and manufacturing data generation for custom shipping crates. Built for professional manufacturing environments, it seamlessly integrates with Siemens NX CAD software to produce parametric 3D models and technical drawings.
 
-> **🤖 AI Development Showcase**: This project demonstrates the power of AI-assisted software development, where advanced engineering calculations, comprehensive testing, and professional documentation were created through human-AI collaboration. The engineering rules are based on ASTM standards and industry best practices.
+> **AI Development Showcase**: This project demonstrates the power of AI-assisted software development, where advanced engineering calculations, comprehensive testing, and professional documentation were created through human-AI collaboration. The engineering rules are based on ASTM standards and industry best practices.
 
-### ⚠️ Important Notice
+### Important Notice
 - **Educational Use Only**: This software is provided for educational and demonstration purposes
 - **ASTM Compliance**: Engineering calculations reference ASTM standards - users must obtain official standards for commercial use
 - **No Client Identification**: All client-specific information has been removed while preserving engineering integrity
 - **Professional Engineering Required**: Any commercial use requires validation by licensed engineers
 
-### 🏆 Key Features
+### Key Features
 
-- 🎨 **Intuitive GUI Interface** - Modern tkinter-based user interface for easy operation
-- ⚙️ **CAD Integration** - Direct integration with Siemens NX through expressions files (`.exp`)
-- 🔧 **Parametric Design** - Fully parametric crate models that adapt to any size requirements
-- 📐 **Smart Material Optimization** - Intelligent plywood layout to minimize waste
-- 🏗️ **Structural Engineering** - Automated cleat placement based on ASTM-derived requirements
-- 📊 **Professional Output** - Generates complete manufacturing documentation
-- 🧪 **AI-Generated Tests** - 100% test coverage with 78+ automated tests created through AI assistance
-- 🤖 **AI-Assisted Architecture** - System design and code structure developed with AI collaboration
+- **Intuitive GUI Interface** - Modern tkinter-based user interface for easy operation
+- **CAD Integration** - Direct integration with Siemens NX through expressions files (`.exp`)
+- **Parametric Design** - Fully parametric crate models that adapt to any size requirements
+- **Smart Material Optimization** - Intelligent plywood layout to minimize waste
+- **Structural Engineering** - Automated cleat placement based on ASTM-derived requirements
+- **Professional Output** - Generates complete manufacturing documentation
+- **AI-Generated Tests** - 100% test coverage with 78+ automated tests created through AI assistance
+- **AI-Assisted Architecture** - System design and code structure developed with AI collaboration
 
 ![AutoCrate GUI](docs/screenshots/autocrate-gui-main.png)
 *AutoCrate's intuitive user interface for crate design*
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -77,7 +77,7 @@ python scripts/build.py
 
 The executable will be created in the `bin/` directory.
 
-## 📋 How It Works
+## How It Works
 
 AutoCrate follows a sophisticated workflow to generate complete crate designs:
 
@@ -101,7 +101,7 @@ AutoCrate follows a sophisticated workflow to generate complete crate designs:
 ![Design Process](docs/screenshots/design-workflow.png)
 *AutoCrate's intelligent design workflow*
 
-## 🏗️ Architecture
+## Architecture
 
 AutoCrate is built with a modern, maintainable architecture:
 
@@ -132,7 +132,7 @@ docs/                              # Documentation
 └── index.html                     # Complete documentation
 ```
 
-## 🔬 Technical Specifications
+## Technical Specifications
 
 ### Supported Crate Types
 - **Standard Shipping Crates**: Full-panel construction
@@ -152,17 +152,17 @@ docs/                              # Documentation
 ![Crate Components](docs/screenshots/crate-components.png)
 *Detailed view of crate structural components*
 
-## 🤖 AI-Assisted Development Showcase
+## AI-Assisted Development Showcase
 
 This project demonstrates advanced AI-assisted software development techniques:
 
 ### AI Collaboration Highlights
-- **🧠 Intelligent Code Generation**: Complex engineering calculations generated through AI analysis of ASTM standards
-- **🔍 Automated Test Creation**: Comprehensive test suite with 78+ tests created through AI-assisted development
-- **📚 Documentation Generation**: Professional documentation created through human-AI collaboration
-- **🏗️ Architecture Design**: System architecture and component design developed with AI assistance
-- **🐛 Bug Detection & Fixing**: AI-assisted debugging and issue resolution
-- **♻️ Code Refactoring**: Continuous improvement through AI-guided code optimization
+- **Intelligent Code Generation**: Complex engineering calculations generated through AI analysis of ASTM standards
+- **Automated Test Creation**: Comprehensive test suite with 78+ tests created through AI-assisted development
+- **Documentation Generation**: Professional documentation created through human-AI collaboration
+- **Architecture Design**: System architecture and component design developed with AI assistance
+- **Bug Detection & Fixing**: AI-assisted debugging and issue resolution
+- **Code Refactoring**: Continuous improvement through AI-guided code optimization
 
 ### Development Process
 1. **Requirements Analysis**: AI helped interpret ASTM standards and engineering requirements
@@ -178,7 +178,7 @@ This project demonstrates advanced AI-assisted software development techniques:
 - **Documentation Generation**: Professional-grade documentation created collaboratively
 - **Code Quality**: AI-assisted code review and optimization techniques
 
-## 🧪 Testing
+## Testing
 
 AutoCrate maintains exceptional code quality with comprehensive AI-assisted testing:
 
@@ -198,7 +198,7 @@ pytest tests/test_front_panel_logic.py -v
 - **100% Pass Rate**: All tests passing
 - **83% Coverage**: High code coverage across modules
 
-## 📚 Usage Examples
+## Usage Examples
 
 ### Basic Crate Design
 
@@ -229,7 +229,7 @@ settings.set('materials.cleats.standard_width', 2.5)
 settings.save()
 ```
 
-## ⚡ Performance
+## Performance
 
 AutoCrate is optimized for professional use:
 
@@ -238,7 +238,7 @@ AutoCrate is optimized for professional use:
 - **File Size**: Generated `.exp` files typically <10KB
 - **Scalability**: Handles crates up to 20×20×20 feet
 
-## 🔧 Configuration
+## Configuration
 
 AutoCrate supports extensive configuration through JSON files:
 
@@ -260,22 +260,22 @@ AutoCrate supports extensive configuration through JSON files:
 }
 ```
 
-## 📈 Version History
+## Version History
 
 ### Version 12.0.7 (Current)
-- 🧹 Clean up redundant files and improve project structure
-- 🚀 Quick Test Suite feature
-- 📂 Better organization of build artifacts
+- Clean up redundant files and improve project structure
+- Quick Test Suite feature
+- Better organization of build artifacts
 
 ### Version 12.0.6
-- ✨ Add Quick Test Suite feature
-- 🔧 Enhanced build system
+- Add Quick Test Suite feature
+- Enhanced build system
 
 ### Version 12.0.5
-- 📁 Consolidate project structure
-- 🐛 Fix expressions file location
+- Consolidate project structure
+- Fix expressions file location
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
@@ -294,7 +294,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - **Documentation**: Comprehensive docstrings
 - **Testing**: 100% test coverage for new features
 
-## 🐛 Bug Reports & Feature Requests
+## Bug Reports & Feature Requests
 
 Please use the [GitHub Issues](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/issues) page to:
 
@@ -302,19 +302,19 @@ Please use the [GitHub Issues](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/
 - Request new features with use case descriptions
 - Ask questions about usage or implementation
 
-## 📜 License & Usage Rights
+## License & Usage Rights
 
 This project is provided under a **Educational Use License** - see the [LICENSE](LICENSE) file for complete terms.
 
 ### Key License Points:
-- ✅ **Viewing & Learning**: Full access to source code for educational purposes
-- ✅ **AI Development Study**: Learn from AI-assisted development techniques
-- ✅ **Academic Research**: Use for research and academic discussion
-- ❌ **Commercial Use**: Prohibited without separate licensing
-- ❌ **Manufacturing Use**: Requires engineering validation and proper licensing
-- ⚠️ **ASTM Standards**: Users must obtain official ASTM documents for commercial applications
+- **Viewing & Learning**: Full access to source code for educational purposes
+- **AI Development Study**: Learn from AI-assisted development techniques
+- **Academic Research**: Use for research and academic discussion
+- **Commercial Use**: Prohibited without separate licensing
+- **Manufacturing Use**: Requires engineering validation and proper licensing
+- **ASTM Standards**: Users must obtain official ASTM documents for commercial applications
 
-## 🏢 Professional Support
+## Professional Support
 
 AutoCrate is designed for professional manufacturing environments. For enterprise support, training, or custom development:
 
@@ -322,37 +322,37 @@ AutoCrate is designed for professional manufacturing environments. For enterpris
 - **Documentation**: [Complete Documentation](docs/index.html)
 - **Issues**: [Report Issues](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/issues)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Client Engineering Team**: Provided ASTM-based structural requirements and industry expertise
 - **AI Development Partner**: Claude AI for collaborative software development
 - **ASTM International**: Standards foundation for engineering calculations
 - **Open Source Community**: Inspiration for documentation and testing practices
 
-## 🔬 AI Development Case Study
+## AI Development Case Study
 
 ### What This Project Demonstrates
 
 **AutoCrate represents a successful case study in AI-assisted software development**, showing how human expertise can be amplified through AI collaboration:
 
-#### 🎯 **Problem Complexity**
+#### **Problem Complexity**
 - Engineering calculations requiring ASTM standard compliance
 - Complex parametric design with multiple interdependent variables
 - Manufacturing constraints and material optimization
 - CAD integration with precise geometric calculations
 
-#### 🤝 **Human-AI Collaboration**
+#### **Human-AI Collaboration**
 - **Human Input**: Domain expertise, requirements, validation, and quality control
 - **AI Contribution**: Code generation, test creation, documentation, and optimization
 - **Iterative Process**: Continuous refinement through collaborative development
 
-#### 📈 **Results Achieved**
+#### **Results Achieved**
 - **78+ Automated Tests**: Comprehensive test coverage generated through AI
 - **Professional Documentation**: Complete technical documentation with AI assistance
 - **Complex Engineering Logic**: ASTM-compliant calculations implemented accurately
 - **Production-Ready Code**: Full application with GUI, testing, and deployment
 
-#### 🚀 **Development Acceleration**
+#### **Development Acceleration**
 - Months of development compressed into weeks
 - Comprehensive testing implemented from day one
 - Professional documentation maintained throughout

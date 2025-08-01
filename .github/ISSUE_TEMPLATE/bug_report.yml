@@ -1,4 +1,4 @@
-name: 🐛 Bug Report
+name: Bug Report
 description: Report a bug in AutoCrate
 title: "[BUG]: "
 labels: ["bug", "needs-triage"]

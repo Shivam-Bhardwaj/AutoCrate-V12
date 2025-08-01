@@ -2,26 +2,26 @@
 
 Welcome to the AutoCrate v12 comprehensive documentation portal.
 
-## 📚 Documentation Structure
+## Documentation Structure
 
-### 🏠 Main Documentation
+### Main Documentation
 - **[index.html](index.html)** - Complete interactive documentation with detailed technical specifications
 - **[GitHub README](../README.md)** - Project overview and quick start guide
 
-### 📸 Visual Resources
+### Visual Resources
 - **[screenshots/](screenshots/)** - Screenshots and visual documentation
   - GUI interface examples
   - Workflow diagrams
   - Technical illustrations
   - Output examples
 
-### 🔧 Technical References
+### Technical References
 - **API Documentation** - Function and class references (see index.html)
 - **Configuration Guide** - Settings and customization options
 - **Testing Framework** - Test coverage and quality assurance details
 - **Deployment Guide** - Installation and deployment instructions
 
-## 🚀 Quick Navigation
+## Quick Navigation
 
 | Topic | Description | Location |
 |-------|-------------|----------|
@@ -32,7 +32,7 @@ Welcome to the AutoCrate v12 comprehensive documentation portal.
 | **Configuration** | Settings and customization | [index.html](index.html#configuration) |
 | **Deployment** | Production deployment | [index.html](index.html#deployment) |
 
-## 📖 Documentation Features
+## Documentation Features
 
 ### Interactive HTML Documentation
 The main documentation (`index.html`) provides:
@@ -49,7 +49,7 @@ The project README provides:
 - **Usage Examples** - Common use cases
 - **Contributing Guidelines** - How to contribute
 
-## 🔍 Finding Information
+## Finding Information
 
 ### For New Users
 1. Start with the [GitHub README](../README.md) for project overview
@@ -66,7 +66,7 @@ The project README provides:
 2. Review [Configuration Management](index.html#configuration) for settings
 3. Check [Performance Specifications](index.html#technical-specs) for requirements
 
-## 🆘 Getting Help
+## Getting Help
 
 ### Documentation Issues
 - **Missing Information**: [Open an issue](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/issues) describing what's needed
@@ -78,7 +78,7 @@ The project README provides:
 - **Feature Requests**: Describe use cases in GitHub issues
 - **General Questions**: Start with documentation, then ask via issues
 
-## 🔄 Documentation Updates
+## Documentation Updates
 
 This documentation is maintained alongside the codebase. When contributing:
 
@@ -87,7 +87,7 @@ This documentation is maintained alongside the codebase. When contributing:
 3. **Configuration Changes**: Update configuration examples
 4. **Architecture Changes**: Update system diagrams and descriptions
 
-## 📋 Documentation Standards
+## Documentation Standards
 
 ### Writing Guidelines
 - **Clear and Concise**: Use simple language and short sentences
