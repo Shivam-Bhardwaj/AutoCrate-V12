@@ -1,0 +1,73 @@
+# AutoCrate Development Dependencies
+# Additional packages for development, testing, and quality assurance
+
+# Testing Framework
+pytest>=7.3.0
+pytest-cov>=4.1.0
+pytest-xvfb>=3.0.0  # For GUI testing in headless environments
+pytest-benchmark>=4.0.0
+pytest-mock>=3.10.0
+pytest-timeout>=2.1.0
+
+# Code Quality
+flake8>=6.0.0
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.3.0
+bandit>=1.7.0  # Security linting
+
+# Documentation
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.2.0
+sphinx-autodoc-typehints>=1.23.0
+myst-parser>=2.0.0  # Markdown support for Sphinx
+
+# Development Tools
+ipython>=8.12.0
+jupyter>=1.0.0
+notebook>=6.5.0
+
+# Pre-commit Hooks
+pre-commit>=3.3.0
+
+# Performance Profiling
+memory-profiler>=0.60.0
+line-profiler>=4.0.0
+py-spy>=0.3.0  # Sampling profiler
+
+# Build Tools
+build>=0.10.0
+twine>=4.0.0
+wheel>=0.40.0
+
+# Executable Generation
+pyinstaller>=5.10.0
+cx-freeze>=6.15.0  # Alternative to PyInstaller
+
+# GUI Testing
+pyautogui>=0.9.54  # For automated GUI testing
+pytestqt>=4.2.0  # Qt testing (if we add Qt support)
+
+# API Documentation
+pdoc3>=0.10.0  # Alternative documentation generator
+
+# Development Utilities
+watchdog>=3.0.0  # File system monitoring
+rich>=13.3.0  # Rich console output
+click>=8.1.0  # CLI utilities
+
+# Mock External Dependencies
+responses>=0.23.0  # HTTP request mocking
+freezegun>=1.2.0  # Time/date mocking
+
+# Container Development
+docker>=6.1.0
+docker-compose>=1.29.0
+
+# Version Management
+bump2version>=1.0.0
+gitpython>=3.1.0
+
+# AI Development Tools
+langchain>=0.0.200  # For future AI integration
+openai>=0.27.0  # For AI-assisted development features

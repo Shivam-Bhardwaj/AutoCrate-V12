@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Development environment
+  autocrate-dev:
+    build:
+      context: .
+      target: development
+    container_name: autocrate-dev
+    volumes:
+      - .:/app
+      - autocrate-cache:/home/developer/.cache
+    environment:
+      - PYTHONPATH=/app
+      - DISPLAY=:99
+    ports:
+      - "8000:8000"  # For future web interface
+    networks:
+      - autocrate-network
+    profiles:
+      - dev
+
+  # Testing environment
+  autocrate-test:
+    build:
+      context: .
+      target: testing
+    container_name: autocrate-test
+    volumes:
+      - .:/app:ro  # Read-only for testing
+      - test-results:/app/test-results
+    environment:
+      - PYTHONPATH=/app
+      - DISPLAY=:99
+    command: >
+      bash -c "xvfb-run-safe python -m pytest tests/ 
+               --cov=. 
+               --cov-report=html:/app/test-results/coverage 
+               --cov-report=xml:/app/test-results/coverage.xml 
+               --junit-xml=/app/test-results/junit.xml 
+               -v"
+    networks:
+      - autocrate-network
+    profiles:
+      - test
+
+  # Production environment
+  autocrate-prod:
+    build:
+      context: .
+      target: production
+    container_name: autocrate-prod
+    volumes:
+      - autocrate-data:/app/data
+      - autocrate-outputs:/app/outputs
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    networks:
+      - autocrate-network
+    profiles:
+      - prod
+
+  # Documentation generator
+  docs-generator:
+    build:
+      context: .
+      target: development
+    container_name: autocrate-docs
+    volumes:
+      - .:/app
+      - docs-output:/app/docs/_build
+    environment:
+      - PYTHONPATH=/app
+    command: >
+      bash -c "pip install --user sphinx sphinx-rtd-theme && 
+               sphinx-apidoc -o docs/api . && 
+               sphinx-build -b html docs docs/_build"
+    networks:
+      - autocrate-network
+    profiles:
+      - docs
+
+  # Code quality checker
+  quality-check:
+    build:
+      context: .
+      target: development
+    container_name: autocrate-quality
+    volumes:
+      - .:/app:ro
+    environment:
+      - PYTHONPATH=/app
+    command: >
+      bash -c "flake8 . --statistics && 
+               mypy *.py --ignore-missing-imports && 
+               black --check . && 
+               isort --check-only ."
+    networks:
+      - autocrate-network
+    profiles:
+      - quality
+
+volumes:
+  autocrate-cache:
+    driver: local
+  autocrate-data:
+    driver: local
+  autocrate-outputs:
+    driver: local
+  test-results:
+    driver: local
+  docs-output:
+    driver: local
+
+networks:
+  autocrate-network:
+    driver: bridge

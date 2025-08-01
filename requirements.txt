@@ -1,0 +1,42 @@
+# AutoCrate Core Dependencies
+# Production requirements for engineering calculations and GUI
+
+# GUI Framework
+tkinter-tooltip>=2.2.0
+Pillow>=10.0.0
+
+# Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Mathematical Operations
+sympy>=1.12
+
+# File I/O and Data Handling
+openpyxl>=3.1.0
+csv342>=1.0.0
+
+# Engineering Calculations
+engineering-units>=0.1.0
+
+# Configuration Management
+configparser>=5.3.0
+pyyaml>=6.0
+
+# Logging and Utilities
+coloredlogs>=15.0
+tqdm>=4.65.0
+
+# Type Hints and Validation
+typing-extensions>=4.5.0
+pydantic>=2.0.0
+
+# Performance
+numba>=0.57.0  # JIT compilation for numerical functions
+cython>=0.29.0  # Optional: for performance-critical sections
+
+# ASTM Standards Support
+# Note: Actual ASTM standards must be obtained separately
+# This package provides parsing utilities only
+astm-parser>=0.1.0  # Hypothetical package for ASTM data parsing

@@ -1,0 +1,127 @@
+name: 🐛 Bug Report
+description: Report a bug in AutoCrate
+title: "[BUG]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out this form as completely as possible.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I am using the latest version of AutoCrate
+          required: true
+        - label: This issue involves ASTM-compliant engineering calculations
+          required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Bug Category
+      description: What type of issue are you experiencing?
+      options:
+        - Calculation Error (ASTM compliance)
+        - GUI/Interface Issue
+        - File Generation (NX expressions)
+        - Performance Problem
+        - Installation/Setup
+        - Documentation
+      validations:
+        required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe what happened and what you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior
+      placeholder: |
+        1. Open AutoCrate
+        2. Enter the following parameters: ...
+        3. Click 'Generate'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include error messages if any
+    validations:
+      required: true
+
+  - type: textarea
+    id: input-data
+    attributes:
+      label: Input Data
+      description: |
+        Please provide the input parameters that caused the issue
+        (Remove any sensitive/proprietary information)
+      placeholder: |
+        Product dimensions: 36" x 24" x 48"
+        Weight: 2500 lbs
+        Material: Plywood
+        Panel thickness: 0.75"
+        etc.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Information about your system
+      placeholder: |
+        - OS: Windows 11
+        - Python version: 3.11.0
+        - AutoCrate version: v12.0.6
+        - Siemens NX version (if applicable): NX 2023
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: If applicable, add any error messages or log output
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+
+  - type: checkboxes
+    id: astm
+    attributes:
+      label: ASTM Compliance Impact
+      description: Does this bug affect ASTM standard compliance?
+      options:
+        - label: This bug may affect ASTM compliance requirements
+        - label: This bug involves structural safety calculations
+        - label: This bug affects material property calculations
