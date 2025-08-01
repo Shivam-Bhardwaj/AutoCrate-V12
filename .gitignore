@@ -72,3 +72,21 @@ temp/
 # Keep sample files but ignore temporary exports
 *.exp.tmp
 *.exp.bak
+
+# CAD and large binary files
+*.prt
+*.asm
+*.dwg
+*.step
+*.stp
+*.iges
+*.igs
+*.nx
+nx part files/
+cad_models/
+part_files/
+
+# Large output files
+*.zip
+*.rar
+*.tar.gz
