@@ -20,12 +20,15 @@ echo - Professional tkinter GUI
 echo.
 
 REM Check if executable exists, otherwise run Python version
-if exist "dist\AutoCrate.exe" (
+if exist "bin\AutoCrate.exe" (
+    echo Running executable version...
+    start "" "bin\AutoCrate.exe"
+) else if exist "dist\AutoCrate.exe" (
     echo Running executable version...
     start "" "dist\AutoCrate.exe"
 ) else (
     echo Running Python version...
-    python nx_expressions_generator.py
+    python main.py
 )
 
 echo.

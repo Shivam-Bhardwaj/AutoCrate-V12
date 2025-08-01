@@ -3,7 +3,6 @@ import math
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import traceback # Added for robust error handling
-from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
 try:
     # Try relative imports first (when used as a module)
     from .front_panel_logic import calculate_front_panel_components
@@ -14,6 +13,8 @@ try:
     from .left_panel_logic import calculate_left_panel_components
     from .right_panel_logic import calculate_right_panel_components
     from .floorboard_logic import calculate_floorboard_layout
+    from .plywood_layout_generator import calculate_layout as calculate_plywood_layout
+    from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
 except ImportError:
     # Fall back to direct imports (when run as a script)
     from front_panel_logic import calculate_front_panel_components
@@ -24,6 +25,8 @@ except ImportError:
     from left_panel_logic import calculate_left_panel_components
     from right_panel_logic import calculate_right_panel_components
     from floorboard_logic import calculate_floorboard_layout
+    from plywood_layout_generator import calculate_layout as calculate_plywood_layout
+    from security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
 from typing import List, Dict, Tuple
 
 # --- Default Constants ---
