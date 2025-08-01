@@ -3,6 +3,7 @@ import math
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import traceback # Added for robust error handling
+from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
 try:
     # Try relative imports first (when used as a module)
     from .front_panel_logic import calculate_front_panel_components
@@ -1282,7 +1283,14 @@ def generate_crate_expressions_logic(
 
         expressions_content.append(f"// End of Expressions")
 
-        with open(output_filename, "w") as f:
+        # Validate output path for security
+        safe_filename = validate_output_path(output_filename, os.path.dirname(output_filename))
+        
+        # Ensure file has safe extension
+        if not is_safe_file_extension(safe_filename, ['.exp']):
+            raise ValueError("Invalid file extension. Only .exp files are allowed.")
+        
+        with open(safe_filename, "w") as f:
             for line in expressions_content: f.write(line + "\n")
         return True, f"Successfully generated: {output_filename}"
     except Exception as e:
@@ -1586,11 +1594,20 @@ class CrateApp:
 
     def generate_expressions(self):
         try:
-            # Get inputs
-            product_weight = float(self.weight_entry.get()); product_length = float(self.length_entry.get()); product_width = float(self.width_entry.get()); clearance = float(self.clearance_entry.get())
-            panel_thickness = float(self.panel_thickness_entry.get()); cleat_thickness = float(self.cleat_thickness_entry.get()); cleat_member_width = float(self.cleat_member_width_entry.get())
-            product_height = float(self.product_height_entry.get()); clearance_above = float(self.clearance_above_entry.get()); ground_clearance = float(self.ground_clearance_entry.get())
-            floorboard_thickness = float(self.floorboard_thickness_entry.get()); max_gap = float(self.max_gap_entry.get()); min_custom = float(self.min_custom_entry.get())
+            # Get and validate inputs with proper error handling
+            product_weight = validate_numeric_input(self.weight_entry.get(), 1, 100000, "Product Weight")
+            product_length = validate_numeric_input(self.length_entry.get(), 1, 500, "Product Length")
+            product_width = validate_numeric_input(self.width_entry.get(), 1, 500, "Product Width")
+            clearance = validate_numeric_input(self.clearance_entry.get(), 0.1, 50, "Clearance")
+            panel_thickness = validate_numeric_input(self.panel_thickness_entry.get(), 0.1, 5, "Panel Thickness")
+            cleat_thickness = validate_numeric_input(self.cleat_thickness_entry.get(), 0.1, 5, "Cleat Thickness")
+            cleat_member_width = validate_numeric_input(self.cleat_member_width_entry.get(), 0.5, 20, "Cleat Member Width")
+            product_height = validate_numeric_input(self.product_height_entry.get(), 1, 500, "Product Height")
+            clearance_above = validate_numeric_input(self.clearance_above_entry.get(), 0.1, 50, "Clearance Above")
+            ground_clearance = validate_numeric_input(self.ground_clearance_entry.get(), 0.1, 50, "Ground Clearance")
+            floorboard_thickness = validate_numeric_input(self.floorboard_thickness_entry.get(), 0.5, 10, "Floorboard Thickness")
+            max_gap = validate_numeric_input(self.max_gap_entry.get(), 0, 50, "Max Gap")
+            min_custom = validate_numeric_input(self.min_custom_entry.get(), 0.5, 50, "Min Custom")
            
             # Create expressions folder if it doesn't exist
             import os
@@ -1605,13 +1622,14 @@ class CrateApp:
                 if exe_dir.endswith('autocrate'):
                     exe_dir = os.path.dirname(exe_dir)  # Go up one level from autocrate folder
             expressions_dir = os.path.join(exe_dir, "expressions")
-            if not os.path.exists(expressions_dir):
-                os.makedirs(expressions_dir)
-                self.log_message(f"Created expressions directory: {expressions_dir}")
+            if not create_secure_directory(expressions_dir):
+                raise Exception(f"Failed to create expressions directory: {expressions_dir}")
+            self.log_message(f"Using expressions directory: {expressions_dir}")
             
-            # Generate automatic filename based on dimensions
-            filename = f"Crate_{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_Clearance_{clearance:.1f}.exp"
-            output_filename = os.path.join(expressions_dir, filename)
+            # Generate automatic filename based on dimensions with sanitization
+            base_filename = f"Crate_{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_Clearance_{clearance:.1f}.exp"
+            safe_filename = sanitize_filename(base_filename)
+            output_filename = os.path.join(expressions_dir, safe_filename)
             
             selected_lumber = [width for width, var in self.lumber_vars.items() if var.get()]
             # Always enable all 5 panels: Front, Back, Left, Right, Top (no End Panel)

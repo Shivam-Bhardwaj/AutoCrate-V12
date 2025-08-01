@@ -10,6 +10,7 @@ import os
 import json
 import logging
 import logging.handlers
+import subprocess
 from typing import Dict, List, Optional, Any, Union
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -232,7 +233,10 @@ class SecurityAuditLogger:
                     
                     # Hide and protect key file
                     if os.name == 'nt':
-                        os.system(f'attrib +h "{key_file}"')  # Hide file on Windows
+                        try:
+                            subprocess.run(['attrib', '+h', key_file], check=True, capture_output=True)
+                        except subprocess.CalledProcessError as e:
+                            audit_logger.warning(f"Failed to hide key file: {e}")
                 
                 audit_logger.info("Tamper protection initialized")
             else:

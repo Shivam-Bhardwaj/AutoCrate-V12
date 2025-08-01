@@ -82,9 +82,18 @@ temp/
 *.iges
 *.igs
 *.nx
-nx part files/
+"nx part files/"
 cad_models/
 part_files/
+
+# Security sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+config/local/
+.env.local
+secrets/
 
 # Large output files
 *.zip
