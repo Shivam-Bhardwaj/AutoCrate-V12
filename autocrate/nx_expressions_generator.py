@@ -49,6 +49,10 @@ MAX_LP_INTERMEDIATE_HORIZONTAL_CLEATS = 6 # Max instances for Left Panel Interme
 MAX_RP_INTERMEDIATE_VERTICAL_CLEATS = 7  # Added for Right Panel
 MAX_RP_INTERMEDIATE_HORIZONTAL_CLEATS = 6 # Max instances for Right Panel Intermediate Horizontal Cleats
 
+# --- Klimp Constants ---
+MAX_FRONT_PANEL_KLIMPS = 12  # Maximum number of klimp instances available in NX
+DEFAULT_KLIMP_DIAMETER = 1.0  # Default klimp diameter in inches
+
 # --- Plywood Layout Constants ---
 MAX_PLYWOOD_DIMS = (96, 48)  # inches (width, height)
 MAX_PLYWOOD_INSTANCES = 10   # Maximum number of plywood instances available in NX
@@ -406,7 +410,9 @@ def generate_crate_expressions_logic(
             front_panel_assembly_height=front_panel_calc_height,
             panel_sheathing_thickness=panel_thickness_in,
             cleat_material_thickness=cleat_thickness_in,
-            cleat_material_member_width=cleat_member_actual_width_in
+            cleat_material_member_width=cleat_member_actual_width_in,
+            include_klimps=True,
+            klimp_diameter=DEFAULT_KLIMP_DIAMETER
         )
         # Update with splice-based cleat positioning
         front_panel_components_data = update_panel_components_with_splice_cleats(
@@ -816,6 +822,33 @@ def generate_crate_expressions_logic(
                 expressions_content.append(f"FP_Inter_VC_Inst_{instance_num}_Suppress_Flag = 0") # Corrected: 0 to suppress/hide
                 expressions_content.append(f"[Inch]FP_Inter_VC_Inst_{instance_num}_X_Pos_Centerline = 0.0000")
                 expressions_content.append(f"[Inch]FP_Inter_VC_Inst_{instance_num}_X_Pos_From_Left_Edge = 0.0000") # Add for consistency when suppressed
+
+        # --- Front Panel Klimps ---
+        klimps_data = front_panel_components_data.get('klimps', {})
+        fp_klimp_count = klimps_data.get('count', 0)
+        fp_klimp_diameter = klimps_data.get('diameter', DEFAULT_KLIMP_DIAMETER)
+        fp_klimp_positions = klimps_data.get('positions', [])
+        fp_klimp_orientation_code = 3 if klimps_data.get('orientation') == "Front_Panel_Surface" else 2  # 3=Front Surface, 2=None
+
+        expressions_content.extend([
+            f"\n// Front Panel Klimps (Clamps/Fasteners)",
+            f"FP_Klimp_Count = {fp_klimp_count}",
+            f"[Inch]FP_Klimp_Diameter = {fp_klimp_diameter:.3f}",
+            f"FP_Klimp_Orientation_Code = {fp_klimp_orientation_code} // 0=Vertical, 1=Horizontal, 2=None, 3=Front_Surface",
+            f"// Front Panel Klimp Instance Data (Max {MAX_FRONT_PANEL_KLIMPS} instances)"
+        ])
+
+        for i in range(MAX_FRONT_PANEL_KLIMPS):
+            instance_num = i + 1
+            if i < fp_klimp_count and i < len(fp_klimp_positions):
+                klimp = fp_klimp_positions[i]
+                expressions_content.append(f"FP_Klimp_Inst_{instance_num}_Suppress_Flag = 1") # 1 to show
+                expressions_content.append(f"[Inch]FP_Klimp_Inst_{instance_num}_X_Pos = {klimp['x_pos']:.4f}")
+                expressions_content.append(f"[Inch]FP_Klimp_Inst_{instance_num}_Y_Pos = {klimp['y_pos']:.4f}")
+            else:
+                expressions_content.append(f"FP_Klimp_Inst_{instance_num}_Suppress_Flag = 0") # 0 to suppress/hide
+                expressions_content.append(f"[Inch]FP_Klimp_Inst_{instance_num}_X_Pos = 0.0000")
+                expressions_content.append(f"[Inch]FP_Klimp_Inst_{instance_num}_Y_Pos = 0.0000")
 
         
         expressions_content.extend([

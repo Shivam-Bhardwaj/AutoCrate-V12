@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(pytest:*)",
@@ -31,7 +32,9 @@
       "Bash(move dev_interface.py dev_interface_backup.py)",
       "Bash(move dev_interface_fixed.py dev_interface.py)",
       "Bash(mv:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rebase:*)"
     ],
     "deny": []
   }

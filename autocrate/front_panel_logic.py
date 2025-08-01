@@ -2,7 +2,7 @@
 Front Panel Logic Module
 
 Calculates dimensions for front panel components including plywood sheathing,
-edge cleats, and intermediate cleats. This is the legacy module maintained
+edge cleats, intermediate cleats, and klimps. This is the legacy module maintained
 for backward compatibility. New code should use front_panel_logic_unified.py.
 
 All variable names are preserved for NX expressions compatibility.
@@ -10,6 +10,10 @@ All variable names are preserved for NX expressions compatibility.
 
 import math
 from typing import Dict, List
+try:
+    from .klimp_placement_logic import calculate_klimp_positions
+except ImportError:
+    from klimp_placement_logic import calculate_klimp_positions
 
 TARGET_INTERMEDIATE_CLEAT_SPACING = 24.0  # inches C-C target
 
@@ -18,12 +22,14 @@ def calculate_front_panel_components(
     front_panel_assembly_height: float,
     panel_sheathing_thickness: float,
     cleat_material_thickness: float,
-    cleat_material_member_width: float
+    cleat_material_member_width: float,
+    include_klimps: bool = True,
+    klimp_diameter: float = 1.0
 ) -> Dict[str, float]:
     """
     Calculates the dimensions for the front panel components:
     plywood sheathing, edge horizontal cleats, edge vertical cleats,
-    and intermediate vertical cleats if needed.
+    intermediate vertical cleats if needed, and klimps.
 
     Args:
         front_panel_assembly_width: Overall width of the front panel assembly.
@@ -31,6 +37,8 @@ def calculate_front_panel_components(
         panel_sheathing_thickness: Thickness of the plywood/sheathing.
         cleat_material_thickness: Thickness of the cleat lumber.
         cleat_material_member_width: Actual face width of the cleat lumber.
+        include_klimps: Whether to calculate klimp positions (default True).
+        klimp_diameter: Diameter of klimp hardware (default 1.0").
 
     Returns:
         A dictionary containing the dimensions of the front panel components.
@@ -140,6 +148,32 @@ def calculate_front_panel_components(
         intermediate_horizontal_cleats_data['horizontal_splice_count'] = horizontal_splice_count
         intermediate_horizontal_cleats_data['pattern_count'] = pattern_count
 
+    # 6. Klimps (Clamps/Fasteners)
+    klimps_data = {
+        'count': 0,
+        'positions': [],
+        'diameter': klimp_diameter,
+        'material_clearance': 2.0,
+        'edge_clearance': 3.0,
+        'orientation': "None"
+    }
+    
+    if include_klimps:
+        klimp_results = calculate_klimp_positions(
+            panel_width=front_panel_assembly_width,
+            panel_height=front_panel_assembly_height,
+            cleat_member_width=cleat_material_member_width,
+            vertical_cleats_data=intermediate_vertical_cleats_data,
+            horizontal_cleats_data=intermediate_horizontal_cleats_data,
+            klimp_diameter=klimp_diameter
+        )
+        
+        klimps_data = klimp_results['klimps']
+        klimps_data['orientation'] = "Front_Panel_Surface" if klimps_data['count'] > 0 else "None"
+        klimps_data['placement_zones'] = klimp_results['placement_zones']
+        klimps_data['exclusion_zones'] = klimp_results['exclusion_zones']
+        klimps_data['spacing_analysis'] = klimp_results['spacing_analysis']
+
     components = {
         'plywood': {
             'width': plywood_width,
@@ -159,7 +193,8 @@ def calculate_front_panel_components(
             'count': 2
         },
         'intermediate_vertical_cleats': intermediate_vertical_cleats_data,
-        'intermediate_horizontal_cleats': intermediate_horizontal_cleats_data  # Add horizontal cleats
+        'intermediate_horizontal_cleats': intermediate_horizontal_cleats_data,  # Add horizontal cleats
+        'klimps': klimps_data  # Add klimps
     }
     return components
 
@@ -444,13 +479,15 @@ def run_example():
     test_cleat_thick = 1.5 # inches
     test_cleat_member_width = 3.5 # inches
 
-    print(f"--- Test Case 1: Width={test_fp_width}, Height={test_fp_height} ---")
+    print(f"--- Test Case 1: Width={test_fp_width}, Height={test_fp_height} (with klimps) ---")
     front_panel_data = calculate_front_panel_components(
         test_fp_width, 
         test_fp_height, 
         test_sheathing_thick, 
         test_cleat_thick, 
-        test_cleat_member_width
+        test_cleat_member_width,
+        include_klimps=True,
+        klimp_diameter=1.0
     )
     import json
     print(json.dumps(front_panel_data, indent=4))
