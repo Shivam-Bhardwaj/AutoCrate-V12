@@ -1,0 +1,43 @@
+AutoCrate Project License
+
+Copyright (c) 2024 AutoCrate Development Team
+
+NOTICE: This project is provided as an educational demonstration of AI-assisted software development. The engineering calculations, design rules, and structural requirements implemented in this software are derived from ASTM standards and proprietary client specifications.
+
+TERMS AND CONDITIONS:
+
+1. VIEWING AND EDUCATIONAL USE PERMITTED
+   This software is made available for viewing, study, and educational purposes to demonstrate AI-assisted development capabilities and software engineering practices.
+
+2. RESTRICTIONS ON USE:
+   a) This software may NOT be used for commercial crate design or manufacturing without explicit written permission.
+   b) The engineering calculations and design methodologies are based on proprietary client requirements and may not be suitable for general use.
+   c) Any commercial use requires separate licensing and validation of engineering standards.
+
+3. NO WARRANTY:
+   This software is provided "as is" without warranty of any kind. The calculations and outputs are for demonstration purposes only and should not be used for actual manufacturing without proper engineering validation.
+
+4. ASTM COMPLIANCE:
+   The structural calculations in this software reference ASTM standards. Users must obtain appropriate ASTM standard documents and ensure compliance for any practical application.
+
+5. PROPRIETARY INFORMATION:
+   While client-identifying information has been removed, the engineering logic and design rules remain proprietary and are shared solely for educational demonstration of AI development capabilities.
+
+6. PERMITTED ACTIVITIES:
+   - Viewing source code for educational purposes
+   - Studying AI-assisted development techniques
+   - Learning software architecture and testing practices
+   - Academic research and discussion
+
+7. PROHIBITED ACTIVITIES:
+   - Commercial use without permission
+   - Redistribution without this license
+   - Using calculations for actual manufacturing
+   - Claiming ownership of design methodologies
+
+For commercial licensing, technical support, or permissions beyond this educational use, contact the development team through the project repository.
+
+This license does not grant any rights to ASTM standards referenced in the code. Users must obtain ASTM standards separately for any practical application.
+
+AI DEVELOPMENT SHOWCASE:
+This project demonstrates collaborative AI-assisted software development techniques, including automated code generation, test creation, documentation, and system architecture design.
