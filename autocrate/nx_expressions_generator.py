@@ -1,32 +1,123 @@
 import datetime
 import math
+import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import traceback # Added for robust error handling
+import sys
+import os
+
+# Setup proper import path for PyInstaller and development
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Initialize logging system
 try:
-    # Try relative imports first (when used as a module)
-    from .front_panel_logic import calculate_front_panel_components
-    from .back_panel_logic import calculate_back_panel_components
-    from .end_panel_logic import calculate_end_panel_components
-    from .top_panel_logic import calculate_top_panel_components
-    from .skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
-    from .left_panel_logic import calculate_left_panel_components
-    from .right_panel_logic import calculate_right_panel_components
-    from .floorboard_logic import calculate_floorboard_layout
-    from .plywood_layout_generator import calculate_layout as calculate_plywood_layout
-    from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
-except ImportError:
-    # Fall back to direct imports (when run as a script)
-    from front_panel_logic import calculate_front_panel_components
-    from back_panel_logic import calculate_back_panel_components
-    from end_panel_logic import calculate_end_panel_components
-    from top_panel_logic import calculate_top_panel_components
-    from skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
-    from left_panel_logic import calculate_left_panel_components
-    from right_panel_logic import calculate_right_panel_components
-    from floorboard_logic import calculate_floorboard_layout
-    from plywood_layout_generator import calculate_layout as calculate_plywood_layout
-    from security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
+    from debug_logger import get_logger, debug_function, finalize_logging
+    logger = get_logger("AutoCrate.NX_Generator")
+    logger.info("NX Expressions Generator module loading...")
+    
+    # Run startup analysis
+    try:
+        from startup_analyzer import run_startup_analysis
+        startup_result = run_startup_analysis(enable_console_output=True)
+        if logger and startup_result.get('status') != 'no_sessions':
+            logger.info("Startup analysis completed", {
+                'previous_run_status': startup_result.get('status'),
+                'previous_errors': startup_result.get('errors', 0),
+                'previous_warnings': startup_result.get('warnings', 0)
+            })
+    except ImportError:
+        if logger:
+            logger.debug("Startup analyzer not available")
+    except Exception as e:
+        if logger:
+            logger.warning(f"Startup analysis failed: {e}")
+        
+except ImportError as e:
+    print(f"Warning: Debug logging not available: {e}")
+    logger = None
+
+# Import all required modules with robust error handling
+if logger:
+    logger.info("Starting module imports...", {'current_dir': current_dir})
+
+try:
+    # Try absolute imports with autocrate package first
+    if logger:
+        logger.debug("Attempting absolute imports with autocrate package...")
+    from autocrate.front_panel_logic import calculate_front_panel_components
+    from autocrate.back_panel_logic import calculate_back_panel_components
+    from autocrate.end_panel_logic import calculate_end_panel_components
+    from autocrate.top_panel_logic import calculate_top_panel_components
+    from autocrate.skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
+    from autocrate.left_panel_logic import calculate_left_panel_components
+    from autocrate.right_panel_logic import calculate_right_panel_components
+    from autocrate.floorboard_logic import calculate_floorboard_layout
+    from autocrate.plywood_layout_generator import calculate_layout as calculate_plywood_layout
+    from autocrate.security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
+    if logger:
+        logger.info("Absolute imports with autocrate package successful")
+except ImportError as e:
+    if logger:
+        logger.warning(f"Absolute import with package failed: {e}")
+    try:
+        # Try relative imports (when used as a module)
+        if logger:
+            logger.debug("Attempting relative imports...")
+        from .front_panel_logic import calculate_front_panel_components
+        from .back_panel_logic import calculate_back_panel_components
+        from .end_panel_logic import calculate_end_panel_components
+        from .top_panel_logic import calculate_top_panel_components
+        from .skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
+        from .left_panel_logic import calculate_left_panel_components
+        from .right_panel_logic import calculate_right_panel_components
+        from .floorboard_logic import calculate_floorboard_layout
+        from .plywood_layout_generator import calculate_layout as calculate_plywood_layout
+        from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
+        if logger:
+            logger.info("Relative imports successful")
+    except ImportError as e2:
+        if logger:
+            logger.warning(f"Relative import failed: {e2}")
+        try:
+            # Fall back to direct imports (when run as a script or PyInstaller)
+            if logger:
+                logger.debug("Attempting direct imports...")
+            from front_panel_logic import calculate_front_panel_components
+            from back_panel_logic import calculate_back_panel_components
+            from end_panel_logic import calculate_end_panel_components
+            from top_panel_logic import calculate_top_panel_components
+            from skid_logic import calculate_skid_lumber_properties, calculate_skid_layout
+            from left_panel_logic import calculate_left_panel_components
+            from right_panel_logic import calculate_right_panel_components
+            from floorboard_logic import calculate_floorboard_layout
+            from plywood_layout_generator import calculate_layout as calculate_plywood_layout
+            from security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
+            if logger:
+                logger.info("Direct imports successful")
+        except ImportError as e3:
+            error_msg = f"Could not import required modules. Package import error: {e}, Relative import error: {e2}, Direct import error: {e3}"
+            debug_info = {
+                'current_dir': current_dir,
+                'parent_dir': parent_dir,
+                'python_path': sys.path[:5],  # First 5 entries
+                'available_files': os.listdir(current_dir) if os.path.exists(current_dir) else []
+            }
+            
+            if logger:
+                logger.critical(error_msg, e3, debug_info)
+            else:
+                print(f"All import methods failed: {e3}")
+                print(f"Current directory: {current_dir}")
+                print(f"Parent directory: {parent_dir}")
+                print(f"Python path: {sys.path[:5]}")
+            
+            raise ImportError(error_msg)
 from typing import List, Dict, Tuple
 
 # --- Default Constants ---
@@ -210,6 +301,22 @@ def generate_crate_expressions_logic(
     # Plywood Panel Selections
     plywood_panel_selections: dict = None
 ) -> tuple[bool, str]:
+    import time
+    start_time = time.time()
+    
+    # Log function entry with parameters
+    if logger:
+        input_params = {
+            'product_weight_lbs': product_weight_lbs,
+            'product_length_in': product_length_in,
+            'product_width_in': product_width_in,
+            'clearance_each_side_in': clearance_each_side_in,
+            'allow_3x4_skids_bool': allow_3x4_skids_bool,
+            'panel_thickness_in': panel_thickness_in,
+            'output_filename': output_filename
+        }
+        logger.info("Starting crate expression generation", input_params)
+    
     try:
         # --- Input Validations ---
         if product_weight_lbs < 0: 
@@ -1295,10 +1402,36 @@ def generate_crate_expressions_logic(
         
         with open(safe_filename, "w") as f:
             for line in expressions_content: f.write(line + "\n")
-        return True, f"Successfully generated: {output_filename}"
+        
+        duration = time.time() - start_time
+        success_msg = f"Successfully generated: {output_filename}"
+        
+        if logger:
+            result_info = {
+                'output_file': safe_filename,
+                'expressions_count': len(expressions_content),
+                'file_size_bytes': os.path.getsize(safe_filename) if os.path.exists(safe_filename) else 0,
+                'duration_seconds': round(duration, 3)
+            }
+            logger.info("Expression generation completed successfully", result_info)
+            logger.log_performance("generate_crate_expressions", duration, result_info)
+        
+        return True, success_msg
     except Exception as e:
-        print(f"Error in logic: {e}\\n{traceback.format_exc()}") # Ensure traceback is used
-        return False, f"Error: {e}"
+        duration = time.time() - start_time
+        error_msg = f"Error: {e}"
+        
+        if logger:
+            error_info = {
+                'duration_seconds': round(duration, 3),
+                'output_filename': output_filename,
+                'traceback': traceback.format_exc()
+            }
+            logger.error("Expression generation failed", e, error_info)
+        else:
+            print(f"Error in logic: {e}\\n{traceback.format_exc()}")
+        
+        return False, error_msg
 
 # --- Vertical Cleat Helper Functions ---
 def extract_vertical_splice_positions(plywood_sheets: List[Dict]) -> List[float]:
@@ -1612,19 +1745,12 @@ class CrateApp:
             max_gap = validate_numeric_input(self.max_gap_entry.get(), 0, 50, "Max Gap")
             min_custom = validate_numeric_input(self.min_custom_entry.get(), 0.5, 50, "Min Custom")
            
-            # Create expressions folder if it doesn't exist
+            # Create expressions folder in the same directory as the script/exe
             import os
             import sys
-            # Use the directory where the executable is running from
-            if getattr(sys, 'frozen', False):
-                # Running as executable
-                exe_dir = os.path.dirname(os.path.abspath(sys.executable))
-            else:
-                # Running as script - use project root
-                exe_dir = os.path.dirname(os.path.abspath(__file__))
-                if exe_dir.endswith('autocrate'):
-                    exe_dir = os.path.dirname(exe_dir)  # Go up one level from autocrate folder
-            expressions_dir = os.path.join(exe_dir, "expressions")
+            # Always use current working directory (where script is run from)
+            root_dir = os.getcwd()
+            expressions_dir = os.path.join(root_dir, "expressions")
             if not create_secure_directory(expressions_dir):
                 raise Exception(f"Failed to create expressions directory: {expressions_dir}")
             self.log_message(f"Using expressions directory: {expressions_dir}")
@@ -1651,17 +1777,9 @@ class CrateApp:
             import os
             import sys
             
-            # Create quick test expressions folder
-            if getattr(sys, 'frozen', False):
-                # Running as executable
-                exe_dir = os.path.dirname(os.path.abspath(sys.executable))
-            else:
-                # Running as script - use project root
-                exe_dir = os.path.dirname(os.path.abspath(__file__))
-                if exe_dir.endswith('autocrate'):
-                    exe_dir = os.path.dirname(exe_dir)  # Go up one level from autocrate folder
-            
-            quick_test_dir = os.path.join(exe_dir, "quick_test_expressions")
+            # Create quick test expressions folder in current working directory
+            root_dir = os.getcwd()
+            quick_test_dir = os.path.join(root_dir, "quick_test_expressions")
             if not os.path.exists(quick_test_dir):
                 os.makedirs(quick_test_dir)
                 self.log_message(f"Created quick test directory: {quick_test_dir}")

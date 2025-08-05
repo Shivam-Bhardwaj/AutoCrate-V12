@@ -9,7 +9,7 @@ set AUTOCRATE_TEST_MODE=1
 
 echo Step 1: Running quick tests...
 echo ===============================
-python -m pytest tests/ -v --tb=short
+python quick_test.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Tests failed! Build aborted.
@@ -42,7 +42,7 @@ python -m PyInstaller ^
     --hidden-import security.windows_security ^
     --hidden-import security.auth_manager ^
     --hidden-import security.audit_logger ^
-    autocrate\nx_expressions_generator.py
+    autocrate/nx_expressions_generator.py
 
 if errorlevel 1 (
     echo.

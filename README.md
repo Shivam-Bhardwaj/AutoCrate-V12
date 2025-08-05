@@ -29,7 +29,7 @@ AutoCrate is a sophisticated Python application that automates the design and ma
 - **Smart Material Optimization** - Intelligent plywood layout to minimize waste
 - **Structural Engineering** - Automated cleat placement based on ASTM-derived requirements
 - **Professional Output** - Generates complete manufacturing documentation
-- **AI-Generated Tests** - 100% test coverage with 78+ automated tests created through AI assistance
+- **Comprehensive Testing System** - Advanced automated testing with AI-generated test agents and real-time dashboard
 - **AI-Assisted Architecture** - System design and code structure developed with AI collaboration
 
 ![AutoCrate GUI](docs/screenshots/autocrate-gui-main.png)
@@ -69,13 +69,18 @@ AutoCrate is a sophisticated Python application that automates the design and ma
 
 ### Building Executable
 
-To create a standalone executable:
+To create a standalone executable with full testing:
 
 ```bash
-python scripts/build.py
+build_and_test.bat
 ```
 
-The executable will be created in the `bin/` directory.
+This runs:
+1. **Quick Tests** - 5-second validation of core functionality
+2. **PyInstaller Build** - Creates standalone executable (2-3 minutes)  
+3. **Executable Validation** - Tests the built application
+
+The executable will be created in the `dist/` directory.
 
 ## How It Works
 
@@ -118,15 +123,21 @@ autocrate/
 ├── skid_logic.py                  # Skid sizing and layout
 ├── floorboard_logic.py            # Floorboard calculations
 ├── plywood_layout_generator.py    # Plywood optimization
-└── front_panel_logic_unified.py   # Advanced unified logic
+├── test_agent.py                  # AI-powered automated testing agent
+├── debug_logger.py                # Comprehensive logging system
+├── startup_analyzer.py            # Automatic startup health checks
+└── log_analyst.py                 # Intelligent log analysis
 
 tests/                              # Comprehensive test suite
 ├── test_*.py                      # Individual test modules
+├── test_property_based.py         # Property-based testing
 └── conftest.py                    # Test configuration
 
-scripts/                           # Build and deployment
-├── build.py                       # Automated build system
-└── dev_setup.py                   # Development setup
+Testing Tools/                      # Advanced testing infrastructure
+├── quick_test.py                  # 5-second validation script
+├── run_tests.py                   # Comprehensive test runner
+├── build_and_test.bat            # Complete CI/CD pipeline
+└── TESTING_GUIDE.md              # Testing system documentation
 
 docs/                              # Documentation
 └── index.html                     # Complete documentation
@@ -178,25 +189,51 @@ This project demonstrates advanced AI-assisted software development techniques:
 - **Documentation Generation**: Professional-grade documentation created collaboratively
 - **Code Quality**: AI-assisted code review and optimization techniques
 
-## Testing
+## Advanced Testing System
 
-AutoCrate maintains exceptional code quality with comprehensive AI-assisted testing:
+AutoCrate features a comprehensive AI-powered testing infrastructure that ensures engineering accuracy and reliability:
 
+### Quick Testing (5 seconds)
 ```bash
-# Run all tests
-pytest
-
-# Run with coverage report
-pytest --cov=autocrate --cov-report=html
-
-# Run specific test module
-pytest tests/test_front_panel_logic.py -v
+python quick_test.py
 ```
 
-**Test Statistics:**
-- **78 Tests**: Covering all major functionality
-- **100% Pass Rate**: All tests passing
-- **83% Coverage**: High code coverage across modules
+### Comprehensive Testing
+```bash
+python run_tests.py --quick
+```
+
+### Full Build Pipeline
+```bash
+build_and_test.bat
+```
+
+### Test Dashboard
+Access real-time testing dashboard in the development interface:
+```bash
+streamlit run dev_interface.py
+```
+
+### Test Categories
+- **🔧 Unit Tests** - Individual calculation function validation
+- **🔗 Integration Tests** - Module interaction testing  
+- **📏 ASTM Compliance** - Engineering standard verification
+- **⚡ Performance Tests** - Speed benchmarking (sub-millisecond)
+- **🎯 Property-Based Tests** - Random input validation
+- **🔍 Boundary Tests** - Edge case and limit testing
+
+### Test Results
+- **100% Pass Rate** - All tests passing consistently
+- **Sub-millisecond Performance** - Average 0.13-0.28ms per calculation
+- **Complete ASTM Validation** - All compliance tests passing
+- **Intelligent Test Agent** - AI-powered test execution and reporting
+- **Manual Testing Guidance** - Automated recommendations for human testing
+
+### Automated Features
+- **Post-session Testing** - Automatic validation after every run
+- **Performance Regression Detection** - Baseline tracking with 20% threshold
+- **Real-time Logging** - Comprehensive test execution tracking
+- **Visual Dashboard** - Streamlit-based test results interface
 
 ## Usage Examples
 

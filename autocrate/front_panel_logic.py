@@ -12,11 +12,22 @@ import math
 from typing import Dict, List
 try:
     from .klimp_placement_logic import calculate_klimp_positions
+    from .debug_logger import get_logger, debug_function
 except ImportError:
-    from klimp_placement_logic import calculate_klimp_positions
+    try:
+        from klimp_placement_logic import calculate_klimp_positions
+        from debug_logger import get_logger, debug_function
+    except ImportError:
+        # Fallback for cases where logging is not available
+        get_logger = lambda name: None
+        debug_function = lambda logger: lambda func: func
+
+# Initialize module logger
+logger = get_logger("AutoCrate.FrontPanel")
 
 TARGET_INTERMEDIATE_CLEAT_SPACING = 24.0  # inches C-C target
 
+@debug_function(logger) if logger else lambda f: f
 def calculate_front_panel_components(
     front_panel_assembly_width: float,
     front_panel_assembly_height: float,
@@ -43,11 +54,28 @@ def calculate_front_panel_components(
     Returns:
         A dictionary containing the dimensions of the front panel components.
     """
+    
+    if logger:
+        logger.info("Starting front panel component calculations", {
+            'panel_width': front_panel_assembly_width,
+            'panel_height': front_panel_assembly_height,
+            'sheathing_thickness': panel_sheathing_thickness,
+            'cleat_thickness': cleat_material_thickness,
+            'cleat_width': cleat_material_member_width,
+            'include_klimps': include_klimps
+        })
 
     # 1. Plywood Board (Sheathing)
     plywood_width = front_panel_assembly_width
     plywood_height = front_panel_assembly_height
     plywood_thickness = panel_sheathing_thickness
+    
+    if logger:
+        logger.debug("Plywood dimensions calculated", {
+            'plywood_width': plywood_width,
+            'plywood_height': plywood_height,
+            'plywood_thickness': plywood_thickness
+        })
 
     # 2. Horizontal Cleats (Top & Bottom) - Edge Cleats
     # These run the full width of the panel assembly.
@@ -86,6 +114,14 @@ def calculate_front_panel_components(
         # For symmetric spacing, find the MINIMUM number of cleats needed to keep spacing ≤ 24"
         min_segments_needed = math.ceil(edge_vertical_cleats_cc_width / TARGET_INTERMEDIATE_CLEAT_SPACING)
         intermediate_cleat_count = max(0, min_segments_needed - 1)
+        
+        if logger:
+            logger.info("Intermediate vertical cleats calculation", {
+                'edge_cc_width': edge_vertical_cleats_cc_width,
+                'target_spacing': TARGET_INTERMEDIATE_CLEAT_SPACING,
+                'min_segments_needed': min_segments_needed,
+                'intermediate_cleat_count': intermediate_cleat_count
+            })
 
         if intermediate_cleat_count > 0:
             intermediate_vertical_cleats_data['count'] = intermediate_cleat_count

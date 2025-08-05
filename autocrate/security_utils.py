@@ -35,7 +35,7 @@ def validate_output_path(filename: str, allowed_dir: str) -> str:
             raise ValueError(f"Path outside allowed directory: {filename}")
         
         # Additional security checks
-        if '..' in str(filename) or filename.startswith('/') or ':' in filename[1:3]:
+        if '..' in str(filename) or (filename.startswith('/') and os.name != 'nt'):
             raise ValueError(f"Invalid path characters detected: {filename}")
             
         return str(requested_path)

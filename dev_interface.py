@@ -21,10 +21,39 @@ from datetime import datetime
 try:
     from autocrate.nx_expressions_generator import *
     from security import initialize_security, SecurityLevel
+    from autocrate.debug_logger import get_logger
+    from autocrate.startup_analyzer import run_startup_analysis
 except ImportError as e:
     st.error(f"Failed to import AutoCrate modules: {e}")
     st.info("Make sure you're running from the project root directory")
     st.stop()
+
+# Initialize logging for Streamlit interface
+@st.cache_resource
+def initialize_logging():
+    """Initialize logging system for Streamlit interface."""
+    try:
+        logger = get_logger("AutoCrate.DevInterface")
+        logger.info("Development interface (Streamlit) starting...")
+        
+        # Run startup analysis
+        try:
+            startup_result = run_startup_analysis(enable_console_output=False)
+            logger.info("Startup analysis completed for dev interface", {
+                'previous_run_status': startup_result.get('status'),
+                'interface_type': 'streamlit'
+            })
+            return logger, startup_result
+        except Exception as e:
+            logger.warning(f"Startup analysis failed: {e}")
+            return logger, None
+            
+    except Exception as e:
+        st.warning(f"Logging initialization failed: {e}")
+        return None, None
+
+# Initialize logging
+logger, startup_result = initialize_logging()
 
 # Configure Streamlit
 st.set_page_config(
@@ -913,7 +942,7 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
             results = self.session_state.calculation_results
             
             # Report sections
-            tab1, tab2, tab3, tab4 = st.tabs(["Design Summary", "Material Details", "Compliance", "Cost Analysis"])
+            tab1, tab2, tab3, tab4, tab5 = st.tabs(["Design Summary", "Material Details", "Compliance", "Cost Analysis", "Test Results"])
             
             with tab1:
                 st.markdown("### Design Summary")
@@ -994,8 +1023,138 @@ Estimated_Cost = {results['material_summary']['estimated_cost']:.2f}
                 
                 st.metric("Total Estimated Cost", f"${cost:.2f}")
                 st.metric("Cost per Cubic Foot", f"${cost / ((dims['length'] * dims['width'] * dims['height']) / 1728):.2f}")
+            
+            with tab5:
+                self.render_test_dashboard()
         else:
             st.info("Please calculate the design first to generate a detailed report.")
+    
+    def render_test_dashboard(self):
+        """Render the automated testing dashboard."""
+        st.markdown("### Automated Test Results")
+        
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.markdown("""
+            This dashboard shows the results of automated tests that run after each calculation.
+            Tests validate calculations, ASTM compliance, and performance.
+            """)
+        
+        with col2:
+            if st.button("🚀 Run Tests Now", type="primary"):
+                self.run_tests_manually()
+        
+        # Check for recent test results
+        test_results_file = Path("logs") / "test_results_latest.json" 
+        if test_results_file.exists():
+            try:
+                with open(test_results_file, 'r') as f:
+                    test_data = json.load(f)
+                
+                # Display test summary
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Tests Passed", test_data.get('passed', 0), delta=None)
+                with col2:
+                    st.metric("Tests Failed", test_data.get('failed', 0), delta=None)
+                with col3:
+                    pass_rate = test_data.get('pass_rate', 0)
+                    st.metric("Pass Rate", f"{pass_rate:.1f}%", delta=None)
+                with col4:
+                    duration = test_data.get('duration', 0)
+                    st.metric("Duration", f"{duration:.2f}s", delta=None)
+                
+                # Test categories breakdown
+                if 'test_categories' in test_data:
+                    st.markdown("#### Test Categories")
+                    categories = test_data['test_categories']
+                    
+                    category_data = []
+                    for category, results in categories.items():
+                        category_data.append({
+                            'Category': category.replace('_', ' ').title(),
+                            'Passed': results.get('passed', 0),
+                            'Failed': results.get('failed', 0),
+                            'Status': '✅' if results.get('failed', 0) == 0 else '❌'
+                        })
+                    
+                    st.table(pd.DataFrame(category_data))
+                
+                # Manual testing recommendations
+                if 'manual_tests' in test_data:
+                    st.markdown("#### Recommended Manual Tests")
+                    manual_tests = test_data['manual_tests']
+                    
+                    for test in manual_tests:
+                        priority_color = {'HIGH': '🔴', 'MEDIUM': '🟡', 'LOW': '🟢'}.get(test.get('priority', 'LOW'), '🟢')
+                        st.markdown(f"{priority_color} **{test['name']}** ({test.get('estimated_time', '5 min')})")
+                        st.markdown(f"   {test['description']}")
+                
+            except Exception as e:
+                st.error(f"Failed to load test results: {e}")
+        else:
+            st.info("No recent test results found. Run tests to see results here.")
+            
+            # Show sample test information
+            st.markdown("#### Available Test Categories:")
+            test_categories = [
+                "🔧 **Unit Tests** - Validate individual calculation functions",
+                "🔗 **Integration Tests** - Test module interactions",
+                "📏 **ASTM Compliance** - Verify engineering standards",
+                "⚡ **Performance Tests** - Check calculation speed",
+                "🎯 **Boundary Tests** - Test edge cases and limits"
+            ]
+            
+            for category in test_categories:
+                st.markdown(category)
+    
+    def run_tests_manually(self):
+        """Run tests manually from the interface."""
+        try:
+            with st.spinner("Running automated tests..."):
+                # Import and run test agent
+                from autocrate.test_agent import AutoCrateTestAgent
+                test_agent = AutoCrateTestAgent()
+                
+                start_time = time.time()
+                results = test_agent.run_quick_validation_tests()
+                duration = time.time() - start_time
+                
+                # Save results for display
+                results_file = Path("logs") / "test_results_latest.json"
+                results_file.parent.mkdir(exist_ok=True)
+                
+                results['duration'] = duration
+                results['timestamp'] = datetime.now().isoformat()
+                
+                with open(results_file, 'w') as f:
+                    json.dump(results, f, indent=2)
+                
+                # Log the test execution
+                if logger:
+                    logger.info("Manual test execution completed from dev interface", {
+                        'passed': results.get('passed', 0),
+                        'failed': results.get('failed', 0),
+                        'duration': duration
+                    })
+                
+                # Show immediate feedback
+                if results.get('all_passed', False):
+                    st.success(f"✅ All tests passed! ({duration:.2f}s)")
+                else:
+                    st.warning(f"⚠️ {results.get('failed', 0)} tests failed. Check details below.")
+                
+                # Force rerun to show updated results
+                st.rerun()
+                
+        except ImportError:
+            st.error("Test agent not available. Make sure the testing system is properly installed.")
+        except Exception as e:
+            st.error(f"Test execution failed: {e}")
+            if logger:
+                logger.error("Manual test execution failed", e)
     
     def run(self):
         """Run the Streamlit development interface."""
