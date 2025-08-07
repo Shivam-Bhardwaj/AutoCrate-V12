@@ -111,7 +111,7 @@ def run_quick_validation():
     print("\n[3/5] Testing edge cases...")
     edge_cases = [
         {"name": "Minimum size", "width": 6, "height": 12},
-        {"name": "Maximum size", "width": 240, "height": 72},
+        {"name": "Maximum size", "width": 130, "height": 72},
         {"name": "Tall thin", "width": 20, "height": 100}
     ]
     

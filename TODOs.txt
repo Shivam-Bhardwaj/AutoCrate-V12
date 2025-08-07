@@ -1,0 +1,14 @@
+12.0.10
+
+Put a limit to the dimension of the product to 130 inch cube.
+
+change the output of the build to main folder and expressions are put in a folder called expressions which has the following behavior.
+1. if the file name exist replace the file.
+2. have a funcationality that the first few letters are the unique timestamps that allows the user of windows to sort the output expressions in an order of latest on the top for way NX access. 
+3. The NX expressions should have some more parameters. use as many characters as windows can safely handle. But try to optimize it still.
+4. use the quick expressions generator use only the allowable parameters for tests. 
+
+Please fix the errors, pass all the checks and keep this repeating till we have a stable version. Do not change any logic. they are working. Use agents to make the tasks simpler
+
+---
+

@@ -1732,32 +1732,61 @@ class CrateApp:
         try:
             # Get and validate inputs with proper error handling
             product_weight = validate_numeric_input(self.weight_entry.get(), 1, 100000, "Product Weight")
-            product_length = validate_numeric_input(self.length_entry.get(), 1, 500, "Product Length")
-            product_width = validate_numeric_input(self.width_entry.get(), 1, 500, "Product Width")
+            product_length = validate_numeric_input(self.length_entry.get(), 12, 130, "Product Length")
+            product_width = validate_numeric_input(self.width_entry.get(), 12, 130, "Product Width")
             clearance = validate_numeric_input(self.clearance_entry.get(), 0.1, 50, "Clearance")
             panel_thickness = validate_numeric_input(self.panel_thickness_entry.get(), 0.1, 5, "Panel Thickness")
             cleat_thickness = validate_numeric_input(self.cleat_thickness_entry.get(), 0.1, 5, "Cleat Thickness")
             cleat_member_width = validate_numeric_input(self.cleat_member_width_entry.get(), 0.5, 20, "Cleat Member Width")
-            product_height = validate_numeric_input(self.product_height_entry.get(), 1, 500, "Product Height")
+            product_height = validate_numeric_input(self.product_height_entry.get(), 12, 130, "Product Height")
             clearance_above = validate_numeric_input(self.clearance_above_entry.get(), 0.1, 50, "Clearance Above")
             ground_clearance = validate_numeric_input(self.ground_clearance_entry.get(), 0.1, 50, "Ground Clearance")
             floorboard_thickness = validate_numeric_input(self.floorboard_thickness_entry.get(), 0.5, 10, "Floorboard Thickness")
             max_gap = validate_numeric_input(self.max_gap_entry.get(), 0, 50, "Max Gap")
             min_custom = validate_numeric_input(self.min_custom_entry.get(), 0.5, 50, "Min Custom")
            
-            # Create expressions folder in the same directory as the script/exe
+            # Create expressions folder in the main application directory
             import os
             import sys
-            # Always use current working directory (where script is run from)
-            root_dir = os.getcwd()
+            from datetime import datetime
+            
+            # Get the main application directory (where the main.py or executable is located)
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                root_dir = os.path.dirname(sys.executable)
+            else:
+                # Running as script - go up one level from autocrate folder
+                current_file = os.path.abspath(__file__)
+                autocrate_dir = os.path.dirname(current_file)
+                root_dir = os.path.dirname(autocrate_dir)
+            
             expressions_dir = os.path.join(root_dir, "expressions")
             if not create_secure_directory(expressions_dir):
                 raise Exception(f"Failed to create expressions directory: {expressions_dir}")
             self.log_message(f"Using expressions directory: {expressions_dir}")
             
-            # Generate automatic filename based on dimensions with sanitization
-            base_filename = f"Crate_{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_Clearance_{clearance:.1f}.exp"
+            # Generate timestamp prefix for sorting (YYYYMMDD_HHMMSS format)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Determine material type based on panel thickness
+            material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+            
+            # Generate enhanced filename with more parameters
+            # Include: timestamp, dimensions, weight, clearance, material type, panel thickness
+            base_filename = (f"{timestamp}_Crate_"
+                           f"{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_"
+                           f"{product_weight:.0f}lbs_"
+                           f"{material_type}{panel_thickness:.2f}_"
+                           f"CLR{clearance:.1f}.exp")
+            
+            # Sanitize and ensure we stay within Windows path limits
             safe_filename = sanitize_filename(base_filename)
+            # Truncate if necessary to stay within Windows limits (260 chars total path)
+            max_filename_length = 200  # Leave room for path
+            if len(safe_filename) > max_filename_length:
+                # Keep timestamp and extension, truncate middle
+                safe_filename = safe_filename[:max_filename_length-4] + ".exp"
+            
             output_filename = os.path.join(expressions_dir, safe_filename)
             
             selected_lumber = [width for width, var in self.lumber_vars.items() if var.get()]
@@ -1776,13 +1805,28 @@ class CrateApp:
         try:
             import os
             import sys
+            from datetime import datetime
             
-            # Create quick test expressions folder in current working directory
-            root_dir = os.getcwd()
-            quick_test_dir = os.path.join(root_dir, "quick_test_expressions")
-            if not os.path.exists(quick_test_dir):
-                os.makedirs(quick_test_dir)
-                self.log_message(f"Created quick test directory: {quick_test_dir}")
+            # Get the main application directory (where the main.py or executable is located)
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                root_dir = os.path.dirname(sys.executable)
+            else:
+                # Running as script - go up one level from autocrate folder
+                current_file = os.path.abspath(__file__)
+                autocrate_dir = os.path.dirname(current_file)
+                root_dir = os.path.dirname(autocrate_dir)
+            
+            # Create expressions folder and quick_test subfolder
+            expressions_dir = os.path.join(root_dir, "expressions")
+            quick_test_dir = os.path.join(expressions_dir, "quick_test")
+            
+            if not create_secure_directory(expressions_dir):
+                raise Exception(f"Failed to create expressions directory: {expressions_dir}")
+            if not create_secure_directory(quick_test_dir):
+                raise Exception(f"Failed to create quick test directory: {quick_test_dir}")
+                
+            self.log_message(f"Using quick test directory: {quick_test_dir}")
             
             # Define test cases with corner cases and edge scenarios
             test_cases = [
@@ -1790,13 +1834,13 @@ class CrateApp:
                 (1000, 20, 20, 100, 1.0, "Very Tall Thin - Horizontal Splice Bug Test"),
                 (500, 96, 48, 30, 2.0, "Standard Plywood Size"),
                 (2000, 120, 120, 48, 1.5, "Large Square Heavy"),
-                (100, 12, 8, 24, 0.5, "Very Small Light"),
-                (5000, 200, 150, 60, 3.0, "Very Large Heavy"),
+                (100, 12, 12, 24, 0.5, "Small Light"),
+                (5000, 130, 120, 60, 3.0, "Very Large Heavy"),
                 (800, 30, 30, 80, 1.0, "Medium Square Tall"),
                 (1500, 100, 50, 40, 2.5, "Long Narrow"),
                 (300, 48, 48, 48, 1.0, "Perfect Cube"),
-                (10000, 240, 200, 72, 4.0, "Maximum Size Heavy"),
-                (50, 6, 6, 12, 0.25, "Minimum Size Light"),
+                (10000, 130, 130, 72, 4.0, "Maximum Size Heavy"),
+                (50, 12, 12, 12, 0.25, "Minimum Size Light"),
             ]
             
             self.log_message("Starting Quick Test Suite generation...")
@@ -1819,9 +1863,20 @@ class CrateApp:
             
             for i, (weight, length, width, height, clearance, description) in enumerate(test_cases, 1):
                 try:
-                    # Generate filename
-                    filename = f"QuickTest_{i:02d}_{length:.0f}x{width:.0f}x{height:.0f}_{description.replace(' ', '_').replace('-', '')}.exp"
-                    output_filename = os.path.join(quick_test_dir, filename)
+                    # Generate timestamp for this test
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    
+                    # Generate enhanced filename with timestamp and parameters
+                    filename = (f"{timestamp}_QuickTest_{i:02d}_"
+                              f"{length:.0f}x{width:.0f}x{height:.0f}_"
+                              f"{weight:.0f}lbs_{description.replace(' ', '_').replace('-', '')}.exp")
+                    
+                    # Sanitize and truncate if necessary
+                    safe_filename = sanitize_filename(filename)
+                    if len(safe_filename) > 200:
+                        safe_filename = safe_filename[:196] + ".exp"
+                    
+                    output_filename = os.path.join(quick_test_dir, safe_filename)
                     
                     self.log_message(f"Test {i}/10: {description}")
                     

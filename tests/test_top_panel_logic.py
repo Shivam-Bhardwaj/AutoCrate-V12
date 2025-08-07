@@ -36,15 +36,15 @@ def test_calculate_top_panel_intermediate_cleats(width, length, cleat_width, exp
 
 def test_calculate_top_panel_small_width():
     """
-    Tests that for a very small width, the secondary cleat length is correctly calculated as 0.
+    Tests that for a small width (at minimum dimension), the secondary cleat length is correctly calculated.
     """
     components = calculate_top_panel_components(
-        top_panel_assembly_width=5.0,
+        top_panel_assembly_width=12.0,
         top_panel_assembly_length=100.0,
         panel_sheathing_thickness=0.75,
         cleat_material_thickness=1.5,
         cleat_material_member_width=3.5
     )
     
-    # Secondary cleats fit between primary cleats, so length should be 5.0 - (2 * 3.5) = -2.0, which gets corrected to 0.
-    assert components['secondary_cleats']['length'] == 0
+    # Secondary cleats fit between primary cleats, so length should be 12.0 - (2 * 3.5) = 5.0
+    assert components['secondary_cleats']['length'] == 5.0

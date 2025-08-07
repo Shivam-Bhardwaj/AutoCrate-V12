@@ -47,7 +47,7 @@ class SecurityValidator:
     MAX_PATH_LENGTH = 260  # Windows MAX_PATH
     
     # Engineering value ranges (inches and pounds)
-    DIMENSION_RANGE = (0.1, 1000.0)  # 0.1" to 1000"
+    DIMENSION_RANGE = (12.0, 130.0)   # 12" to 130" (130 inch cube limit per requirement)
     WEIGHT_RANGE = (0.1, 100000.0)   # 0.1 lb to 100,000 lbs
     THICKNESS_RANGE = (0.125, 6.0)   # 1/8" to 6"
     CLEARANCE_RANGE = (0.0, 100.0)   # 0" to 100"

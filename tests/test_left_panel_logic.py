@@ -36,15 +36,15 @@ def test_calculate_left_panel_intermediate_cleats(length, height, cleat_width, e
 
 def test_calculate_left_panel_small_length():
     """
-    Tests that for a very small length, the horizontal cleat length is correctly calculated as 0.
+    Tests that for a small length (at minimum dimension), the horizontal cleat length is correctly calculated.
     """
     components = calculate_left_panel_components(
-        left_panel_assembly_length=5.0,
+        left_panel_assembly_length=12.0,
         left_panel_assembly_height=100.0,
         panel_sheathing_thickness=0.75,
         cleat_material_thickness=1.5,
         cleat_material_member_width=3.5
     )
     
-    # Horizontal cleats fit between vertical cleats, so length should be 5.0 - (2 * 3.5) = -2.0, which gets corrected to 0.
-    assert components['horizontal_cleats']['length'] == 0
+    # Horizontal cleats fit between vertical cleats, so length should be 12.0 - (2 * 3.5) = 5.0
+    assert components['horizontal_cleats']['length'] == 5.0

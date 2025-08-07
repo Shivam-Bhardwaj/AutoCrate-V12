@@ -49,7 +49,7 @@ horizontal_splice_test_cases = [
     (100, 50, []), # Legacy logic does not produce splices for this case
     (40, 100, [4.0]),
     (100, 100, [4.0]),
-    (200, 40, []),
+    (130, 40, []),
 ]
 
 @pytest.mark.parametrize("panel_width, panel_height, expected_splices", horizontal_splice_test_cases)

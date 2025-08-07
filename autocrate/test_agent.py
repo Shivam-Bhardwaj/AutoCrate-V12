@@ -210,9 +210,9 @@ class AutoCrateTestAgent:
                 description="Test the system with extreme but valid crate dimensions",
                 steps=[
                     "1. Test minimum valid crate (6x6x12)",
-                    "2. Test maximum valid crate (240x200x72)",
+                    "2. Test maximum valid crate (130x130x72)",
                     "3. Test very tall thin crate (20x20x100)",
-                    "4. Test very wide flat crate (200x150x24)",
+                    "4. Test very wide flat crate (130x120x24)",
                     "5. Verify calculations complete within 5 seconds for each"
                 ],
                 expected_results=[
@@ -611,7 +611,7 @@ class AutoCrateTestAgent:
             },
             {
                 "name": "extreme_crate_calculation",
-                "size": (240, 200, 72),
+                "size": (130, 130, 72),
                 "max_time_ms": 3000
             }
         ]
@@ -714,7 +714,7 @@ class AutoCrateTestAgent:
             },
             {
                 "name": "maximum_dimensions",
-                "width": 240, "length": 200, "height": 72,
+                "width": 130, "length": 130, "height": 72,
                 "description": "Maximum valid crate size"
             },
             {
@@ -730,7 +730,7 @@ class AutoCrateTestAgent:
             },
             {
                 "name": "extreme_aspect_ratio_wide",
-                "width": 200, "length": 200, "height": 12,
+                "width": 130, "length": 130, "height": 12,
                 "description": "Extremely wide and flat crate"
             }
         ]
@@ -832,8 +832,8 @@ class AutoCrateTestAgent:
             test_start = time.time()
             
             # Generate random valid dimensions
-            width = random.uniform(6, 240)
-            length = random.uniform(6, 200)
+            width = random.uniform(6, 130)
+            length = random.uniform(6, 130)
             height = random.uniform(12, 72)
             
             try:

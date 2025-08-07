@@ -24,8 +24,8 @@ layout_test_cases = [
     # Rotated: 100 / 48 -> 3 sheets across. 50 / 96 -> 1 sheet down. Total = 3 sheets.
     (100, 50, 3, {'x': 0, 'y': 0, 'width': 48, 'height': 50}),
     
-    # Case 5: A large panel requiring a 4-sheet grid where rotated is preferred in a tie
-    (150, 90, 4, {'x': 0, 'y': 0, 'width': 48, 'height': 90}),
+    # Case 5: A large panel requiring 3 sheets when rotated (130/48=3 across, 90/96=1 down)
+    (130, 90, 3, {'x': 0, 'y': 0, 'width': 48, 'height': 90}),
 ]
 
 @pytest.mark.parametrize("panel_width, panel_height, expected_count, expected_first_sheet", layout_test_cases)
@@ -219,8 +219,8 @@ def test_main_with_too_many_sheets(mock_write, mock_generate, mock_calculate, mo
         'input': 'input.exp',
         'output': 'output.exp',
         'manual_dimensions': True,
-        'width': 200.0,
-        'height': 200.0
+        'width': 130.0,
+        'height': 130.0
     })
     
     # Create 12 sheets (more than MAX_PLYWOOD_INSTANCES)
