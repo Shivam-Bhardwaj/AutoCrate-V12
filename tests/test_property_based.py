@@ -495,7 +495,7 @@ def test_regression_specific_cases():
     
     # Test case 4: Minimum size
     result = calculate_front_panel_components(
-        front_panel_assembly_width=6,
+        front_panel_assembly_width=12,  # Changed from 6 to 12 (min constraint)
         front_panel_assembly_height=12,
         panel_sheathing_thickness=0.75,
         cleat_material_thickness=1.5,

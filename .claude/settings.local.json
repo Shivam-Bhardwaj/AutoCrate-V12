@@ -35,7 +35,10 @@
       "Bash(awk:*)",
       "Bash(git checkout:*)",
       "Bash(git rebase:*)",
-      "Bash(xcopy:*)"
+      "Bash(xcopy:*)",
+      "Bash(build.bat)",
+      "Bash(move:*)",
+      "Bash(start AutoCrate.exe)"
     ],
     "deny": []
   }

@@ -1765,29 +1765,61 @@ class CrateApp:
                 raise Exception(f"Failed to create expressions directory: {expressions_dir}")
             self.log_message(f"Using expressions directory: {expressions_dir}")
             
-            # Generate timestamp prefix for sorting (YYYYMMDD_HHMMSS format)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # Determine material type based on panel thickness
-            material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
-            
-            # Generate enhanced filename with more parameters
-            # Include: timestamp, dimensions, weight, clearance, material type, panel thickness
-            base_filename = (f"{timestamp}_Crate_"
-                           f"{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_"
-                           f"{product_weight:.0f}lbs_"
-                           f"{material_type}{panel_thickness:.2f}_"
-                           f"CLR{clearance:.1f}.exp")
-            
-            # Sanitize and ensure we stay within Windows path limits
-            safe_filename = sanitize_filename(base_filename)
-            # Truncate if necessary to stay within Windows limits (260 chars total path)
-            max_filename_length = 200  # Leave room for path
-            if len(safe_filename) > max_filename_length:
-                # Keep timestamp and extension, truncate middle
-                safe_filename = safe_filename[:max_filename_length-4] + ".exp"
-            
-            output_filename = os.path.join(expressions_dir, safe_filename)
+            # Import and use the intelligent file manager
+            try:
+                from expression_file_manager import ExpressionFileManager, extract_parameters_from_inputs
+                
+                # Create file manager instance
+                file_manager = ExpressionFileManager(expressions_dir)
+                
+                # Extract parameters for the current expression
+                params = extract_parameters_from_inputs(
+                    product_length=product_length,
+                    product_width=product_width,
+                    product_height=product_height,
+                    product_weight=product_weight,
+                    panel_thickness=panel_thickness,
+                    clearance=clearance
+                )
+                
+                # Generate filename and manage duplicates
+                output_filename, deleted_files = file_manager.manage_expression_file(params)
+                
+                # Log deleted files if any
+                if deleted_files:
+                    self.log_message(f"Replaced {len(deleted_files)} existing expression(s) with same parameters:")
+                    for deleted_file in deleted_files:
+                        self.log_message(f"  - Deleted: {os.path.basename(deleted_file)}")
+                
+            except ImportError:
+                # Fallback to original behavior if file manager not available
+                self.log_message("Expression file manager not available, using standard naming")
+                
+                # Generate timestamp prefix for sorting (YYYYMMDD_HHMMSS format)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                
+                # Determine material type based on panel thickness
+                material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+                
+                # Generate enhanced filename with more parameters
+                panel_count = 5  # Always 5 panels (Front, Back, Left, Right, Top)
+                base_filename = (f"{timestamp}_Crate_"
+                               f"{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_"
+                               f"W{product_weight:.0f}_"
+                               f"{panel_count}P_"
+                               f"{material_type}{panel_thickness:.2f}_"
+                               f"C{clearance:.1f}_"
+                               f"ASTM.exp")
+                
+                # Sanitize and ensure we stay within Windows path limits
+                safe_filename = sanitize_filename(base_filename)
+                # Truncate if necessary to stay within Windows limits (260 chars total path)
+                max_filename_length = 200  # Leave room for path
+                if len(safe_filename) > max_filename_length:
+                    # Keep timestamp and extension, truncate middle
+                    safe_filename = safe_filename[:max_filename_length-4] + ".exp"
+                
+                output_filename = os.path.join(expressions_dir, safe_filename)
             
             selected_lumber = [width for width, var in self.lumber_vars.items() if var.get()]
             # Always enable all 5 panels: Front, Back, Left, Right, Top (no End Panel)
@@ -1828,13 +1860,23 @@ class CrateApp:
                 
             self.log_message(f"Using quick test directory: {quick_test_dir}")
             
+            # Import file manager for quick tests
+            try:
+                from expression_file_manager import ExpressionFileManager, extract_parameters_from_inputs
+                quick_test_file_manager = ExpressionFileManager(quick_test_dir)
+                use_file_manager = True
+            except ImportError:
+                use_file_manager = False
+                self.log_message("File manager not available for quick tests")
+            
             # Define test cases with corner cases and edge scenarios
             test_cases = [
                 # Format: (product_weight, product_length, product_width, product_height, clearance, description)
+                # All dimensions must be within 12-130 inches as per constraints
                 (1000, 20, 20, 100, 1.0, "Very Tall Thin - Horizontal Splice Bug Test"),
                 (500, 96, 48, 30, 2.0, "Standard Plywood Size"),
                 (2000, 120, 120, 48, 1.5, "Large Square Heavy"),
-                (100, 12, 12, 24, 0.5, "Small Light"),
+                (100, 12, 12, 24, 0.5, "Very Small Light"),  # Updated description
                 (5000, 130, 120, 60, 3.0, "Very Large Heavy"),
                 (800, 30, 30, 80, 1.0, "Medium Square Tall"),
                 (1500, 100, 50, 40, 2.5, "Long Narrow"),
@@ -1863,20 +1905,59 @@ class CrateApp:
             
             for i, (weight, length, width, height, clearance, description) in enumerate(test_cases, 1):
                 try:
-                    # Generate timestamp for this test
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    
-                    # Generate enhanced filename with timestamp and parameters
-                    filename = (f"{timestamp}_QuickTest_{i:02d}_"
-                              f"{length:.0f}x{width:.0f}x{height:.0f}_"
-                              f"{weight:.0f}lbs_{description.replace(' ', '_').replace('-', '')}.exp")
-                    
-                    # Sanitize and truncate if necessary
-                    safe_filename = sanitize_filename(filename)
-                    if len(safe_filename) > 200:
-                        safe_filename = safe_filename[:196] + ".exp"
-                    
-                    output_filename = os.path.join(quick_test_dir, safe_filename)
+                    if use_file_manager:
+                        # Use file manager for intelligent replacement
+                        params = extract_parameters_from_inputs(
+                            product_length=length,
+                            product_width=width,
+                            product_height=height,
+                            product_weight=weight,
+                            panel_thickness=panel_thickness,
+                            clearance=clearance
+                        )
+                        
+                        # Generate custom filename with test description
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+                        filename = (f"{timestamp}_QuickTest_{i:02d}_"
+                                  f"{length:.0f}x{width:.0f}x{height:.0f}_"
+                                  f"W{weight:.0f}_"
+                                  f"{material_type}{panel_thickness:.2f}_"
+                                  f"C{clearance:.1f}_"
+                                  f"{description.replace(' ', '_').replace('-', '')}.exp")
+                        
+                        # Sanitize and truncate if necessary
+                        safe_filename = sanitize_filename(filename)
+                        if len(safe_filename) > 200:
+                            safe_filename = safe_filename[:196] + ".exp"
+                        
+                        output_filename = os.path.join(quick_test_dir, safe_filename)
+                        
+                        # Clean up duplicates with same parameters
+                        deleted_files = quick_test_file_manager.clean_duplicates(params, output_filename)
+                        if deleted_files:
+                            self.log_message(f"  Replaced {len(deleted_files)} existing test(s)")
+                    else:
+                        # Original behavior without file manager
+                        # Generate timestamp for this test
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        
+                        # Generate enhanced filename with timestamp and parameters
+                        # Include all relevant parameters for better test identification
+                        material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+                        filename = (f"{timestamp}_QuickTest_{i:02d}_"
+                                  f"{length:.0f}x{width:.0f}x{height:.0f}_"
+                                  f"W{weight:.0f}_"
+                                  f"{material_type}{panel_thickness:.2f}_"
+                                  f"C{clearance:.1f}_"
+                                  f"{description.replace(' ', '_').replace('-', '')}.exp")
+                        
+                        # Sanitize and truncate if necessary
+                        safe_filename = sanitize_filename(filename)
+                        if len(safe_filename) > 200:
+                            safe_filename = safe_filename[:196] + ".exp"
+                        
+                        output_filename = os.path.join(quick_test_dir, safe_filename)
                     
                     self.log_message(f"Test {i}/10: {description}")
                     
