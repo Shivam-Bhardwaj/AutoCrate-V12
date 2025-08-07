@@ -38,7 +38,8 @@
       "Bash(xcopy:*)",
       "Bash(build.bat)",
       "Bash(move:*)",
-      "Bash(start AutoCrate.exe)"
+      "Bash(start AutoCrate.exe)",
+      "Bash(quick_test.bat)"
     ],
     "deny": []
   }

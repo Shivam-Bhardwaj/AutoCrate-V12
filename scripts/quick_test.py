@@ -12,7 +12,13 @@ from pathlib import Path
 from datetime import datetime
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
+current_dir = Path(__file__).parent
+if current_dir.name == 'scripts':
+    # Running from scripts folder, go up one level
+    sys.path.insert(0, str(current_dir.parent))
+else:
+    # Running from root
+    sys.path.insert(0, str(current_dir))
 
 from autocrate.test_agent import AutoCrateTestAgent
 from autocrate.debug_logger import get_logger, finalize_logging

@@ -1,5 +1,57 @@
 # AutoCrate Changelog
 
+## [12.1.0] - 2025-08-07
+
+### Major Refactoring - Clean Architecture and Rapid Testing System
+
+#### Added - Intelligent Expression Management
+- **Expression File Manager** (`autocrate/expression_file_manager.py`): Automatic duplicate detection and replacement
+  - Compares files by dimensions, weight, material, thickness, and clearance
+  - Automatically deletes old versions when generating new expressions
+  - Maintains one expression per unique parameter combination
+  - Perfect for rapid testing workflows without manual cleanup
+
+#### Added - Streamlined Testing Scripts  
+- **build_and_test.bat**: Complete build pipeline with test validation
+  - Runs all tests, builds executable, cleans artifacts
+  - Places AutoCrate.exe in root folder for easy access
+  - Clears expressions folder for clean testing environment
+  
+- **quick_test.bat**: Rapid expression generation for testing
+  - Cleans expressions folder completely
+  - Generates all 10 quick test expressions
+  - Shows file count and names for verification
+  
+- **test_and_push.bat**: Comprehensive pre-push validation
+  - Runs all tests including property-based tests
+  - Updates CHANGELOG automatically
+  - Creates/switches to refactor branch
+  - Commits and pushes changes to GitHub
+
+#### Changed - Project Structure
+- **Moved all Python scripts from root to scripts folder**: Cleaner project organization
+  - main.py, quick_test.py, run_tests.py → scripts/
+  - All test utilities and helpers → scripts/
+  - Root folder now only contains batch files and AutoCrate.exe
+
+- **Enhanced NX Expression Generation**: 
+  - Added timestamp prefixes (YYYYMMDD_HHMMSS) for Windows sorting
+  - Enhanced filenames with more parameters (weight, panels, material, thickness)
+  - Dimension constraints: 12-130 inch cube limits
+  - Expression output to main/expressions folder
+
+#### Removed - Unnecessary Files
+- Deleted Docker-related files (Dockerfile, docker-compose.yml)
+- Removed legacy test folders and outdated documentation
+- Cleaned up validation scripts and test utilities from root
+- Removed unused batch files (start_dev.bat, start_production.bat)
+
+#### Technical Improvements
+- **Git Workflow**: Introduced refactor branch strategy for cleaner merges
+- **Build System**: Optimized PyInstaller configuration with all dependencies
+- **Testing**: 88 tests passing with < 5ms average performance
+- **File Management**: Automatic cleanup prevents duplicate accumulation
+
 ## [12.0.9] - 2025-08-05
 
 ### Added - Comprehensive AI-Powered Testing System
