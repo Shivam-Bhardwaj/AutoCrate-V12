@@ -1,0 +1,158 @@
+[
+  {
+    "session_id": "988890d1-d766-4e4d-b6fd-060ff4113ab4",
+    "status": "idle",
+    "created_at": "2025-08-07T18:49:37.756216",
+    "last_activity": "2025-08-07T18:49:37.756617",
+    "context": {
+      "session_id": "988890d1-d766-4e4d-b6fd-060ff4113ab4",
+      "project_name": "AutoCrate Project 1",
+      "task_description": "Designing crate type 1",
+      "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+      "environment_info": {
+        "python_version": "3.13.5",
+        "platform": "nt",
+        "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+        "timestamp": "2025-08-07T18:49:37.756221",
+        "process_id": 32376
+      },
+      "user_preferences": {},
+      "active_files": []
+    },
+    "messages": [
+      {
+        "id": "518a1c93-6398-4ebc-a639-4c0b0fc7b217",
+        "role": "system",
+        "content": "AutoCrate AI Assistant - Professional Crate Engineering System\nSession ID: 988890d1-d766-4e4d-b6fd-060ff4113ab4\nProject: AutoCrate Project 1\nWorking Directory: C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts\nSession Started: 2025-08-07 18:49:37\nTask: Designing crate type 1\n\nI am ready to assist with AutoCrate engineering calculations, crate design,\nNX expression generation, testing, and development tasks.\nPlease let me know how I can help you today.",
+        "timestamp": "2025-08-07T18:49:37.756256",
+        "token_count": 120,
+        "metadata": {
+          "type": "system_initialization"
+        }
+      },
+      {
+        "id": "19e3e843-b5d1-40ef-afae-f3f6c75214a4",
+        "role": "user",
+        "content": "I need to calculate material requirements",
+        "timestamp": "2025-08-07T18:49:37.756609",
+        "token_count": 10,
+        "metadata": {}
+      },
+      {
+        "id": "7b0bc0ce-e6f3-4118-a027-0cb97b7415ae",
+        "role": "assistant",
+        "content": "I can help calculate materials. What are your crate dimensions?",
+        "timestamp": "2025-08-07T18:49:37.756616",
+        "token_count": 15,
+        "metadata": {}
+      }
+    ],
+    "total_tokens": 145,
+    "turn_count": 3,
+    "summary": null
+  },
+  {
+    "session_id": "c4697a21-a69b-485b-b3ed-33775fbc2438",
+    "status": "idle",
+    "created_at": "2025-08-07T18:49:37.756297",
+    "last_activity": "2025-08-07T18:49:37.756666",
+    "context": {
+      "session_id": "c4697a21-a69b-485b-b3ed-33775fbc2438",
+      "project_name": "AutoCrate Project 2",
+      "task_description": "Designing crate type 2",
+      "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+      "environment_info": {
+        "python_version": "3.13.5",
+        "platform": "nt",
+        "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+        "timestamp": "2025-08-07T18:49:37.756418",
+        "process_id": 32376
+      },
+      "user_preferences": {},
+      "active_files": []
+    },
+    "messages": [
+      {
+        "id": "c0a9db99-fce1-426b-8800-08c65185041b",
+        "role": "system",
+        "content": "AutoCrate AI Assistant - Professional Crate Engineering System\nSession ID: c4697a21-a69b-485b-b3ed-33775fbc2438\nProject: AutoCrate Project 2\nWorking Directory: C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts\nSession Started: 2025-08-07 18:49:37\nTask: Designing crate type 2\n\nI am ready to assist with AutoCrate engineering calculations, crate design,\nNX expression generation, testing, and development tasks.\nPlease let me know how I can help you today.",
+        "timestamp": "2025-08-07T18:49:37.756456",
+        "token_count": 120,
+        "metadata": {
+          "type": "system_initialization"
+        }
+      },
+      {
+        "id": "341123b7-cc73-4652-9a98-416840c52591",
+        "role": "user",
+        "content": "How do I optimize plywood layout?",
+        "timestamp": "2025-08-07T18:49:37.756661",
+        "token_count": 8,
+        "metadata": {}
+      },
+      {
+        "id": "31f2e007-fa1a-45e9-93b5-92a8bf975a12",
+        "role": "assistant",
+        "content": "For plywood optimization, I recommend analyzing the panel arrangement...",
+        "timestamp": "2025-08-07T18:49:37.756666",
+        "token_count": 18,
+        "metadata": {}
+      }
+    ],
+    "total_tokens": 146,
+    "turn_count": 3,
+    "summary": null
+  },
+  {
+    "session_id": "81348cfb-604d-4ad3-9e5c-e53355db6661",
+    "status": "active",
+    "created_at": "2025-08-07T18:49:37.756524",
+    "last_activity": "2025-08-07T18:49:37.756704",
+    "context": {
+      "session_id": "81348cfb-604d-4ad3-9e5c-e53355db6661",
+      "project_name": "AutoCrate Project 3",
+      "task_description": "Designing crate type 3",
+      "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+      "environment_info": {
+        "python_version": "3.13.5",
+        "platform": "nt",
+        "working_directory": "C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts",
+        "timestamp": "2025-08-07T18:49:37.756528",
+        "process_id": 32376
+      },
+      "user_preferences": {},
+      "active_files": []
+    },
+    "messages": [
+      {
+        "id": "6fb0c7e8-98e8-42c4-ad0b-74c4646b8c03",
+        "role": "system",
+        "content": "AutoCrate AI Assistant - Professional Crate Engineering System\nSession ID: 81348cfb-604d-4ad3-9e5c-e53355db6661\nProject: AutoCrate Project 3\nWorking Directory: C:\\Users\\Curio\\OneDrive\\Desktop\\SbT\\AutoCrate V12\\AutoCrate V12.0.9\\scripts\nSession Started: 2025-08-07 18:49:37\nTask: Designing crate type 3\n\nI am ready to assist with AutoCrate engineering calculations, crate design,\nNX expression generation, testing, and development tasks.\nPlease let me know how I can help you today.",
+        "timestamp": "2025-08-07T18:49:37.756545",
+        "token_count": 120,
+        "metadata": {
+          "type": "system_initialization"
+        }
+      },
+      {
+        "id": "6d683a04-068e-4e9d-8c91-916a0f600b22",
+        "role": "user",
+        "content": "Can you debug this NX expression error?",
+        "timestamp": "2025-08-07T18:49:37.756699",
+        "token_count": 9,
+        "metadata": {}
+      },
+      {
+        "id": "2a74f340-393c-4def-8ccf-53e6546faad9",
+        "role": "assistant",
+        "content": "I'll help debug the expression. Can you share the error details?",
+        "timestamp": "2025-08-07T18:49:37.756703",
+        "token_count": 16,
+        "metadata": {}
+      }
+    ],
+    "total_tokens": 145,
+    "turn_count": 3,
+    "summary": null
+  }
+]

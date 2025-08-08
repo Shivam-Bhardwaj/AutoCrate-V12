@@ -39,7 +39,8 @@
       "Bash(build.bat)",
       "Bash(move:*)",
       "Bash(start AutoCrate.exe)",
-      "Bash(quick_test.bat)"
+      "Bash(quick_test.bat)",
+      "Bash(git branch:*)"
     ],
     "deny": []
   }

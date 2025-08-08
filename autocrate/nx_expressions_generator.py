@@ -121,6 +121,11 @@ except ImportError as e:
 from typing import List, Dict, Tuple
 
 # --- Default Constants ---
+# Standardized Material Dimensions (ASTM D6007 compliant)
+STANDARD_PLYWOOD_THICKNESS = 0.25  # 1/4 inch standard plywood
+STANDARD_CLEAT_THICKNESS = 0.75    # Actual thickness of 1x4 lumber
+STANDARD_CLEAT_WIDTH = 3.5         # Actual width of 1x4 lumber
+
 DEFAULT_AVAILABLE_STD_LUMBER_WIDTHS = { 
     "2x6 (5.5 in)": 5.5, "2x8 (7.25 in)": 7.25,
     "2x10 (9.25 in)": 9.25, "2x12 (11.25 in)": 11.25
@@ -1667,63 +1672,199 @@ def update_panel_components_with_splice_cleats(panel_components: dict, panel_wid
 
 class CrateApp: 
     def __init__(self, master):
-        self.master = master; master.title("NX Crate Exporter (Updated Cleat Logic)") 
-        master.geometry("550x880") 
-        style = ttk.Style(); style.theme_use('clam') 
-        main_frame = ttk.Frame(master, padding="10"); main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.master = master
+        master.title("AutoCrate NX Expression Generator v12.0.9") 
+        master.geometry("650x920") 
+        style = ttk.Style()
+        style.theme_use('clam')
         
-        # Product Inputs Section
-        product_frame = ttk.LabelFrame(main_frame, text="Product Specifications", padding="10")
-        product_frame.grid(row=0, column=0, columnspan=2, pady=10, sticky="ew") 
-        ttk.Label(product_frame, text="Product Weight (lbs):").grid(row=0, column=0, sticky="w", pady=2); self.weight_entry = ttk.Entry(product_frame, width=25); self.weight_entry.grid(row=0, column=1, sticky="ew", pady=2); self.weight_entry.insert(0, "8000.0")
-        ttk.Label(product_frame, text="Product Length (in):").grid(row=1, column=0, sticky="w", pady=2); self.length_entry = ttk.Entry(product_frame, width=25); self.length_entry.grid(row=1, column=1, sticky="ew", pady=2); self.length_entry.insert(0, "96.0")
-        ttk.Label(product_frame, text="Product Width (in):").grid(row=2, column=0, sticky="w", pady=2); self.width_entry = ttk.Entry(product_frame, width=25); self.width_entry.grid(row=2, column=1, sticky="ew", pady=2); self.width_entry.insert(0, "100.0")
-        ttk.Label(product_frame, text="Side Clearance (in):").grid(row=3, column=0, sticky="w", pady=2); self.clearance_entry = ttk.Entry(product_frame, width=25); self.clearance_entry.grid(row=3, column=1, sticky="ew", pady=2); self.clearance_entry.insert(0, "2.0")
-        self.allow_3x4_skids_var = tk.BooleanVar(value=True); ttk.Checkbutton(product_frame, text="Allow 3x4 skids", variable=self.allow_3x4_skids_var).grid(row=4, column=0, columnspan=2, sticky="w", pady=2)
+        # Main container with padding
+        main_frame = ttk.Frame(master, padding="10")
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        # Title and version header
+        header_frame = ttk.Frame(main_frame)
+        header_frame.grid(row=0, column=0, columnspan=2, pady=(0, 10), sticky="ew")
+        ttk.Label(header_frame, text="AutoCrate NX Expression Generator", font=('Arial', 12, 'bold')).pack()
+        ttk.Label(header_frame, text="ASTM D6179/D6251/D6256 Compliant", font=('Arial', 9)).pack()
+        ttk.Separator(main_frame, orient='horizontal').grid(row=1, column=0, columnspan=2, sticky="ew", pady=5)
+        
+        # === CATEGORY 1: PRODUCT DIMENSIONS ===
+        product_frame = ttk.LabelFrame(main_frame, text="1. Product Dimensions", padding="10")
+        product_frame.grid(row=2, column=0, columnspan=2, pady=5, sticky="ew")
+        
+        ttk.Label(product_frame, text="Length (in):").grid(row=0, column=0, sticky="w", pady=2)
+        self.length_entry = ttk.Entry(product_frame, width=20)
+        self.length_entry.grid(row=0, column=1, sticky="ew", pady=2)
+        self.length_entry.insert(0, "96.0")
+        ttk.Label(product_frame, text="Along Y-axis (crate length)", font=('Arial', 8)).grid(row=0, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(product_frame, text="Width (in):").grid(row=1, column=0, sticky="w", pady=2)
+        self.width_entry = ttk.Entry(product_frame, width=20)
+        self.width_entry.grid(row=1, column=1, sticky="ew", pady=2)
+        self.width_entry.insert(0, "100.0")
+        ttk.Label(product_frame, text="Along X-axis (crate width)", font=('Arial', 8)).grid(row=1, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(product_frame, text="Height (in):").grid(row=2, column=0, sticky="w", pady=2)
+        self.product_height_entry = ttk.Entry(product_frame, width=20)
+        self.product_height_entry.grid(row=2, column=1, sticky="ew", pady=2)
+        self.product_height_entry.insert(0, "30.0")
+        ttk.Label(product_frame, text="Along Z-axis (vertical)", font=('Arial', 8)).grid(row=2, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(product_frame, text="Weight (lbs):").grid(row=3, column=0, sticky="w", pady=2)
+        self.weight_entry = ttk.Entry(product_frame, width=20)
+        self.weight_entry.grid(row=3, column=1, sticky="ew", pady=2)
+        self.weight_entry.insert(0, "8000.0")
+        ttk.Label(product_frame, text="Total product weight", font=('Arial', 8)).grid(row=3, column=2, sticky="w", padx=(5,0))
+        
         product_frame.columnconfigure(1, weight=1)
+        
+        # === CATEGORY 2: MATERIAL SPECIFICATIONS ===
+        material_frame = ttk.LabelFrame(main_frame, text="2. Material Specifications (Standardized)", padding="10")
+        material_frame.grid(row=3, column=0, columnspan=2, pady=5, sticky="ew")
+        
+        # Display standardized materials (read-only)
+        ttk.Label(material_frame, text="Panel Material:", font=('Arial', 9, 'bold')).grid(row=0, column=0, sticky="w", pady=2)
+        ttk.Label(material_frame, text="1/4 inch (0.25\") Plywood", font=('Arial', 9)).grid(row=0, column=1, sticky="w", pady=2)
+        ttk.Label(material_frame, text="ASTM D6007 compliant", font=('Arial', 8, 'italic')).grid(row=0, column=2, sticky="w", padx=(10,0))
+        
+        ttk.Label(material_frame, text="Cleat Material:", font=('Arial', 9, 'bold')).grid(row=1, column=0, sticky="w", pady=2)
+        ttk.Label(material_frame, text="1x4 inch Lumber (0.75\" x 3.5\" actual)", font=('Arial', 9)).grid(row=1, column=1, sticky="w", pady=2)
+        ttk.Label(material_frame, text="SPF Grade 2 or better", font=('Arial', 8, 'italic')).grid(row=1, column=2, sticky="w", padx=(10,0))
+        
+        # Hidden entries for backward compatibility (with standard values)
+        self.panel_thickness_entry = ttk.Entry(material_frame)
+        self.panel_thickness_entry.insert(0, str(STANDARD_PLYWOOD_THICKNESS))
+        self.cleat_thickness_entry = ttk.Entry(material_frame)
+        self.cleat_thickness_entry.insert(0, str(STANDARD_CLEAT_THICKNESS))
+        self.cleat_member_width_entry = ttk.Entry(material_frame)
+        self.cleat_member_width_entry.insert(0, str(STANDARD_CLEAT_WIDTH))
+        # Don't grid these - they're hidden but available for the logic
+        
+        material_frame.columnconfigure(1, weight=1)
+        
+        # === CATEGORY 3: ENGINEERING PARAMETERS ===
+        engineering_frame = ttk.LabelFrame(main_frame, text="3. Engineering Parameters", padding="10")
+        engineering_frame.grid(row=4, column=0, columnspan=2, pady=5, sticky="ew")
+        
+        ttk.Label(engineering_frame, text="Side Clearance (in):").grid(row=0, column=0, sticky="w", pady=2)
+        self.clearance_entry = ttk.Entry(engineering_frame, width=20)
+        self.clearance_entry.grid(row=0, column=1, sticky="ew", pady=2)
+        self.clearance_entry.insert(0, "2.0")
+        ttk.Label(engineering_frame, text="Clearance on each side", font=('Arial', 8)).grid(row=0, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(engineering_frame, text="Top Clearance (in):").grid(row=1, column=0, sticky="w", pady=2)
+        self.clearance_above_entry = ttk.Entry(engineering_frame, width=20)
+        self.clearance_above_entry.grid(row=1, column=1, sticky="ew", pady=2)
+        self.clearance_above_entry.insert(0, "2.0")
+        ttk.Label(engineering_frame, text="Above product", font=('Arial', 8)).grid(row=1, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(engineering_frame, text="Ground Clearance (in):").grid(row=2, column=0, sticky="w", pady=2)
+        self.ground_clearance_entry = ttk.Entry(engineering_frame, width=20)
+        self.ground_clearance_entry.grid(row=2, column=1, sticky="ew", pady=2)
+        self.ground_clearance_entry.insert(0, "1.0")
+        ttk.Label(engineering_frame, text="For forklift access", font=('Arial', 8)).grid(row=2, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Separator(engineering_frame, orient='horizontal').grid(row=3, column=0, columnspan=3, sticky="ew", pady=(8,4))
+        
+        self.allow_3x4_skids_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(engineering_frame, text="Allow 3x4 skids for lighter loads", 
+                       variable=self.allow_3x4_skids_var).grid(row=4, column=0, columnspan=2, sticky="w", pady=2)
+        ttk.Label(engineering_frame, text="(Unchecked uses 4x4 minimum)", font=('Arial', 8)).grid(row=4, column=2, sticky="w", padx=(5,0))
+        
+        engineering_frame.columnconfigure(1, weight=1)
 
-        # Crate Inputs Section
-        crate_frame = ttk.LabelFrame(main_frame, text="Crate & Panel Specifications", padding="10")
-        crate_frame.grid(row=1, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Label(crate_frame, text="Panel Thickness (in):").grid(row=0, column=0, sticky="w", pady=2); self.panel_thickness_entry = ttk.Entry(crate_frame, width=25); self.panel_thickness_entry.grid(row=0, column=1, sticky="ew", pady=2); self.panel_thickness_entry.insert(0, "0.25")
-        ttk.Label(crate_frame, text="Cleat Thickness (in):").grid(row=1, column=0, sticky="w", pady=2); self.cleat_thickness_entry = ttk.Entry(crate_frame, width=25); self.cleat_thickness_entry.grid(row=1, column=1, sticky="ew", pady=2); self.cleat_thickness_entry.insert(0, "0.75")
-        ttk.Label(crate_frame, text="Cleat Member Width (in):").grid(row=2, column=0, sticky="w", pady=2); self.cleat_member_width_entry = ttk.Entry(crate_frame, width=25); self.cleat_member_width_entry.grid(row=2, column=1, sticky="ew", pady=2); self.cleat_member_width_entry.insert(0, "3.5")
-        ttk.Label(crate_frame, text="Product Height (in):").grid(row=3, column=0, sticky="w", pady=2); self.product_height_entry = ttk.Entry(crate_frame, width=25); self.product_height_entry.grid(row=3, column=1, sticky="ew", pady=2); self.product_height_entry.insert(0, "30.0")
-        ttk.Label(crate_frame, text="Clearance Above Product (in):").grid(row=4, column=0, sticky="w", pady=2); self.clearance_above_entry = ttk.Entry(crate_frame, width=25); self.clearance_above_entry.grid(row=4, column=1, sticky="ew", pady=2); self.clearance_above_entry.insert(0, "2.0")
-        ttk.Label(crate_frame, text="Ground Clearance (in):").grid(row=5, column=0, sticky="w", pady=2); self.ground_clearance_entry = ttk.Entry(crate_frame, width=25); self.ground_clearance_entry.grid(row=5, column=1, sticky="ew", pady=2); self.ground_clearance_entry.insert(0, "1.0")
-        crate_frame.columnconfigure(1, weight=1)
-
-        # Floorboard Inputs Section
-        floorboard_frame = ttk.LabelFrame(main_frame, text="Floorboard Specifications", padding="10")
-        floorboard_frame.grid(row=2, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Label(floorboard_frame, text="Floorboard Thickness (in):").grid(row=0, column=0, sticky="w", pady=2); self.floorboard_thickness_entry = ttk.Entry(floorboard_frame, width=25); self.floorboard_thickness_entry.grid(row=0, column=1, sticky="ew", pady=2); self.floorboard_thickness_entry.insert(0, "1.5")
-        ttk.Label(floorboard_frame, text="Max Middle Gap (in):").grid(row=1, column=0, sticky="w", pady=2); self.max_gap_entry = ttk.Entry(floorboard_frame, width=25); self.max_gap_entry.grid(row=1, column=1, sticky="ew", pady=2); self.max_gap_entry.insert(0, "0.25")
-        ttk.Label(floorboard_frame, text="Min Custom Width (in):").grid(row=2, column=0, sticky="w", pady=2); self.min_custom_entry = ttk.Entry(floorboard_frame, width=25); self.min_custom_entry.grid(row=2, column=1, sticky="ew", pady=2); self.min_custom_entry.insert(0, "2.5")
-        self.force_custom_var = tk.BooleanVar(value=True); ttk.Checkbutton(floorboard_frame, text="Force small custom board", variable=self.force_custom_var).grid(row=3, column=0, columnspan=2, sticky="w", pady=2)
+        # === CATEGORY 4: FLOORBOARD CONFIGURATION ===
+        floorboard_frame = ttk.LabelFrame(main_frame, text="4. Floorboard Configuration", padding="10")
+        floorboard_frame.grid(row=5, column=0, columnspan=2, pady=5, sticky="ew")
+        
+        ttk.Label(floorboard_frame, text="Floorboard Thickness (in):").grid(row=0, column=0, sticky="w", pady=2)
+        self.floorboard_thickness_entry = ttk.Entry(floorboard_frame, width=20)
+        self.floorboard_thickness_entry.grid(row=0, column=1, sticky="ew", pady=2)
+        self.floorboard_thickness_entry.insert(0, "1.5")
+        ttk.Label(floorboard_frame, text="2x lumber actual thickness", font=('Arial', 8)).grid(row=0, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(floorboard_frame, text="Available Lumber Sizes:", font=('Arial', 9, 'bold')).grid(row=1, column=0, sticky="nw", pady=(8,2))
+        
+        lumber_select_frame = ttk.Frame(floorboard_frame)
+        lumber_select_frame.grid(row=1, column=1, columnspan=2, sticky="w", pady=(8,2))
+        
+        self.lumber_vars = {}
+        lumber_widths = {"2x6 (5.5\")": 5.5, "2x8 (7.25\")": 7.25, "2x10 (9.25\")": 9.25, "2x12 (11.25\")": 11.25}
+        for i, (name, width) in enumerate(lumber_widths.items()):
+            var = tk.BooleanVar(value=True)
+            self.lumber_vars[width] = var
+            ttk.Checkbutton(lumber_select_frame, text=name, variable=var).grid(row=i//2, column=i%2, sticky="w", padx=(0,15))
+        
+        ttk.Separator(floorboard_frame, orient='horizontal').grid(row=2, column=0, columnspan=3, sticky="ew", pady=(8,4))
+        
+        ttk.Label(floorboard_frame, text="Gap Tolerance (in):").grid(row=3, column=0, sticky="w", pady=2)
+        self.max_gap_entry = ttk.Entry(floorboard_frame, width=20)
+        self.max_gap_entry.grid(row=3, column=1, sticky="ew", pady=2)
+        self.max_gap_entry.insert(0, "0.25")
+        ttk.Label(floorboard_frame, text="Max gap between boards", font=('Arial', 8)).grid(row=3, column=2, sticky="w", padx=(5,0))
+        
+        ttk.Label(floorboard_frame, text="Min Custom Board (in):").grid(row=4, column=0, sticky="w", pady=2)
+        self.min_custom_entry = ttk.Entry(floorboard_frame, width=20)
+        self.min_custom_entry.grid(row=4, column=1, sticky="ew", pady=2)
+        self.min_custom_entry.insert(0, "2.5")
+        ttk.Label(floorboard_frame, text="For center fill board", font=('Arial', 8)).grid(row=4, column=2, sticky="w", padx=(5,0))
+        
+        self.force_custom_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(floorboard_frame, text="Force center custom board for better load distribution", 
+                       variable=self.force_custom_var).grid(row=5, column=0, columnspan=3, sticky="w", pady=(4,0))
+        
         floorboard_frame.columnconfigure(1, weight=1)
 
-        # Lumber Selection Section
-        lumber_frame = ttk.LabelFrame(main_frame, text="Available Lumber Widths", padding="10")
-        lumber_frame.grid(row=3, column=0, columnspan=2, pady=10, sticky="ew")
-        self.lumber_vars = {}
-        lumber_widths = {"2x6 (5.5 in)": 5.5, "2x8 (7.25 in)": 7.25, "2x10 (9.25 in)": 9.25, "2x12 (11.25 in)": 11.25}
-        for i, (name, width) in enumerate(lumber_widths.items()):
-            var = tk.BooleanVar(value=True); self.lumber_vars[width] = var; ttk.Checkbutton(lumber_frame, text=name, variable=var).grid(row=i//2, column=i%2, sticky="w", pady=2)
-
-        # Plywood panels are always enabled for all 5 panels (FP, BP, LP, RP, TP)
-
+        # === FILE SETTINGS ===
+        ttk.Separator(main_frame, orient='horizontal').grid(row=6, column=0, columnspan=2, sticky="ew", pady=10)
+        
         # Output Section
-        output_frame = ttk.LabelFrame(main_frame, text="Output", padding="10")
-        output_frame.grid(row=4, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Button(output_frame, text="Generate NX Expressions", command=self.generate_expressions).grid(row=0, column=0, pady=10, padx=(0, 5))
-        ttk.Button(output_frame, text="Quick Test Suite", command=self.run_quick_test_suite).grid(row=0, column=1, pady=10, padx=(5, 0))
+        output_frame = ttk.LabelFrame(main_frame, text="5. Output Options", padding="10")
+        output_frame.grid(row=7, column=0, columnspan=2, pady=5, sticky="ew")
+        # Information label about panels
+        info_label = ttk.Label(output_frame, text="All 5 panels (Front, Back, Left, Right, Top) will be generated", 
+                              font=('Arial', 9, 'italic'))
+        info_label.grid(row=0, column=0, columnspan=2, pady=(0,5))
+        
+        # Buttons
+        button_frame = ttk.Frame(output_frame)
+        button_frame.grid(row=1, column=0, columnspan=2, pady=5)
+        
+        generate_btn = ttk.Button(button_frame, text="Generate NX Expressions", command=self.generate_expressions)
+        generate_btn.grid(row=0, column=0, padx=5)
+        
+        test_btn = ttk.Button(button_frame, text="Run Test Suite", command=self.run_quick_test_suite)
+        test_btn.grid(row=0, column=1, padx=5)
+        
+        # Center the button frame
+        button_frame.grid_columnconfigure(0, weight=1)
+        button_frame.grid_columnconfigure(1, weight=1)
         output_frame.columnconfigure(0, weight=1)
-        output_frame.columnconfigure(1, weight=1)
 
-        # Status Section
-        self.status_text = tk.Text(main_frame, height=8, width=60); self.status_text.grid(row=5, column=0, columnspan=2, pady=10, sticky="ew")
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=self.status_text.yview); scrollbar.grid(row=5, column=2, sticky="ns", pady=10); self.status_text.configure(yscrollcommand=scrollbar.set)
-        main_frame.columnconfigure(0, weight=1); master.columnconfigure(0, weight=1); master.rowconfigure(0, weight=1)
+        # === STATUS LOG ===
+        status_frame = ttk.LabelFrame(main_frame, text="Status Log", padding="5")
+        status_frame.grid(row=8, column=0, columnspan=2, pady=5, sticky="nsew")
+        
+        self.status_text = tk.Text(status_frame, height=8, width=70, wrap=tk.WORD)
+        self.status_text.grid(row=0, column=0, sticky="nsew")
+        
+        scrollbar = ttk.Scrollbar(status_frame, orient="vertical", command=self.status_text.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        self.status_text.configure(yscrollcommand=scrollbar.set)
+        
+        status_frame.columnconfigure(0, weight=1)
+        status_frame.rowconfigure(0, weight=1)
+        
+        # Configure main frame weights
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(8, weight=1)  # Allow status frame to expand
+        master.columnconfigure(0, weight=1)
+        master.rowconfigure(0, weight=1)
+        
+        # Add initial status message
+        self.log_message("AutoCrate v12.0.9 Ready")
+        self.log_message("Using standardized materials: 1/4\" plywood and 1x4 lumber")
 
     def log_message(self, message): 
         self.status_text.insert(tk.END, f"{datetime.datetime.now().strftime('%H:%M:%S')} - {message}\\n"); self.status_text.see(tk.END); self.master.update_idletasks()
@@ -1735,9 +1876,10 @@ class CrateApp:
             product_length = validate_numeric_input(self.length_entry.get(), 12, 130, "Product Length")
             product_width = validate_numeric_input(self.width_entry.get(), 12, 130, "Product Width")
             clearance = validate_numeric_input(self.clearance_entry.get(), 0.1, 50, "Clearance")
-            panel_thickness = validate_numeric_input(self.panel_thickness_entry.get(), 0.1, 5, "Panel Thickness")
-            cleat_thickness = validate_numeric_input(self.cleat_thickness_entry.get(), 0.1, 5, "Cleat Thickness")
-            cleat_member_width = validate_numeric_input(self.cleat_member_width_entry.get(), 0.5, 20, "Cleat Member Width")
+            # Use standardized material dimensions
+            panel_thickness = STANDARD_PLYWOOD_THICKNESS
+            cleat_thickness = STANDARD_CLEAT_THICKNESS
+            cleat_member_width = STANDARD_CLEAT_WIDTH
             product_height = validate_numeric_input(self.product_height_entry.get(), 12, 130, "Product Height")
             clearance_above = validate_numeric_input(self.clearance_above_entry.get(), 0.1, 50, "Clearance Above")
             ground_clearance = validate_numeric_input(self.ground_clearance_entry.get(), 0.1, 50, "Ground Clearance")
@@ -1825,6 +1967,7 @@ class CrateApp:
             # Always enable all 5 panels: Front, Back, Left, Right, Top (no End Panel)
             plywood_selections = {"FP": True, "BP": True, "LP": True, "RP": True, "TP": True}
             self.log_message("Starting expression generation...")
+            self.log_message(f"Using standard materials: {panel_thickness}\" plywood, {cleat_thickness}\"x{cleat_member_width}\" cleats")
             self.log_message(f"Output file: {output_filename}")
             success, message = generate_crate_expressions_logic(product_weight, product_length, product_width, clearance, self.allow_3x4_skids_var.get(), panel_thickness, cleat_thickness, cleat_member_width, product_height, clearance_above, ground_clearance, floorboard_thickness, selected_lumber, max_gap, min_custom, self.force_custom_var.get(), output_filename, plywood_selections)
             if success: self.log_message(f"SUCCESS: {message}"); messagebox.showinfo("Success", message)
@@ -1888,10 +2031,10 @@ class CrateApp:
             self.log_message("Starting Quick Test Suite generation...")
             self.log_message(f"Generating {len(test_cases)} test cases...")
             
-            # Use current GUI settings for common parameters
-            panel_thickness = float(self.panel_thickness_entry.get())
-            cleat_thickness = float(self.cleat_thickness_entry.get()) 
-            cleat_member_width = float(self.cleat_member_width_entry.get())
+            # Use standardized material dimensions for test suite
+            panel_thickness = STANDARD_PLYWOOD_THICKNESS
+            cleat_thickness = STANDARD_CLEAT_THICKNESS
+            cleat_member_width = STANDARD_CLEAT_WIDTH
             clearance_above = float(self.clearance_above_entry.get())
             ground_clearance = float(self.ground_clearance_entry.get())
             floorboard_thickness = float(self.floorboard_thickness_entry.get())

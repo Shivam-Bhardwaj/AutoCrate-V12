@@ -1,0 +1,36 @@
+{
+  "max_tokens_per_conversation": 100000,
+  "warning_threshold": 0.75,
+  "critical_threshold": 0.9,
+  "max_turns_in_memory": 50,
+  "summarization_trigger_turns": 20,
+  "compression_ratio_target": 0.3,
+  "auto_prune_enabled": true,
+  "prune_threshold_days": 7,
+  "keep_recent_turns": 10,
+  "background_processing": true,
+  "cache_summaries": true,
+  "save_interval_minutes": 5,
+  "data_directory": "logs/token_optimization",
+  "backup_enabled": true,
+  "compression_enabled": true,
+  "created_at": "2025-08-07T18:49:38.969091",
+  "version": "1.0.0",
+  "description": "AutoCrate token optimization configuration",
+  "project_settings": {
+    "default_plywood_thickness": 0.75,
+    "standard_cleat_width": 3.5,
+    "max_panel_size": 96
+  },
+  "optimization_settings": {
+    "auto_summarize": true,
+    "compression_target": 0.3,
+    "warning_threshold": 0.75
+  },
+  "ui_preferences": {
+    "show_debug_info": false,
+    "enable_animations": true,
+    "theme": "professional"
+  },
+  "updated_at": "2025-08-07T18:49:38.969099"
+}

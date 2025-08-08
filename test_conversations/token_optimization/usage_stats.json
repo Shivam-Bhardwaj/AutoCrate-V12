@@ -1,0 +1,14 @@
+{
+  "current_stats": {
+    "total_tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "conversation_turns": 0,
+    "average_per_turn": 0.0,
+    "peak_usage": 0,
+    "timestamp": "2025-08-07T18:47:33.825683"
+  },
+  "usage_history": [],
+  "alerts": [],
+  "saved_at": "2025-08-07T18:47:33.826783"
+}

@@ -8,6 +8,9 @@ import time
 import sys
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# Add parent directory to path for autocrate module
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autocrate.test_agent import AutoCrateTestAgent
 
 def run_test_category(category):

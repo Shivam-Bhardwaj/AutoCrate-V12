@@ -1,5 +1,59 @@
 # AutoCrate Changelog
 
+## [12.1.1] - 2025-08-08
+
+### Added - AI Token Optimization System
+- **Token Usage Optimizer** (`scripts/token_optimizer.py`): Comprehensive token management and conversation optimization
+  - Real-time token tracking per conversation turn with configurable thresholds
+  - Automatic conversation summarization when approaching limits (default: 80% threshold)
+  - Multi-level alert system (low/medium/high/critical) with background monitoring
+  - Memory pruning strategies for long development sessions
+  - JSON-based persistence for conversation state across sessions
+
+- **Conversation State Manager** (`scripts/conversation_state_manager.py`): Session management and context preservation
+  - Multi-session conversation handling with thread-safe operations
+  - Context preservation across interactions with intelligent archiving
+  - Session cleanup and management with configurable retention policies
+  - Background processing to avoid blocking main operations
+
+- **AutoCrate AI Integration** (`scripts/autocrate_ai_integration.py`): Easy-to-use AI assistant interface
+  - Context-aware conversation handling for AutoCrate development workflows
+  - Built-in optimization triggers and automatic memory management
+  - Comprehensive usage reporting and optimization recommendations
+  - Workflow-specific assistance with project context awareness
+
+- **Token Utilities** (`scripts/token_utils.py`): Analysis tools and command-line interface
+  - Token analysis with pattern recognition and optimization suggestions
+  - Configuration management with flexible settings system
+  - Performance monitoring and integration testing capabilities
+  - CLI tools for testing, analysis, and system management
+
+- **Comprehensive Test Suite** (`tests/test_token_optimization.py`): Full validation coverage
+  - Unit tests for all optimization components with edge case validation
+  - Integration tests for real-world usage scenarios
+  - Performance validation and system reliability testing
+  - Automated test reporting with detailed metrics
+
+### Enhanced - Development Experience
+- **Production-Ready Token Management**: Complete system for preventing token exhaustion during AI-assisted development
+  - Early warning system prevents running out of tokens mid-session
+  - Automatic optimization maintains conversation context while reducing token usage
+  - Detailed usage insights help optimize AI interaction patterns
+  - Seamless integration with existing AutoCrate development workflows
+
+- **Documentation and Examples**: Complete system documentation and usage demonstrations
+  - Live demonstration script showing all system capabilities
+  - Integration examples for common AutoCrate development scenarios
+  - Comprehensive system documentation with configuration guides
+  - Command-line utilities for system testing and management
+
+### Technical Implementation
+- **Background Processing**: All optimization operations run in background threads to avoid blocking
+- **Thread Safety**: All components designed for concurrent use in multi-threaded environments
+- **Error Handling**: Comprehensive exception handling with graceful degradation
+- **Logging Integration**: Uses AutoCrate's existing logging system for consistency
+- **Memory Efficiency**: Intelligent memory management with automatic cleanup
+
 ## [12.1.0] - 2025-08-07
 
 ### Major Refactoring - Clean Architecture and Rapid Testing System
