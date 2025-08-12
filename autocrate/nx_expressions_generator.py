@@ -909,7 +909,8 @@ def generate_crate_expressions_logic(
             f"[Inch]PANEL_Top_Assy_Overall_Depth_Thickness = {top_panel_calc_depth:.3f}\n",
             
             f"// --- CRATE OVERALL DIMENSIONS ---",
-            f"[Inch]KL_1_Z = {front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in:.3f} // Overall crate height (including top panel assembly and top cleat)\n",
+            f"[Inch]KL_1_Z = {front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in:.3f} // Overall crate height (including top panel assembly and top cleat)",
+            f"[Inch]KL_1_X = {-(front_panel_calc_width/2) + cleat_member_actual_width_in/2 + 2.0:.3f} // X position from center plane (2 inches right of first vertical cleat)\n",
 
             f"// --- FRONT PANEL ASSEMBLY DIMENSIONS ---",
             f"[Inch]FP_Panel_Assembly_Width = PANEL_Front_Assy_Overall_Width",

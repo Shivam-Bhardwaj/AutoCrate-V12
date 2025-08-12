@@ -44,7 +44,7 @@ try {
         Remove-Item -Force $exePath 
     }
     Write-Log -LogFile $LogFile -Level "INFO" -Message "Previous artifacts cleaned."
-    Write-Host "  ✓ Cleanup complete" -ForegroundColor Green
+    Write-Host "  [DONE] Cleanup complete" -ForegroundColor Green
     Write-Host "" # Add spacing
 
     # --- 2. Build Executable ---
@@ -87,7 +87,7 @@ try {
     }
     
     Write-Log -LogFile $LogFile -Level "INFO" -Message "PyInstaller completed."
-    Write-Host "  ✓ PyInstaller build complete" -ForegroundColor Green
+    Write-Host "  [DONE] PyInstaller build complete" -ForegroundColor Green
     Write-Host "" # Add spacing
 
     # --- 3. Validate and Move ---
@@ -108,7 +108,7 @@ try {
     Write-Host "  - Moving to project root..." -ForegroundColor Gray
     Move-Item -Path $exePath -Destination (Join-Path -Path $ProjectRoot -ChildPath "AutoCrate.exe") -Force
     Write-Log -LogFile $LogFile -Level "INFO" -Message "Moved executable to project root."
-    Write-Host "  ✓ Executable validated and moved" -ForegroundColor Green
+    Write-Host "  [DONE] Executable validated and moved" -ForegroundColor Green
     Write-Host "" # Add spacing
 
     # --- 4. Final Cleanup ---
@@ -122,7 +122,7 @@ try {
     Remove-Item -Recurse -Force (Join-Path -Path $ProjectRoot -ChildPath "dist")
     
     Write-Log -LogFile $LogFile -Level "INFO" -Message "'build' and 'dist' folders cleaned."
-    Write-Host "  ✓ Cleanup complete" -ForegroundColor Green
+    Write-Host "  [DONE] Cleanup complete" -ForegroundColor Green
     Write-Host "" # Add spacing
 
     # --- Success ---
