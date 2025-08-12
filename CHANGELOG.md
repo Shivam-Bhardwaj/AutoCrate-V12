@@ -1,5 +1,22 @@
 # AutoCrate Changelog
 
+## [12.1.2] - 2025-08-12
+
+### Added
+- **KL_1_Z Variable**: New NX expression variable for overall crate height
+  - Calculates total crate height including top panel assembly and top cleat
+  - Formula: panel height + plywood thickness + cleat thickness + cleat member width
+  - Provides accurate Z-coordinate for top of crate assembly
+
+### Enhanced
+- **Build System Verbosity**: Improved build script output for better visibility
+  - Added clear stage indicators (1/4, 2/4, etc.) for build progress
+  - Color-coded output for improved readability in console
+  - Detailed progress messages for each build operation
+  - File size reporting and path information
+  - Success checkmarks (✓) for completed steps
+  - Enhanced error reporting with clear error codes
+
 ## [12.1.1] - 2025-08-08
 
 ### Added - AI Token Optimization System

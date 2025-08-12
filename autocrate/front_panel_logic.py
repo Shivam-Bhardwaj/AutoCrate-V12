@@ -184,31 +184,14 @@ def calculate_front_panel_components(
         intermediate_horizontal_cleats_data['horizontal_splice_count'] = horizontal_splice_count
         intermediate_horizontal_cleats_data['pattern_count'] = pattern_count
 
-    # 6. Klimps (Clamps/Fasteners)
+    # 6. Klimps (Clamps/Fasteners) - DEPRECATED in this module
+    # This logic is now handled in the main nx_expressions_generator.py
     klimps_data = {
         'count': 0,
         'positions': [],
         'diameter': klimp_diameter,
-        'material_clearance': 2.0,
-        'edge_clearance': 3.0,
         'orientation': "None"
     }
-    
-    if include_klimps:
-        klimp_results = calculate_klimp_positions(
-            panel_width=front_panel_assembly_width,
-            panel_height=front_panel_assembly_height,
-            cleat_member_width=cleat_material_member_width,
-            vertical_cleats_data=intermediate_vertical_cleats_data,
-            horizontal_cleats_data=intermediate_horizontal_cleats_data,
-            klimp_diameter=klimp_diameter
-        )
-        
-        klimps_data = klimp_results['klimps']
-        klimps_data['orientation'] = "Front_Panel_Surface" if klimps_data['count'] > 0 else "None"
-        klimps_data['placement_zones'] = klimp_results['placement_zones']
-        klimps_data['exclusion_zones'] = klimp_results['exclusion_zones']
-        klimps_data['spacing_analysis'] = klimp_results['spacing_analysis']
 
     components = {
         'plywood': {
