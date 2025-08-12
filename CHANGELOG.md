@@ -8,14 +8,26 @@
   - Formula: panel height + plywood thickness + cleat thickness + cleat member width
   - Provides accurate Z-coordinate for top of crate assembly
 
+- **KL_1_X Variable**: X-coordinate for first klimp position from center plane
+  - Positions klimp with 0.25" clearance from left vertical cleat edge
+  - Formula: -(panel_width/2) + cleat_member_width + 0.25
+  - Prevents overlap between klimps and vertical cleats
+
 ### Enhanced
+- **Structural Klimp Placement**: Complete redesign for structural strength
+  - Places multiple klimps at 16-24 inch intervals (target 20 inches)
+  - Maintains 0.25 inch minimum gap from vertical cleats
+  - Automatically calculates available zones between cleats
+  - Adapts to panel size and cleat positions
+  - Supports up to 15 klimps per side for maximum strength
+  - Prevents interference between klimps and cleats
+
 - **Build System Verbosity**: Improved build script output for better visibility
   - Added clear stage indicators (1/4, 2/4, etc.) for build progress
-  - Color-coded output for improved readability in console
+  - Real-time PyInstaller output with color-coded messages
   - Detailed progress messages for each build operation
   - File size reporting and path information
-  - Success checkmarks (✓) for completed steps
-  - Enhanced error reporting with clear error codes
+  - Enhanced error reporting with detailed logs
 
 ## [12.1.1] - 2025-08-08
 
