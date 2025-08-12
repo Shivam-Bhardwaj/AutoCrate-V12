@@ -152,16 +152,4 @@ def calculate_klimp_placements(
             selected_klimps.append(klimps[index])
         klimps = selected_klimps
     
-    # Add debug information
-    print(f"Klimp Placement Debug:")
-    print(f"  Panel width: {panel_width:.2f}\"")
-    print(f"  Cleat zones: {len(cleat_zones)}")
-    print(f"  Available zones: {len(available_zones)}")
-    print(f"  Total klimps placed: {len(klimps)}")
-    if klimps:
-        positions = [k['position'] for k in klimps]
-        if len(positions) > 1:
-            spacings = [positions[i+1] - positions[i] for i in range(len(positions)-1)]
-            print(f"  Klimp spacings: min={min(spacings):.2f}\", max={max(spacings):.2f}\", avg={sum(spacings)/len(spacings):.2f}\"")
-    
     return {"klimps": klimps}

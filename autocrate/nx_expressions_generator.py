@@ -909,8 +909,30 @@ def generate_crate_expressions_logic(
             f"[Inch]PANEL_Top_Assy_Overall_Depth_Thickness = {top_panel_calc_depth:.3f}\n",
             
             f"// --- CRATE OVERALL DIMENSIONS ---",
-            f"[Inch]KL_1_Z = {front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in:.3f} // Overall crate height (including top panel assembly and top cleat)",
-            f"[Inch]KL_1_X = {-(front_panel_calc_width/2) + cleat_member_actual_width_in + 0.25:.3f} // X position from center plane (first klimp, 0.25 inches right of left vertical cleat edge)\n",
+            f"// Klimp positions for top edge (up to 9 klimps)",
+        ])
+        
+        # Calculate the Z position for all klimps (same for all on top edge)
+        klimp_z_position = front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in
+        
+        # Generate KL_1 through KL_9 variables
+        for i in range(9):
+            if i < len(top_klimps):
+                # Calculate X position from center plane
+                # top_klimps[i]['position'] is from left edge of panel
+                # Convert to center plane coordinate system
+                klimp_x_from_left = top_klimps[i]['position']
+                klimp_x_from_center = klimp_x_from_left - (front_panel_calc_width / 2.0)
+                
+                expressions_content.append(f"[Inch]KL_{i+1}_X = {klimp_x_from_center:.3f} // Klimp {i+1} X position from center plane")
+                expressions_content.append(f"[Inch]KL_{i+1}_Z = {klimp_z_position:.3f} // Klimp {i+1} Z position (top of crate)")
+            else:
+                # No klimp at this position, set to zero or a default value
+                expressions_content.append(f"[Inch]KL_{i+1}_X = 0.000 // Klimp {i+1} not used")
+                expressions_content.append(f"[Inch]KL_{i+1}_Z = 0.000 // Klimp {i+1} not used")
+        
+        expressions_content.extend([
+            "",
 
             f"// --- FRONT PANEL ASSEMBLY DIMENSIONS ---",
             f"[Inch]FP_Panel_Assembly_Width = PANEL_Front_Assy_Overall_Width",
