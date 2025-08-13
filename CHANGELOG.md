@@ -1,5 +1,20 @@
 # AutoCrate Changelog
 
+## [12.1.3] - 2025-08-12
+
+### Fixed
+- **KL Suppression Flags**: Corrected to match NX standards
+  - KL_n_SUPPRESS = 0 now correctly means suppress/hide
+  - KL_n_SUPPRESS = 1 now correctly means show/active
+  - Previously had these values reversed
+
+### Added  
+- **KL_1 through KL_9 Variables**: Complete klimp positioning system
+  - KL_n_SUPPRESS: Visibility control flags (0=hide, 1=show)
+  - KL_n_X: X-coordinate from center plane for each klimp
+  - KL_n_Z: Z-coordinate (height) for each klimp
+  - Supports up to 9 klimps for structural requirements
+
 ## [12.1.2] - 2025-08-12
 
 ### Added
