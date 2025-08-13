@@ -918,18 +918,18 @@ def generate_crate_expressions_logic(
         # Generate KL_1 through KL_9 variables with suppression flags
         for i in range(9):
             if i < len(top_klimps):
-                # Active klimp - calculate position and set suppress flag to 0 (show)
+                # Active klimp - calculate position and set suppress flag to 1 (show)
                 # top_klimps[i]['position'] is from left edge of panel
                 # Convert to center plane coordinate system
                 klimp_x_from_left = top_klimps[i]['position']
                 klimp_x_from_center = klimp_x_from_left - (front_panel_calc_width / 2.0)
                 
-                expressions_content.append(f"KL_{i+1}_SUPPRESS = 0 // Klimp {i+1} active (0=show, 1=suppress)")
+                expressions_content.append(f"KL_{i+1}_SUPPRESS = 1 // Klimp {i+1} active (0=suppress, 1=show)")
                 expressions_content.append(f"[Inch]KL_{i+1}_X = {klimp_x_from_center:.3f} // Klimp {i+1} X position from center plane")
                 expressions_content.append(f"[Inch]KL_{i+1}_Z = {klimp_z_position:.3f} // Klimp {i+1} Z position (top of crate)")
             else:
                 # No klimp at this position - suppress it and set positions to zero
-                expressions_content.append(f"KL_{i+1}_SUPPRESS = 1 // Klimp {i+1} suppressed (0=show, 1=suppress)")
+                expressions_content.append(f"KL_{i+1}_SUPPRESS = 0 // Klimp {i+1} suppressed (0=suppress, 1=show)")
                 expressions_content.append(f"[Inch]KL_{i+1}_X = 0.000 // Klimp {i+1} not used")
                 expressions_content.append(f"[Inch]KL_{i+1}_Z = 0.000 // Klimp {i+1} not used")
         
