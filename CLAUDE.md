@@ -1,5 +1,10 @@
 DO NOT CHANGE THE NX VARIABLES they are needed for the model generation.
 
+## CRITICAL NX COMPATIBILITY RULES
+- **NO ZERO LENGTH DIMENSIONS**: NX cannot process 0 values for LENGTH variables (Width, Height, Length, Thickness, Depth, Diameter). Use MIN_NON_ZERO_DIMENSION (0.001) for suppressed components.
+- **POSITIONS AND ANGLES CAN BE ZERO**: Position variables (X, Y, Z, Pos) and angle variables (RX, RY, RZ, ROTATE) CAN and SHOULD be 0.000 when appropriate.
+- **NO UNICODE CHARACTERS**: All NX expression content must be ASCII-only. Unicode characters will cause NX import failures.
+
 # AutoCrate Project Summary - Version 12.1.2
 
 ## Overview
@@ -154,6 +159,66 @@ This module represents the most advanced logic for handling complex scenarios, p
     *   If the required adjustment is large, it opts for **Position Adjustment**, where the panel height is *not* changed, and instead, the intermediate cleat is simply moved slightly to avoid the conflict.
 *   This adaptive approach provides an optimal solution that balances material usage and manufacturing simplicity.
 
+## Klimp System (KL Variables)
+
+AutoCrate includes a comprehensive klimp positioning system for structural L-bracket components that reinforce panel connections.
+
+### Klimp Geometry and Purpose
+- **Physical Structure**: L-shaped angle brackets with two perpendicular sides (long side and short side)
+- **Structural Function**: Hold front panel together with top and side panels for corner reinforcement
+- **Material**: Typically metal brackets that provide structural integrity at panel intersections
+
+### Klimp Orientation by Panel Location
+
+#### Top Panel Klimps (KL_1 through KL_10):
+```
+Position: Mounted on top surface (Y = 0)
+- Long side: Extends downward into crate (-Z direction)
+- Short side: Extends away from viewer (+Y direction)  
+- Width: Spans sideways (±X direction)
+Purpose: Connects top panel to front/back panels
+```
+
+#### Side Panel Klimps (Left: KL_11-20, Right: KL_21-30):
+```
+Position: Mounted on vertical panel surfaces
+- Long side: Extends away from viewer (+Y direction)
+- Short side: Extends toward crate center (±X direction)
+- Width: Spans vertically (±Z direction)
+Purpose: Connects side panels to front/back panels
+```
+
+### NX Variable Structure
+Each klimp uses direction vectors for precise 6DOF positioning:
+- **Position**: `[Inch]KL_XX_X`, `[Inch]KL_XX_Y`, `[Inch]KL_XX_Z`
+- **X-Axis Direction**: `KL_XX_X_DIR_X/Y/Z` (width direction)
+- **Y-Axis Direction**: `KL_XX_Y_DIR_X/Y/Z` (short side direction)
+- **Z-Axis Direction**: `KL_XX_Z_DIR_X/Y/Z` (long side direction)
+- **Control**: `KL_XX_SUPPRESS` (0=hide, 1=show)
+
+### Example Orientations
+
+**Top Panel Klimp (Standard)**:
+```
+X_DIR = (1,0,0)   // Width spans sideways
+Y_DIR = (0,1,0)   // Short side extends away
+Z_DIR = (0,0,-1)  // Long side extends down into crate
+```
+
+**Left Panel Klimp**:
+```
+X_DIR = (1,0,0)   // Short side extends inward
+Y_DIR = (0,1,0)   // Long side extends away  
+Z_DIR = (0,0,1)   // Width spans vertically
+```
+
+**Right Panel Klimp**:
+```
+X_DIR = (-1,0,0)  // Short side extends inward
+Y_DIR = (0,1,0)   // Long side extends away
+Z_DIR = (0,0,1)   // Width spans vertically
+```
+
 ## AI Assistant Notes
 
 When working with AutoCrate:
@@ -164,9 +229,12 @@ When working with AutoCrate:
 4. **Expression Files**: Generated .exp files are timestamped and stored in the expressions/ directory.
 5. **Suppress Flags**: 0 = suppress/hide component, 1 = show component in the NX model.
 6. **KL_1_Z Usage**: This variable represents the absolute top of the crate assembly, useful for stacking calculations or clearance checks.
+7. **Klimp Positioning**: Klimps are L-brackets that provide structural corner reinforcement between panels using precise 6DOF direction vectors.
 
 ## Version History
 
+- **12.1.4**: Enhanced klimp system with direction vectors for 6DOF control, universal component orientation framework
+- **12.1.3**: Fixed KL suppression flags to match NX standards, added complete KL_1 through KL_9 variable system
 - **12.1.2**: Added KL_1_Z variable for total crate height, enhanced build system verbosity
 - **12.1.1**: Added comprehensive AI token optimization system
 - **12.0.9**: Comprehensive AI-powered testing system and infrastructure improvements

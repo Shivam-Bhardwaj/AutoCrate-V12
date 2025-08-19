@@ -1,5 +1,52 @@
 # AutoCrate Changelog
 
+## [12.1.4] - 2025-08-18
+
+### Major Enhancement - Universal Component Orientation System
+- **Direction Vector System**: Comprehensive 6DOF orientation system for all components
+  - Replaces complex quaternion/Euler angle systems with intuitive direction vectors
+  - Each component uses 3 orthogonal direction vectors (X, Y, Z axes)
+  - Eliminates gimbal lock issues while maintaining engineering intuition
+  - Universal framework supports klimps, vinyls, decals, lag screws, handles, etc.
+
+### Enhanced - Klimp System Documentation
+- **Complete Klimp Geometry Documentation**: L-bracket structural component specifications
+  - Physical structure: L-shaped angle brackets with long/short sides
+  - Structural function: Corner reinforcement between crate panels
+  - Panel-specific orientations for top, left, and right panel klimps
+  - Clear coordinate system reference (X=sideways, Y=away, Z=up)
+
+- **NX Implementation Guide**: Step-by-step instructions for Siemens NX integration
+  - Parametric coordinate system creation using direction vectors
+  - Component constraint methodology for precise positioning
+  - Suppress logic implementation for visibility control
+  - Practical examples for different component types
+
+### Added - Future Component Support Framework
+- **Extensible Architecture**: System designed for unlimited component types
+  - Same 13-variable pattern for all components (position + orientation + control)
+  - Component-specific axis definitions for intuitive engineering control
+  - Scalable naming conventions (KL_XX for klimps, VN_XX for vinyls, etc.)
+  - Complete 6DOF control while maintaining simplicity
+
+### Technical Implementation
+- **Reduced Variable Count**: Optimized from 25 to 13 variables per klimp (48% reduction)
+  - Position: 3 variables ([Inch]COMP_XX_X/Y/Z)
+  - Orientation: 9 variables (3 direction vectors × 3 components each)
+  - Control: 1 variable (COMP_XX_SUPPRESS)
+  - Total klimp variables: 390 (down from 750)
+
+- **Engineering Examples**: Comprehensive orientation examples for real-world usage
+  - Top panel klimps: Standard orientation with downward long side
+  - Side panel klimps: Inward-facing orientation for structural support
+  - Vinyl labels: Surface-normal orientation with text reading direction
+  - Lag screws: Insertion direction with head orientation control
+
+### Documentation Updates
+- **CLAUDE.md**: Added complete klimp system documentation
+- **klimp_orientation_conventions.txt**: Updated with correct L-bracket geometry
+- **Universal orientation examples**: Practical implementations for multiple component types
+
 ## [12.1.3] - 2025-08-12
 
 ### Fixed

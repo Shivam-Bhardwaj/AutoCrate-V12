@@ -59,7 +59,8 @@ try:
     from autocrate.right_panel_logic import calculate_right_panel_components
     from autocrate.floorboard_logic import calculate_floorboard_layout
     from autocrate.plywood_layout_generator import calculate_layout as calculate_plywood_layout
-    from autocrate.klimp_placement_logic import calculate_klimp_placements
+    from autocrate.klimp_placement_logic_all_sides import calculate_all_klimp_placements
+    from autocrate.klimp_quaternion_integration import calculate_klimp_quaternion_orientations, generate_klimp_quaternion_nx_expressions
     from autocrate.security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
     if logger:
         logger.info("Absolute imports with autocrate package successful")
@@ -79,6 +80,8 @@ except ImportError as e:
         from .right_panel_logic import calculate_right_panel_components
         from .floorboard_logic import calculate_floorboard_layout
         from .plywood_layout_generator import calculate_layout as calculate_plywood_layout
+        from .klimp_placement_logic_all_sides import calculate_all_klimp_placements
+        from .klimp_quaternion_integration import calculate_klimp_quaternion_orientations, generate_klimp_quaternion_nx_expressions
         from .security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
         if logger:
             logger.info("Relative imports successful")
@@ -98,6 +101,8 @@ except ImportError as e:
             from right_panel_logic import calculate_right_panel_components
             from floorboard_logic import calculate_floorboard_layout
             from plywood_layout_generator import calculate_layout as calculate_plywood_layout
+            from klimp_placement_logic_all_sides import calculate_all_klimp_placements
+            from klimp_quaternion_integration import calculate_klimp_quaternion_orientations, generate_klimp_quaternion_nx_expressions
             from security_utils import validate_output_path, sanitize_filename, validate_numeric_input, create_secure_directory, is_safe_file_extension
             if logger:
                 logger.info("Direct imports successful")
@@ -309,6 +314,35 @@ def generate_crate_expressions_logic(
 ) -> tuple[bool, str]:
     import time
     start_time = time.time()
+    
+    # NX validation constants - NX cannot handle 0 dimensions or Unicode characters
+    MIN_NON_ZERO_DIMENSION = 0.001  # Minimal non-zero value for suppressed NX components
+    
+    def validate_nx_expression_value(value, variable_name=""):
+        """
+        Validates that expression values comply with NX requirements:
+        - No 0 LENGTH dimensions (Width, Height, Length, Thickness, Depth, Diameter)
+        - Positions (X, Y, Z, Pos) and angles (RX, RY, RZ, ROTATE) CAN be 0
+        - No Unicode characters
+        """
+        if isinstance(value, (int, float)):
+            # Check for zero LENGTH dimensions (not positions or angles)
+            if (variable_name and "[Inch]" in variable_name and value == 0.0 and
+                any(length_type in variable_name for length_type in ['Width', 'Height', 'Length', 'Thickness', 'Depth', 'Diameter', 'Actual_Width'])):
+                if logger:
+                    logger.warning(f"Zero LENGTH dimension detected in {variable_name}, using minimal non-zero value")
+                return MIN_NON_ZERO_DIMENSION
+            return value
+        elif isinstance(value, str):
+            # Check for Unicode characters
+            try:
+                value.encode('ascii')
+                return value
+            except UnicodeEncodeError:
+                if logger:
+                    logger.warning(f"Unicode characters detected in {variable_name}, removing non-ASCII characters")
+                return value.encode('ascii', 'ignore').decode('ascii')
+        return value
     
     # Log function entry with parameters
     if logger:
@@ -574,17 +608,26 @@ def generate_crate_expressions_logic(
         # Get front panel intermediate vertical cleat positions for klimp calculation
         fp_intermediate_vc_positions = front_panel_components_data.get('intermediate_vertical_cleats', {}).get('positions_x_centerline', [])
         
-        # Calculate klimp placements with actual panel dimensions and cleat positions
-        klimp_data = calculate_klimp_placements(
+        # Get horizontal splice positions for side panels
+        left_horizontal_splices = left_panel_components_data.get('horizontal_splices', {}).get('positions_z', [])
+        right_horizontal_splices = right_panel_components_data.get('horizontal_splices', {}).get('positions_z', [])
+        
+        # Calculate klimp placements for all three sides (top, left, right)
+        klimp_data = calculate_all_klimp_placements(
             panel_width=front_panel_calc_width,
+            panel_length=end_panel_calc_length,  # Y dimension (depth) - left/right panel length
+            panel_height=end_panel_calc_height,  # Z dimension - left/right panel height
             cleat_member_width=cleat_member_actual_width_in,
-            intermediate_cleat_positions=fp_intermediate_vc_positions
+            cleat_thickness=cleat_thickness_in,
+            panel_thickness=panel_thickness_in,
+            intermediate_vertical_cleats=fp_intermediate_vc_positions,
+            horizontal_splice_positions=left_horizontal_splices  # Use left panel splices
         )
 
-        # Separate the calculated klimps by side
-        top_klimps = [k for k in klimp_data['klimps'] if k['side'] == 'top']
-        left_klimps = [k for k in klimp_data['klimps'] if k['side'] == 'left']
-        right_klimps = [k for k in klimp_data['klimps'] if k['side'] == 'right']
+        # Get the calculated klimps for each side
+        top_klimps = klimp_data['top_klimps']
+        left_klimps = klimp_data['left_klimps']
+        right_klimps = klimp_data['right_klimps']
 
         # Extract intermediate cleat data for Front Panel
         fp_intermediate_cleats_data = front_panel_components_data.get('intermediate_vertical_cleats', {})
@@ -874,7 +917,7 @@ def generate_crate_expressions_logic(
             f"[Inch]FB_Board_Actual_Length = {fb_actual_length_in:.3f}", 
             f"[Inch]FB_Board_Actual_Thickness = {fb_actual_thickness_in:.3f}",
             f"[Inch]CALC_FB_Actual_Middle_Gap = {actual_middle_gap:.4f}", 
-            f"[Inch]CALC_FB_Center_Custom_Board_Width = {center_custom_board_width if center_custom_board_width > 0.001 else 0.0:.4f}",
+            f"[Inch]CALC_FB_Center_Custom_Board_Width = {center_custom_board_width if center_custom_board_width > 0.001 else MIN_NON_ZERO_DIMENSION:.4f}",
             f"[Inch]CALC_FB_Start_Y_Offset_Abs = {fb_initial_start_y_offset_abs:.3f}\n",
             f"// Floorboard Instance Data"
         ]
@@ -909,29 +952,36 @@ def generate_crate_expressions_logic(
             f"[Inch]PANEL_Top_Assy_Overall_Depth_Thickness = {top_panel_calc_depth:.3f}\n",
             
             f"// --- CRATE OVERALL DIMENSIONS ---",
-            f"// Klimp positions for top edge (up to 9 klimps)",
+            f"// Klimp positions for all sides (30 klimps total)",
+            f"// KL_1 to KL_10: Top panel (rotation = 0)",
+            f"// KL_11 to KL_20: Left panel (rotation = -90)",
+            f"// KL_21 to KL_30: Right panel (rotation = +90)",
         ])
         
-        # Calculate the Z position for all klimps (same for all on top edge)
-        klimp_z_position = front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in
+        # Calculate Z position for top klimps
+        top_klimp_z = front_panel_calc_height + panel_thickness_in + cleat_thickness_in + cleat_member_actual_width_in
         
-        # Generate KL_1 through KL_9 variables with suppression flags
-        for i in range(9):
-            if i < len(top_klimps):
-                # Active klimp - calculate position and set suppress flag to 1 (show)
-                # top_klimps[i]['position'] is from left edge of panel
-                # Convert to center plane coordinate system
-                klimp_x_from_left = top_klimps[i]['position']
-                klimp_x_from_center = klimp_x_from_left - (front_panel_calc_width / 2.0)
-                
-                expressions_content.append(f"KL_{i+1}_SUPPRESS = 1 // Klimp {i+1} active (0=suppress, 1=show)")
-                expressions_content.append(f"[Inch]KL_{i+1}_X = {klimp_x_from_center:.3f} // Klimp {i+1} X position from center plane")
-                expressions_content.append(f"[Inch]KL_{i+1}_Z = {klimp_z_position:.3f} // Klimp {i+1} Z position (top of crate)")
-            else:
-                # No klimp at this position - suppress it and set positions to zero
-                expressions_content.append(f"KL_{i+1}_SUPPRESS = 0 // Klimp {i+1} suppressed (0=suppress, 1=show)")
-                expressions_content.append(f"[Inch]KL_{i+1}_X = 0.000 // Klimp {i+1} not used")
-                expressions_content.append(f"[Inch]KL_{i+1}_Z = 0.000 // Klimp {i+1} not used")
+        # === KLIMP QUATERNION SYSTEM INTEGRATION ===
+        # Use quaternion system for advanced klimp orientation (superior to unit vectors)
+        
+        # Calculate klimp orientations using quaternion system
+        klimp_orientations = calculate_klimp_quaternion_orientations(
+            panel_width=front_panel_calc_width,
+            panel_length=end_panel_calc_length,
+            panel_height=end_panel_calc_height,
+            cleat_member_width=cleat_member_actual_width_in,
+            cleat_thickness=cleat_thickness_in,
+            panel_thickness=panel_thickness_in,
+            intermediate_vertical_cleats=fp_intermediate_vc_positions,
+            horizontal_splice_positions=left_horizontal_splices,
+            crate_center_x=0.0,  # Center at origin
+            crate_center_y=0.0,  # Center at origin
+            ground_level_z=0.0   # Ground at Z=0
+        )
+        
+        # Generate NX expressions with quaternion system
+        klimp_nx_expressions = generate_klimp_quaternion_nx_expressions(klimp_orientations)
+        expressions_content.extend(klimp_nx_expressions)
         
         expressions_content.extend([
             "",
@@ -995,8 +1045,8 @@ def generate_crate_expressions_logic(
             if i < len(top_klimps):
                 klimp = top_klimps[i]
                 expressions_content.append(f"FP_Top_Klimp_{instance_num}_Suppress = 0") # 0 to show
-                expressions_content.append(f"[Inch]FP_Top_Klimp_{instance_num}_X_Pos = {klimp['position']:.4f}")
-                expressions_content.append(f"FP_Top_Klimp_{instance_num}_Angle = {klimp['angle']}")
+                expressions_content.append(f"[Inch]FP_Top_Klimp_{instance_num}_X_Pos = {klimp.get('position_x', 0.0):.4f}")
+                expressions_content.append(f"FP_Top_Klimp_{instance_num}_Angle = {klimp.get('rotation', 0)}")
             else:
                 expressions_content.append(f"FP_Top_Klimp_{instance_num}_Suppress = 1") # 1 to suppress
                 expressions_content.append(f"[Inch]FP_Top_Klimp_{instance_num}_X_Pos = 0")
@@ -1010,8 +1060,8 @@ def generate_crate_expressions_logic(
             if i < len(left_klimps):
                 klimp = left_klimps[i]
                 expressions_content.append(f"FP_Left_Klimp_{instance_num}_Suppress = 0") # 0 to show
-                expressions_content.append(f"[Inch]FP_Left_Klimp_{instance_num}_Z_Pos = {klimp['position']:.4f}")
-                expressions_content.append(f"FP_Left_Klimp_{instance_num}_Angle = {klimp['angle']}")
+                expressions_content.append(f"[Inch]FP_Left_Klimp_{instance_num}_Z_Pos = {klimp.get('position_z', 0.0):.4f}")
+                expressions_content.append(f"FP_Left_Klimp_{instance_num}_Angle = {klimp.get('rotation', -90)}")
             else:
                 expressions_content.append(f"FP_Left_Klimp_{instance_num}_Suppress = 1") # 1 to suppress
                 expressions_content.append(f"[Inch]FP_Left_Klimp_{instance_num}_Z_Pos = 0")
@@ -1025,8 +1075,8 @@ def generate_crate_expressions_logic(
             if i < len(right_klimps):
                 klimp = right_klimps[i]
                 expressions_content.append(f"FP_Right_Klimp_{instance_num}_Suppress = 0") # 0 to show
-                expressions_content.append(f"[Inch]FP_Right_Klimp_{instance_num}_Z_Pos = {klimp['position']:.4f}")
-                expressions_content.append(f"FP_Right_Klimp_{instance_num}_Angle = {klimp['angle']}")
+                expressions_content.append(f"[Inch]FP_Right_Klimp_{instance_num}_Z_Pos = {klimp.get('position_z', 0.0):.4f}")
+                expressions_content.append(f"FP_Right_Klimp_{instance_num}_Angle = {klimp.get('rotation', 90)}")
             else:
                 expressions_content.append(f"FP_Right_Klimp_{instance_num}_Suppress = 1") # 1 to suppress
                 expressions_content.append(f"[Inch]FP_Right_Klimp_{instance_num}_Z_Pos = 0")
@@ -1323,9 +1373,9 @@ def generate_crate_expressions_logic(
                 expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Height = 0.001")  # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Width = 0.001")   # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Length = 0.001")  # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_X_Pos = 0.001")    # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0010")   # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0010")  # Minimal non-zero for NX
+                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_X_Pos = 0.0000")    # Position can be 0
+                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0000")   # Position can be 0
+                expressions_content.append(f"[Inch]FP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0000")  # Position can be 0
 
         # Add Back Panel Intermediate Horizontal Cleat Data
         expressions_content.extend([
@@ -1368,9 +1418,9 @@ def generate_crate_expressions_logic(
                 expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Height = 0.001")  # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Width = 0.001")   # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Length = 0.001")  # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_X_Pos = 0.001")    # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0010")   # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0010")  # Minimal non-zero for NX
+                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_X_Pos = 0.0000")    # Position can be 0
+                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0000")   # Position can be 0
+                expressions_content.append(f"[Inch]BP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0000")  # Position can be 0
 
         # Add Left Panel Intermediate Horizontal Cleat Data
         expressions_content.extend([
@@ -1413,9 +1463,9 @@ def generate_crate_expressions_logic(
                 expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Height = 0.001")  # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Width = 0.001")   # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Length = 0.001")  # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_X_Pos = 0.001")    # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0010")   # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0010")  # Minimal non-zero for NX
+                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_X_Pos = 0.0000")    # Position can be 0
+                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0000")   # Position can be 0
+                expressions_content.append(f"[Inch]LP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0000")  # Position can be 0
 
         # Add Right Panel Intermediate Horizontal Cleat Data
         expressions_content.extend([
@@ -1458,9 +1508,9 @@ def generate_crate_expressions_logic(
                 expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Height = 0.001")  # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Width = 0.001")   # Minimal non-zero for NX
                 expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Length = 0.001")  # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_X_Pos = 0.001")    # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0010")   # Minimal non-zero for NX
-                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0010")  # Minimal non-zero for NX
+                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_X_Pos = 0.0000")    # Position can be 0
+                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Y_Pos = 0.0000")   # Position can be 0
+                expressions_content.append(f"[Inch]RP_Inter_HC_Inst_{instance_num}_Y_Pos_Centerline = 0.0000")  # Position can be 0
 
         expressions_content.append(f"// End of Expressions")
 

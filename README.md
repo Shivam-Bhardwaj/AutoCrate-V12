@@ -28,6 +28,7 @@ AutoCrate is a sophisticated Python application that automates the design and ma
 - **Parametric Design** - Fully parametric crate models that adapt to any size requirements
 - **Smart Material Optimization** - Intelligent plywood layout to minimize waste
 - **Structural Engineering** - Automated cleat placement based on ASTM-derived requirements
+- **Universal Component System** - 6DOF direction vector framework for klimps, vinyls, decals, screws, handles
 - **Professional Output** - Generates complete manufacturing documentation
 - **Comprehensive Testing System** - Advanced automated testing with AI-generated test agents and real-time dashboard
 - **AI-Assisted Architecture** - System design and code structure developed with AI collaboration
@@ -140,25 +141,31 @@ Testing Tools/                      # Advanced testing infrastructure
 └── TESTING_GUIDE.md              # Testing system documentation
 
 docs/                              # Documentation
-└── index.html                     # Complete documentation
+├── index.html                     # Complete documentation
+├── UNIVERSAL_COMPONENT_SYSTEM.md  # Component orientation framework
+├── CHANGELOG.md                   # Version history and updates
+└── klimp_orientation_conventions.txt  # L-bracket geometry guide
 ```
 
 ## Technical Specifications
 
 ### Supported Crate Types
-- **Standard Shipping Crates**: Full-panel construction
-- **Heavy-Duty Industrial**: Reinforced for extreme loads
-- **Custom Geometries**: Any size within material constraints
+- **Standard Shipping Crates**: Full-panel construction with structural klimps
+- **Heavy-Duty Industrial**: Reinforced for extreme loads with comprehensive component support
+- **Custom Geometries**: Any size within material constraints with universal component framework
 
 ### Material Standards
 - **Plywood**: Standard 4'×8' sheets (48" × 96")
 - **Cleats**: Dimensional lumber (1.5" × 3.5" standard)
-- **Hardware**: Industry-standard fasteners and reinforcements
+- **Klimps**: L-shaped angle brackets for structural reinforcement
+- **Hardware**: Industry-standard fasteners, lag screws, handles, and accessories
 
 ### Engineering Standards
 - **Cleat Spacing**: Maximum 24" center-to-center
 - **Load Distribution**: Engineered for specified product weights
 - **Structural Integrity**: Mandatory reinforcement at plywood splices
+- **Component Positioning**: 6DOF direction vector system for precise placement
+- **Klimp Placement**: Strategic positioning for corner reinforcement
 
 ![Crate Components](docs/screenshots/crate-components.png)
 *Detailed view of crate structural components*
@@ -299,18 +306,37 @@ AutoCrate supports extensive configuration through JSON files:
 
 ## Version History
 
-### Version 12.0.7 (Current)
+### Version 12.1.4 (Current)
+- **Universal Component Orientation System**: Complete 6DOF direction vector framework
+- **Enhanced Klimp System**: L-bracket structural components with intuitive positioning
+- **Comprehensive Documentation**: Updated technical documentation and NX implementation guides
+- **Reduced Variable Count**: Optimized from 750 to 390 klimp variables (48% reduction)
+
+### Version 12.1.3
+- Fixed KL suppression flags to match NX standards
+- Added complete KL_1 through KL_9 variable system
+
+### Version 12.1.2
+- Added KL_1_Z variable for total crate height
+- Enhanced build system verbosity
+
+### Version 12.1.1
+- Comprehensive AI token optimization system
+- Advanced conversation state management
+
+### Version 12.0.9
+- Comprehensive AI-powered testing system
+- 78+ automated tests with real-time dashboard
+- Complete CI/CD pipeline
+
+### Version 12.0.8
+- Major architecture cleanup
+- Intelligent expression management
+
+### Version 12.0.7
 - Clean up redundant files and improve project structure
 - Quick Test Suite feature
 - Better organization of build artifacts
-
-### Version 12.0.6
-- Add Quick Test Suite feature
-- Enhanced build system
-
-### Version 12.0.5
-- Consolidate project structure
-- Fix expressions file location
 
 ## Contributing
 
