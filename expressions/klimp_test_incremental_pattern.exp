@@ -1,0 +1,296 @@
+// KLIMP TEST PATTERN - INCREMENTAL VALUES FOR EASY NX VERIFICATION
+// Generated: 2025-08-15
+// Pattern: Each klimp has incremental values for easy identification
+// X = klimp_number * 5 inches
+// Y = klimp_number * 5 inches  
+// Z = klimp_number * 5 inches
+// RX = klimp_number * 10 degrees
+// RY = klimp_number * 10 degrees
+// RZ = klimp_number * 10 degrees
+// All klimps are ACTIVE (SUPPRESS = 1) for testing
+
+// === TOP PANEL KLIMPS (KL_1 to KL_10) ===
+// Pattern starts at 5, 5, 5 and increments by 5, 5, 5
+
+KL_1_SUPPRESS = 1 // Klimp 1 active
+[Inch]KL_1_X = 5.000 // X = 1 * 5
+[Inch]KL_1_Y = 5.000 // Y = 1 * 5
+[Inch]KL_1_Z = 5.000 // Z = 1 * 5
+KL_1_RX = 10.000 // RX = 1 * 10 degrees
+KL_1_RY = 10.000 // RY = 1 * 10 degrees
+KL_1_RZ = 10.000 // RZ = 1 * 10 degrees
+KL_1_ROTATE = 10 // Legacy rotation
+
+KL_2_SUPPRESS = 1 // Klimp 2 active
+[Inch]KL_2_X = 10.000 // X = 2 * 5
+[Inch]KL_2_Y = 10.000 // Y = 2 * 5
+[Inch]KL_2_Z = 10.000 // Z = 2 * 5
+KL_2_RX = 20.000 // RX = 2 * 10 degrees
+KL_2_RY = 20.000 // RY = 2 * 10 degrees
+KL_2_RZ = 20.000 // RZ = 2 * 10 degrees
+KL_2_ROTATE = 20 // Legacy rotation
+
+KL_3_SUPPRESS = 1 // Klimp 3 active
+[Inch]KL_3_X = 15.000 // X = 3 * 5
+[Inch]KL_3_Y = 15.000 // Y = 3 * 5
+[Inch]KL_3_Z = 15.000 // Z = 3 * 5
+KL_3_RX = 30.000 // RX = 3 * 10 degrees
+KL_3_RY = 30.000 // RY = 3 * 10 degrees
+KL_3_RZ = 30.000 // RZ = 3 * 10 degrees
+KL_3_ROTATE = 30 // Legacy rotation
+
+KL_4_SUPPRESS = 1 // Klimp 4 active
+[Inch]KL_4_X = 20.000 // X = 4 * 5
+[Inch]KL_4_Y = 20.000 // Y = 4 * 5
+[Inch]KL_4_Z = 20.000 // Z = 4 * 5
+KL_4_RX = 40.000 // RX = 4 * 10 degrees
+KL_4_RY = 40.000 // RY = 4 * 10 degrees
+KL_4_RZ = 40.000 // RZ = 4 * 10 degrees
+KL_4_ROTATE = 40 // Legacy rotation
+
+KL_5_SUPPRESS = 1 // Klimp 5 active
+[Inch]KL_5_X = 25.000 // X = 5 * 5
+[Inch]KL_5_Y = 25.000 // Y = 5 * 5
+[Inch]KL_5_Z = 25.000 // Z = 5 * 5
+KL_5_RX = 50.000 // RX = 5 * 10 degrees
+KL_5_RY = 50.000 // RY = 5 * 10 degrees
+KL_5_RZ = 50.000 // RZ = 5 * 10 degrees
+KL_5_ROTATE = 50 // Legacy rotation
+
+KL_6_SUPPRESS = 1 // Klimp 6 active
+[Inch]KL_6_X = 30.000 // X = 6 * 5
+[Inch]KL_6_Y = 30.000 // Y = 6 * 5
+[Inch]KL_6_Z = 30.000 // Z = 6 * 5
+KL_6_RX = 60.000 // RX = 6 * 10 degrees
+KL_6_RY = 60.000 // RY = 6 * 10 degrees
+KL_6_RZ = 60.000 // RZ = 6 * 10 degrees
+KL_6_ROTATE = 60 // Legacy rotation
+
+KL_7_SUPPRESS = 1 // Klimp 7 active
+[Inch]KL_7_X = 35.000 // X = 7 * 5
+[Inch]KL_7_Y = 35.000 // Y = 7 * 5
+[Inch]KL_7_Z = 35.000 // Z = 7 * 5
+KL_7_RX = 70.000 // RX = 7 * 10 degrees
+KL_7_RY = 70.000 // RY = 7 * 10 degrees
+KL_7_RZ = 70.000 // RZ = 7 * 10 degrees
+KL_7_ROTATE = 70 // Legacy rotation
+
+KL_8_SUPPRESS = 1 // Klimp 8 active
+[Inch]KL_8_X = 40.000 // X = 8 * 5
+[Inch]KL_8_Y = 40.000 // Y = 8 * 5
+[Inch]KL_8_Z = 40.000 // Z = 8 * 5
+KL_8_RX = 80.000 // RX = 8 * 10 degrees
+KL_8_RY = 80.000 // RY = 8 * 10 degrees
+KL_8_RZ = 80.000 // RZ = 8 * 10 degrees
+KL_8_ROTATE = 80 // Legacy rotation
+
+KL_9_SUPPRESS = 1 // Klimp 9 active
+[Inch]KL_9_X = 45.000 // X = 9 * 5
+[Inch]KL_9_Y = 45.000 // Y = 9 * 5
+[Inch]KL_9_Z = 45.000 // Z = 9 * 5
+KL_9_RX = 90.000 // RX = 9 * 10 degrees
+KL_9_RY = 90.000 // RY = 9 * 10 degrees
+KL_9_RZ = 90.000 // RZ = 9 * 10 degrees
+KL_9_ROTATE = 90 // Legacy rotation
+
+KL_10_SUPPRESS = 1 // Klimp 10 active
+[Inch]KL_10_X = 50.000 // X = 10 * 5
+[Inch]KL_10_Y = 50.000 // Y = 10 * 5
+[Inch]KL_10_Z = 50.000 // Z = 10 * 5
+KL_10_RX = 100.000 // RX = 10 * 10 degrees
+KL_10_RY = 100.000 // RY = 10 * 10 degrees
+KL_10_RZ = 100.000 // RZ = 10 * 10 degrees
+KL_10_ROTATE = 100 // Legacy rotation
+
+// === LEFT PANEL KLIMPS (KL_11 to KL_20) ===
+// Pattern continues: klimp_number * 5 inches, klimp_number * 10 degrees
+
+KL_11_SUPPRESS = 1 // Klimp 11 active
+[Inch]KL_11_X = 55.000 // X = 11 * 5
+[Inch]KL_11_Y = 55.000 // Y = 11 * 5
+[Inch]KL_11_Z = 55.000 // Z = 11 * 5
+KL_11_RX = 110.000 // RX = 11 * 10 degrees
+KL_11_RY = 110.000 // RY = 11 * 10 degrees
+KL_11_RZ = 110.000 // RZ = 11 * 10 degrees
+KL_11_ROTATE = 110 // Legacy rotation
+
+KL_12_SUPPRESS = 1 // Klimp 12 active
+[Inch]KL_12_X = 60.000 // X = 12 * 5
+[Inch]KL_12_Y = 60.000 // Y = 12 * 5
+[Inch]KL_12_Z = 60.000 // Z = 12 * 5
+KL_12_RX = 120.000 // RX = 12 * 10 degrees
+KL_12_RY = 120.000 // RY = 12 * 10 degrees
+KL_12_RZ = 120.000 // RZ = 12 * 10 degrees
+KL_12_ROTATE = 120 // Legacy rotation
+
+KL_13_SUPPRESS = 1 // Klimp 13 active
+[Inch]KL_13_X = 65.000 // X = 13 * 5
+[Inch]KL_13_Y = 65.000 // Y = 13 * 5
+[Inch]KL_13_Z = 65.000 // Z = 13 * 5
+KL_13_RX = 130.000 // RX = 13 * 10 degrees
+KL_13_RY = 130.000 // RY = 13 * 10 degrees
+KL_13_RZ = 130.000 // RZ = 13 * 10 degrees
+KL_13_ROTATE = 130 // Legacy rotation
+
+KL_14_SUPPRESS = 1 // Klimp 14 active
+[Inch]KL_14_X = 70.000 // X = 14 * 5
+[Inch]KL_14_Y = 70.000 // Y = 14 * 5
+[Inch]KL_14_Z = 70.000 // Z = 14 * 5
+KL_14_RX = 140.000 // RX = 14 * 10 degrees
+KL_14_RY = 140.000 // RY = 14 * 10 degrees
+KL_14_RZ = 140.000 // RZ = 14 * 10 degrees
+KL_14_ROTATE = 140 // Legacy rotation
+
+KL_15_SUPPRESS = 1 // Klimp 15 active
+[Inch]KL_15_X = 75.000 // X = 15 * 5
+[Inch]KL_15_Y = 75.000 // Y = 15 * 5
+[Inch]KL_15_Z = 75.000 // Z = 15 * 5
+KL_15_RX = 150.000 // RX = 15 * 10 degrees
+KL_15_RY = 150.000 // RY = 15 * 10 degrees
+KL_15_RZ = 150.000 // RZ = 15 * 10 degrees
+KL_15_ROTATE = 150 // Legacy rotation
+
+KL_16_SUPPRESS = 1 // Klimp 16 active
+[Inch]KL_16_X = 80.000 // X = 16 * 5
+[Inch]KL_16_Y = 80.000 // Y = 16 * 5
+[Inch]KL_16_Z = 80.000 // Z = 16 * 5
+KL_16_RX = 160.000 // RX = 16 * 10 degrees
+KL_16_RY = 160.000 // RY = 16 * 10 degrees
+KL_16_RZ = 160.000 // RZ = 16 * 10 degrees
+KL_16_ROTATE = 160 // Legacy rotation
+
+KL_17_SUPPRESS = 1 // Klimp 17 active
+[Inch]KL_17_X = 85.000 // X = 17 * 5
+[Inch]KL_17_Y = 85.000 // Y = 17 * 5
+[Inch]KL_17_Z = 85.000 // Z = 17 * 5
+KL_17_RX = 170.000 // RX = 17 * 10 degrees
+KL_17_RY = 170.000 // RY = 17 * 10 degrees
+KL_17_RZ = 170.000 // RZ = 17 * 10 degrees
+KL_17_ROTATE = 170 // Legacy rotation
+
+KL_18_SUPPRESS = 1 // Klimp 18 active
+[Inch]KL_18_X = 90.000 // X = 18 * 5
+[Inch]KL_18_Y = 90.000 // Y = 18 * 5
+[Inch]KL_18_Z = 90.000 // Z = 18 * 5
+KL_18_RX = 180.000 // RX = 18 * 10 degrees
+KL_18_RY = 180.000 // RY = 18 * 10 degrees
+KL_18_RZ = 180.000 // RZ = 18 * 10 degrees
+KL_18_ROTATE = 180 // Legacy rotation
+
+KL_19_SUPPRESS = 1 // Klimp 19 active
+[Inch]KL_19_X = 95.000 // X = 19 * 5
+[Inch]KL_19_Y = 95.000 // Y = 19 * 5
+[Inch]KL_19_Z = 95.000 // Z = 19 * 5
+KL_19_RX = 190.000 // RX = 19 * 10 degrees
+KL_19_RY = 190.000 // RY = 19 * 10 degrees
+KL_19_RZ = 190.000 // RZ = 19 * 10 degrees
+KL_19_ROTATE = 190 // Legacy rotation
+
+KL_20_SUPPRESS = 1 // Klimp 20 active
+[Inch]KL_20_X = 100.000 // X = 20 * 5
+[Inch]KL_20_Y = 100.000 // Y = 20 * 5
+[Inch]KL_20_Z = 100.000 // Z = 20 * 5
+KL_20_RX = 200.000 // RX = 20 * 10 degrees
+KL_20_RY = 200.000 // RY = 20 * 10 degrees
+KL_20_RZ = 200.000 // RZ = 20 * 10 degrees
+KL_20_ROTATE = 200 // Legacy rotation
+
+// === RIGHT PANEL KLIMPS (KL_21 to KL_30) ===
+// Pattern continues: klimp_number * 5 inches, klimp_number * 10 degrees
+
+KL_21_SUPPRESS = 1 // Klimp 21 active
+[Inch]KL_21_X = 105.000 // X = 21 * 5
+[Inch]KL_21_Y = 105.000 // Y = 21 * 5
+[Inch]KL_21_Z = 105.000 // Z = 21 * 5
+KL_21_RX = 210.000 // RX = 21 * 10 degrees
+KL_21_RY = 210.000 // RY = 21 * 10 degrees
+KL_21_RZ = 210.000 // RZ = 21 * 10 degrees
+KL_21_ROTATE = 210 // Legacy rotation
+
+KL_22_SUPPRESS = 1 // Klimp 22 active
+[Inch]KL_22_X = 110.000 // X = 22 * 5
+[Inch]KL_22_Y = 110.000 // Y = 22 * 5
+[Inch]KL_22_Z = 110.000 // Z = 22 * 5
+KL_22_RX = 220.000 // RX = 22 * 10 degrees
+KL_22_RY = 220.000 // RY = 22 * 10 degrees
+KL_22_RZ = 220.000 // RZ = 22 * 10 degrees
+KL_22_ROTATE = 220 // Legacy rotation
+
+KL_23_SUPPRESS = 1 // Klimp 23 active
+[Inch]KL_23_X = 115.000 // X = 23 * 5
+[Inch]KL_23_Y = 115.000 // Y = 23 * 5
+[Inch]KL_23_Z = 115.000 // Z = 23 * 5
+KL_23_RX = 230.000 // RX = 23 * 10 degrees
+KL_23_RY = 230.000 // RY = 23 * 10 degrees
+KL_23_RZ = 230.000 // RZ = 23 * 10 degrees
+KL_23_ROTATE = 230 // Legacy rotation
+
+KL_24_SUPPRESS = 1 // Klimp 24 active
+[Inch]KL_24_X = 120.000 // X = 24 * 5
+[Inch]KL_24_Y = 120.000 // Y = 24 * 5
+[Inch]KL_24_Z = 120.000 // Z = 24 * 5
+KL_24_RX = 240.000 // RX = 24 * 10 degrees
+KL_24_RY = 240.000 // RY = 24 * 10 degrees
+KL_24_RZ = 240.000 // RZ = 24 * 10 degrees
+KL_24_ROTATE = 240 // Legacy rotation
+
+KL_25_SUPPRESS = 1 // Klimp 25 active
+[Inch]KL_25_X = 125.000 // X = 25 * 5
+[Inch]KL_25_Y = 125.000 // Y = 25 * 5
+[Inch]KL_25_Z = 125.000 // Z = 25 * 5
+KL_25_RX = 250.000 // RX = 25 * 10 degrees
+KL_25_RY = 250.000 // RY = 25 * 10 degrees
+KL_25_RZ = 250.000 // RZ = 25 * 10 degrees
+KL_25_ROTATE = 250 // Legacy rotation
+
+KL_26_SUPPRESS = 1 // Klimp 26 active
+[Inch]KL_26_X = 130.000 // X = 26 * 5
+[Inch]KL_26_Y = 130.000 // Y = 26 * 5
+[Inch]KL_26_Z = 130.000 // Z = 26 * 5
+KL_26_RX = 260.000 // RX = 26 * 10 degrees
+KL_26_RY = 260.000 // RY = 26 * 10 degrees
+KL_26_RZ = 260.000 // RZ = 26 * 10 degrees
+KL_26_ROTATE = 260 // Legacy rotation
+
+KL_27_SUPPRESS = 1 // Klimp 27 active
+[Inch]KL_27_X = 135.000 // X = 27 * 5
+[Inch]KL_27_Y = 135.000 // Y = 27 * 5
+[Inch]KL_27_Z = 135.000 // Z = 27 * 5
+KL_27_RX = 270.000 // RX = 27 * 10 degrees
+KL_27_RY = 270.000 // RY = 27 * 10 degrees
+KL_27_RZ = 270.000 // RZ = 27 * 10 degrees
+KL_27_ROTATE = 270 // Legacy rotation
+
+KL_28_SUPPRESS = 1 // Klimp 28 active
+[Inch]KL_28_X = 140.000 // X = 28 * 5
+[Inch]KL_28_Y = 140.000 // Y = 28 * 5
+[Inch]KL_28_Z = 140.000 // Z = 28 * 5
+KL_28_RX = 280.000 // RX = 28 * 10 degrees
+KL_28_RY = 280.000 // RY = 28 * 10 degrees
+KL_28_RZ = 280.000 // RZ = 28 * 10 degrees
+KL_28_ROTATE = 280 // Legacy rotation
+
+KL_29_SUPPRESS = 1 // Klimp 29 active
+[Inch]KL_29_X = 145.000 // X = 29 * 5
+[Inch]KL_29_Y = 145.000 // Y = 29 * 5
+[Inch]KL_29_Z = 145.000 // Z = 29 * 5
+KL_29_RX = 290.000 // RX = 29 * 10 degrees
+KL_29_RY = 290.000 // RY = 29 * 10 degrees
+KL_29_RZ = 290.000 // RZ = 29 * 10 degrees
+KL_29_ROTATE = 290 // Legacy rotation
+
+KL_30_SUPPRESS = 1 // Klimp 30 active
+[Inch]KL_30_X = 150.000 // X = 30 * 5
+[Inch]KL_30_Y = 150.000 // Y = 30 * 5
+[Inch]KL_30_Z = 150.000 // Z = 30 * 5
+KL_30_RX = 300.000 // RX = 30 * 10 degrees
+KL_30_RY = 300.000 // RY = 30 * 10 degrees
+KL_30_RZ = 300.000 // RZ = 30 * 10 degrees
+KL_30_ROTATE = 300 // Legacy rotation
+
+// === VERIFICATION SUMMARY ===
+// TOP PANEL (KL_1-10): X,Y,Z = 5-50 inches, Rotations = 10-100 degrees
+// LEFT PANEL (KL_11-20): X,Y,Z = 55-100 inches, Rotations = 110-200 degrees  
+// RIGHT PANEL (KL_21-30): X,Y,Z = 105-150 inches, Rotations = 210-300 degrees
+// All klimps are ACTIVE (SUPPRESS = 1) for testing purposes
+// Pattern: klimp_number * 5 inches for positions, klimp_number * 10 degrees for rotations

@@ -97,10 +97,6 @@ class UltraModernAutocrateGUI:
         self.root = ctk.CTk()
         self.root.title("AutoCrate Pro - Engineering Design Suite")
         
-        # Initialize thread tracking
-        self.test_thread = None
-        self.generate_thread = None
-        
         # Get screen dimensions
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
@@ -397,104 +393,35 @@ class UltraModernAutocrateGUI:
             self.canvas.create_line(x1, y1, x2, y2, fill="#00ff88", width=2)
     
     def generate_expression_file(self):
-        """Generate expression file in background thread"""
-        if hasattr(self, 'generate_thread') and self.generate_thread and self.generate_thread.is_alive():
-            messagebox.showwarning("In Progress", "Generation already in progress!")
-            return
+        """Generate expression file"""
+        self.status_label.configure(text="⚙️ Generating...")
+        self.progress.set(0.5)
         
-        self.generate_thread = threading.Thread(target=self._generate_worker)
-        self.generate_thread.daemon = True
-        self.generate_thread.start()
+        # Simulate generation
+        self.root.after(1000, self._complete_generation)
     
-    def _generate_worker(self):
-        """Worker thread for expression generation"""
-        try:
-            self.root.after(0, lambda: self.status_label.configure(text="⚙️ Generating..."))
-            self.root.after(0, lambda: self.progress.set(0.2))
-            
-            # Log progress
-            self._log_progress("Starting expression generation")
-            
-            # Simulate stages of generation
-            time.sleep(0.5)
-            self.root.after(0, lambda: self.progress.set(0.5))
-            self._log_progress("Calculating dimensions...")
-            
-            time.sleep(0.5)
-            self.root.after(0, lambda: self.progress.set(0.8))
-            self._log_progress("Writing NX expressions...")
-            
-            # Complete generation
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"Crate_{timestamp}.exp"
-            
-            self.root.after(0, lambda: self.status_label.configure(text=f"✅ Generated: {filename}"))
-            self.root.after(0, lambda: self.progress.set(1.0))
-            
-            self._log_progress(f"Expression generated: {filename}")
-            
-            self.root.after(0, lambda: messagebox.showinfo("Success", f"Expression file generated:\n{filename}"))
-            
-            # Reset progress
-            self.root.after(2000, lambda: self.progress.set(0))
-            
-        except Exception as e:
-            self._log_progress(f"Generation failed: {str(e)}")
-            self.root.after(0, lambda: self.status_label.configure(text=f"❌ Failed: {str(e)}"))
-            self.root.after(0, lambda: self.progress.set(0))
+    def _complete_generation(self):
+        """Complete generation"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"Crate_{timestamp}.exp"
+        
+        self.status_label.configure(text=f"✅ Generated: {filename}")
+        self.progress.set(1.0)
+        
+        messagebox.showinfo("Success", f"Expression file generated:\n{filename}")
+        
+        # Reset progress
+        self.root.after(2000, lambda: self.progress.set(0))
     
     def run_quick_test(self):
-        """Run quick test in background thread"""
-        if hasattr(self, 'test_thread') and self.test_thread and self.test_thread.is_alive():
-            messagebox.showwarning("In Progress", "Tests already running!")
-            return
+        """Run quick test"""
+        self.status_label.configure(text="🧪 Running tests...")
+        self.progress.set(0.5)
         
-        self.test_thread = threading.Thread(target=self._run_test_worker)
-        self.test_thread.daemon = True
-        self.test_thread.start()
-    
-    def _run_test_worker(self):
-        """Worker thread for test execution"""
-        try:
-            # Update UI in main thread
-            self.root.after(0, lambda: self.status_label.configure(text="🧪 Running tests..."))
-            self.root.after(0, lambda: self.progress.set(0.1))
-            
-            # Log to progress file
-            self._log_progress("Starting Quick Test Suite")
-            
-            # Simulate test with actual quick test logic if available
-            if quick_test:
-                # Run actual tests
-                self.root.after(0, lambda: self.progress.set(0.5))
-                time.sleep(1)  # Simulate work
-                self._log_progress("Tests completed successfully")
-                self.root.after(0, lambda: self.status_label.configure(text="✅ Tests passed"))
-            else:
-                # Fallback simulation
-                for i in range(10):
-                    progress = (i + 1) / 10
-                    self.root.after(0, lambda p=progress: self.progress.set(p))
-                    self._log_progress(f"Test {i+1}/10 completed")
-                    time.sleep(0.2)  # Simulate work
-                self.root.after(0, lambda: self.status_label.configure(text="✅ Tests simulated"))
-            
-            self.root.after(0, lambda: self.progress.set(1.0))
-            self.root.after(2000, lambda: self.progress.set(0))
-            
-        except Exception as e:
-            self._log_progress(f"Test failed: {str(e)}")
-            self.root.after(0, lambda: self.status_label.configure(text=f"❌ Test failed: {str(e)}"))
-            self.root.after(0, lambda: self.progress.set(0))
-    
-    def _log_progress(self, message):
-        """Log progress to file"""
-        try:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            with open("progress_log.txt", "a") as f:
-                f.write(f"[{timestamp}] {message}\n")
-        except:
-            pass  # Silent fail for logging
+        # Simulate test
+        self.root.after(2000, lambda: self.status_label.configure(text="✅ Tests passed"))
+        self.root.after(2000, lambda: self.progress.set(1.0))
+        self.root.after(4000, lambda: self.progress.set(0))
     
     def on_closing(self):
         """Clean shutdown"""

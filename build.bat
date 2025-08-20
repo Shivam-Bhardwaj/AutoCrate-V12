@@ -1,11 +1,13 @@
 @echo off
-:: This script is a launcher for the main PowerShell build engine.
+:: This script is a launcher for the main PowerShell build engine with Ultra-Modern GUI.
 echo ============================================
-echo AutoCrate Build System v12.1.2
+echo AutoCrate Build System v12.1.5
+echo Ultra-Modern GUI Edition
 echo ============================================
 echo.
 echo [INIT] Build Configuration:
 echo        - Target: AutoCrate.exe
+echo        - GUI: Ultra-Modern (Default)
 echo        - Type: Single executable
 echo        - Python: %PYTHON_HOME%
 echo        - Working directory: %CD%

@@ -40,7 +40,10 @@
       "Bash(move:*)",
       "Bash(start AutoCrate.exe)",
       "Bash(quick_test.bat)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(taskkill:*)",
+      "Bash(start /wait AutoCrate.exe)",
+      "WebSearch"
     ],
     "deny": []
   }
