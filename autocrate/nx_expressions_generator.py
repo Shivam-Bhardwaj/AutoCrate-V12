@@ -2335,7 +2335,19 @@ def calculate_horizontal_cleat_sections_from_vertical_positions(
         
 
 if __name__ == "__main__":
-    # Use the original UI (reverted from fast modern UI)
-    root = tk.Tk()
-    app = CrateApp(root)
-    root.mainloop()
+    # Launch Ultra-Modern GUI as the default interface
+    try:
+        from ultra_modern_gui import main as launch_ultra_modern
+        launch_ultra_modern()
+    except ImportError as e:
+        print(f"Ultra-Modern GUI not available: {e}")
+        # Fallback to autocrate_main selector
+        try:
+            from autocrate_main import main as launch_main_app
+            launch_main_app()
+        except ImportError:
+            # Final fallback to legacy interface
+            print("Launching legacy interface...")
+            root = tk.Tk()
+            app = CrateApp(root)
+            root.mainloop()
