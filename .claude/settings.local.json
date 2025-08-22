@@ -50,7 +50,8 @@
       "Bash(vercel:*)",
       "Bash(curl:*)",
       "Bash(start https://vercel.com/shivams-projects-1d3fe872/autocrate-v12)",
-      "Bash(start https://autocrate-web-app.vercel.app)"
+      "Bash(start https://autocrate-web-app.vercel.app)",
+      "Bash(start https://vercel.com/shivams-projects-1d3fe872/autocrate-web-app/functions)"
     ],
     "deny": []
   }
