@@ -420,5 +420,5 @@ def generate_expressions():
         'content': content
     })
 
-# Handler for Vercel - must be called 'app' for Vercel Python runtime
-# The app object is already defined above, no need to reassign
+# Vercel requires the Flask app to be available as 'app'
+# The app variable is already defined above and will be automatically detected
