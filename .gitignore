@@ -99,3 +99,4 @@ secrets/
 *.zip
 *.rar
 *.tar.gz
+.vercel

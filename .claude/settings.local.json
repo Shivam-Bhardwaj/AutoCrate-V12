@@ -43,7 +43,14 @@
       "Bash(git branch:*)",
       "Bash(taskkill:*)",
       "Bash(start /wait AutoCrate.exe)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(start /wait distAutoCrate_Simple.exe)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(vercel:*)",
+      "Bash(curl:*)",
+      "Bash(start https://vercel.com/shivams-projects-1d3fe872/autocrate-v12)",
+      "Bash(start https://autocrate-web-app.vercel.app)"
     ],
     "deny": []
   }

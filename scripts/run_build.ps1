@@ -75,9 +75,16 @@ try {
         "--collect-all", "customtkinter",
         "--exclude-module", "pytest",
         "--exclude-module", "hypothesis",
+        "--exclude-module", "pydevd",
+        "--exclude-module", "pdb",
+        "--exclude-module", "doctest",
+        "--exclude-module", "unittest",
         "--strip",
         "--optimize", "1",
         "--noupx",
+        "--runtime-tmpdir", ".",
+        "--clean",
+        "--uac-admin",
         "autocrate/nx_expressions_generator.py"
     )
     
@@ -239,6 +246,11 @@ try {
     Write-Host "[SUCCESS] AutoCrate.exe is ready in: $ProjectRoot" -ForegroundColor Green
     Write-Host "[SUCCESS] Log file: $LogFile" -ForegroundColor DarkGreen
     Write-Host "============================================" -ForegroundColor Green
+    
+    # Optional: Sign the executable
+    Write-Host "[INFO] To sign the executable and prevent antivirus issues:" -ForegroundColor Cyan
+    Write-Host "[INFO] Run: .\scripts\sign_exe.ps1" -ForegroundColor Cyan
+    Write-Host "" # Add spacing
     Write-Host "The window will close in 5 seconds..." -ForegroundColor Gray
     Start-Sleep -Seconds 5
 

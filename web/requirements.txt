@@ -1,0 +1,18 @@
+# Web Application Dependencies
+Flask==3.0.0
+flask-cors==4.0.0
+firebase-functions==0.1.2
+firebase-admin==6.4.0
+gunicorn==21.2.0
+
+# AutoCrate Core Dependencies (from parent project)
+numpy==1.24.3
+scipy==1.11.4
+Pillow==10.1.0
+
+# Security
+python-dotenv==1.0.0
+werkzeug==3.0.1
+
+# Production server
+waitress==2.1.2

@@ -29,10 +29,6 @@ except ImportError:
     import plywood_layout_generator
     import security_utils
 
-try:
-    import quick_test
-except ImportError:
-    quick_test = None
 
 # Configure CustomTkinter
 ctk.set_appearance_mode("dark")
@@ -415,25 +411,37 @@ class UltraModernAutocrateGUI:
             # Log progress
             self._log_progress("Starting expression generation")
             
-            # Simulate stages of generation
-            time.sleep(0.5)
-            self.root.after(0, lambda: self.progress.set(0.5))
-            self._log_progress("Calculating dimensions...")
-            
-            time.sleep(0.5)
-            self.root.after(0, lambda: self.progress.set(0.8))
-            self._log_progress("Writing NX expressions...")
-            
-            # Complete generation
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"Crate_{timestamp}.exp"
-            
-            self.root.after(0, lambda: self.status_label.configure(text=f"✅ Generated: {filename}"))
-            self.root.after(0, lambda: self.progress.set(1.0))
-            
-            self._log_progress(f"Expression generated: {filename}")
-            
-            self.root.after(0, lambda: messagebox.showinfo("Success", f"Expression file generated:\n{filename}"))
+            # Call the actual generation method from parent
+            if hasattr(self.parent, 'generate_expressions'):
+                self.root.after(0, lambda: self.progress.set(0.5))
+                self._log_progress("Calling NX expression generator...")
+                
+                # Call parent's generate_expressions method
+                self.parent.generate_expressions()
+                
+                self.root.after(0, lambda: self.progress.set(1.0))
+                self._log_progress("Expression generation completed")
+                self.root.after(0, lambda: self.status_label.configure(text="✅ Expression file generated"))
+            else:
+                # Fallback if parent doesn't have the method
+                time.sleep(0.5)
+                self.root.after(0, lambda: self.progress.set(0.5))
+                self._log_progress("Calculating dimensions...")
+                
+                time.sleep(0.5)
+                self.root.after(0, lambda: self.progress.set(0.8))
+                self._log_progress("Writing NX expressions...")
+                
+                # Complete generation
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"Crate_{timestamp}.exp"
+                
+                self.root.after(0, lambda: self.status_label.configure(text=f"✅ Generated: {filename}"))
+                self.root.after(0, lambda: self.progress.set(1.0))
+                
+                self._log_progress(f"Expression generated: {filename}")
+                
+                self.root.after(0, lambda: messagebox.showinfo("Success", f"Expression file generated:\n{filename}"))
             
             # Reset progress
             self.root.after(2000, lambda: self.progress.set(0))
@@ -442,6 +450,7 @@ class UltraModernAutocrateGUI:
             self._log_progress(f"Generation failed: {str(e)}")
             self.root.after(0, lambda: self.status_label.configure(text=f"❌ Failed: {str(e)}"))
             self.root.after(0, lambda: self.progress.set(0))
+            self.root.after(0, lambda: messagebox.showerror("Generation Error", f"Failed to generate expressions:\n{str(e)}"))
     
     def run_quick_test(self):
         """Run quick test in background thread"""
@@ -463,11 +472,11 @@ class UltraModernAutocrateGUI:
             # Log to progress file
             self._log_progress("Starting Quick Test Suite")
             
-            # Simulate test with actual quick test logic if available
-            if quick_test:
-                # Run actual tests
-                self.root.after(0, lambda: self.progress.set(0.5))
-                time.sleep(1)  # Simulate work
+            # Call the actual quick test method from nx_expressions_generator
+            if hasattr(self.parent, 'run_quick_test_suite'):
+                # Run the actual quick test suite from parent
+                self.root.after(0, lambda: self.progress.set(0.3))
+                self.parent.run_quick_test_suite()
                 self._log_progress("Tests completed successfully")
                 self.root.after(0, lambda: self.status_label.configure(text="✅ Tests passed"))
             else:

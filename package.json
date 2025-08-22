@@ -1,0 +1,21 @@
+{
+  "name": "autocrate-v12-website",
+  "version": "12.0.9",
+  "description": "AutoCrate v12 - Professional CAD Automation Documentation Website",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "cad",
+    "automation",
+    "engineering",
+    "nx",
+    "siemens",
+    "crate-design"
+  ],
+  "author": "AutoCrate Team",
+  "license": "MIT"
+}
