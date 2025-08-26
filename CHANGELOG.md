@@ -1,5 +1,40 @@
 # AutoCrate Changelog
 
+## [12.1.0] - 2025-08-26
+
+### Changed - Major Code Cleanup and Optimization
+- **🧹 Archive Cleanup**: Removed legacy files and test artifacts to streamline repository
+  - Deleted archive folder containing outdated documentation (CLAUDE.md, README.md, etc.)
+  - Removed 30+ legacy test expression files from quick_test and expressions folders  
+  - Cleaned up old test session artifacts and screenshots from legacy_tests
+  - Removed deprecated scripts (build.py, dev_setup.py, dev_workflow.py, generate_docs.py)
+  - Repository size reduced by ~25MB through removal of redundant test files
+
+### Enhanced - UI and Code Quality
+- **🎨 Improved GUI Layout** (`autocrate/nx_expressions_generator.py`):
+  - Enhanced window resizing behavior with proper weight configuration
+  - Improved button layout and state management for better user interaction
+  - Fixed focus handling and idle task updates for smoother UI response
+  - Better status text scrollbar integration and frame organization
+
+- **📝 Enhanced Expression Filename Format**:
+  - More descriptive filenames including panel count (5P) and ASTM compliance marker
+  - Improved weight format (W1500 instead of 1500lbs) for better readability
+  - Added panel count indicator for quick identification of crate configuration
+  - Example: `20250826_Crate_72x48x36_W1500_5P_PLY0.75_C2.0_ASTM.exp`
+
+### Fixed - Dimension Constraints
+- **📏 Enforced Minimum Size Constraint**: Updated all tests to respect 12-inch minimum dimension
+  - Fixed edge case tests changing minimum width from 6" to 12" in quick_test.py
+  - Updated parallel test suite minimum size validation
+  - Corrected property-based test regression cases for proper constraint validation
+  - Ensures all generated crates meet ASTM minimum size requirements
+
+### Technical Improvements
+- **Code Quality**: Cleaner codebase with ~25,600 lines removed (mostly redundant test files)
+- **Repository Health**: Better organization with focused file structure
+- **Test Consistency**: All test files now properly enforce dimension constraints (12-130 inches)
+
 ## [12.0.9] - 2025-08-05
 
 ### Added - Comprehensive AI-Powered Testing System

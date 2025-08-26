@@ -32,7 +32,7 @@ def run_test_category(category):
         elif category == "edge_cases":
             # Test minimum and maximum sizes
             from autocrate.front_panel_logic import calculate_front_panel_components
-            min_result = calculate_front_panel_components(6, 12, 0.75, 1.5, 3.5, True)
+            min_result = calculate_front_panel_components(12, 12, 0.75, 1.5, 3.5, True)  # Changed from 6 to 12 (min constraint)
             max_result = calculate_front_panel_components(130, 72, 0.75, 1.5, 3.5, True)
             success = bool(min_result and max_result)
             

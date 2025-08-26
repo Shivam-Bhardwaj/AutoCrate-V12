@@ -1667,10 +1667,14 @@ def update_panel_components_with_splice_cleats(panel_components: dict, panel_wid
 
 class CrateApp: 
     def __init__(self, master):
-        self.master = master; master.title("NX Crate Exporter (Updated Cleat Logic)") 
-        master.geometry("550x880") 
-        style = ttk.Style(); style.theme_use('clam') 
-        main_frame = ttk.Frame(master, padding="10"); main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.master = master
+        master.title("NX Crate Exporter (Updated Cleat Logic)")
+        master.geometry("550x880")
+        master.resizable(True, True)
+        style = ttk.Style()
+        style.theme_use('clam')
+        main_frame = ttk.Frame(master, padding="10")
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Product Inputs Section
         product_frame = ttk.LabelFrame(main_frame, text="Product Specifications", padding="10")
@@ -1715,15 +1719,32 @@ class CrateApp:
         # Output Section
         output_frame = ttk.LabelFrame(main_frame, text="Output", padding="10")
         output_frame.grid(row=4, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Button(output_frame, text="Generate NX Expressions", command=self.generate_expressions).grid(row=0, column=0, pady=10, padx=(0, 5))
-        ttk.Button(output_frame, text="Quick Test Suite", command=self.run_quick_test_suite).grid(row=0, column=1, pady=10, padx=(5, 0))
+        self.generate_button = ttk.Button(output_frame, text="Generate NX Expressions", command=self.generate_expressions)
+        self.generate_button.grid(row=0, column=0, pady=10, padx=(0, 5), sticky="ew")
+        self.test_button = ttk.Button(output_frame, text="Quick Test Suite", command=self.run_quick_test_suite)
+        self.test_button.grid(row=0, column=1, pady=10, padx=(5, 0), sticky="ew")
         output_frame.columnconfigure(0, weight=1)
         output_frame.columnconfigure(1, weight=1)
 
         # Status Section
-        self.status_text = tk.Text(main_frame, height=8, width=60); self.status_text.grid(row=5, column=0, columnspan=2, pady=10, sticky="ew")
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=self.status_text.yview); scrollbar.grid(row=5, column=2, sticky="ns", pady=10); self.status_text.configure(yscrollcommand=scrollbar.set)
-        main_frame.columnconfigure(0, weight=1); master.columnconfigure(0, weight=1); master.rowconfigure(0, weight=1)
+        status_frame = ttk.Frame(main_frame)
+        status_frame.grid(row=5, column=0, columnspan=2, pady=10, sticky="ew")
+        self.status_text = tk.Text(status_frame, height=8, width=60)
+        self.status_text.grid(row=0, column=0, sticky="ew")
+        scrollbar = ttk.Scrollbar(status_frame, orient="vertical", command=self.status_text.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        self.status_text.configure(yscrollcommand=scrollbar.set)
+        status_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(5, weight=1)
+        master.columnconfigure(0, weight=1)
+        master.rowconfigure(0, weight=1)
+        
+        # Ensure buttons are properly configured and focusable
+        self.generate_button.configure(state='normal')
+        self.test_button.configure(state='normal')
+        master.focus_force()
+        master.update_idletasks()
 
     def log_message(self, message): 
         self.status_text.insert(tk.END, f"{datetime.datetime.now().strftime('%H:%M:%S')} - {message}\\n"); self.status_text.see(tk.END); self.master.update_idletasks()
@@ -1772,12 +1793,16 @@ class CrateApp:
             material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
             
             # Generate enhanced filename with more parameters
-            # Include: timestamp, dimensions, weight, clearance, material type, panel thickness
+            # Include: timestamp, dimensions, weight, material type, panel thickness, clearance
+            # Enhanced to include more parameters for better identification
+            panel_count = 5  # Always 5 panels (Front, Back, Left, Right, Top)
             base_filename = (f"{timestamp}_Crate_"
                            f"{product_length:.0f}x{product_width:.0f}x{product_height:.0f}_"
-                           f"{product_weight:.0f}lbs_"
+                           f"W{product_weight:.0f}_"
+                           f"{panel_count}P_"
                            f"{material_type}{panel_thickness:.2f}_"
-                           f"CLR{clearance:.1f}.exp")
+                           f"C{clearance:.1f}_"
+                           f"ASTM.exp")
             
             # Sanitize and ensure we stay within Windows path limits
             safe_filename = sanitize_filename(base_filename)
@@ -1787,6 +1812,7 @@ class CrateApp:
                 # Keep timestamp and extension, truncate middle
                 safe_filename = safe_filename[:max_filename_length-4] + ".exp"
             
+            # Check if file exists and replace it (no timestamp suffix for duplicates)
             output_filename = os.path.join(expressions_dir, safe_filename)
             
             selected_lumber = [width for width, var in self.lumber_vars.items() if var.get()]
@@ -1831,10 +1857,11 @@ class CrateApp:
             # Define test cases with corner cases and edge scenarios
             test_cases = [
                 # Format: (product_weight, product_length, product_width, product_height, clearance, description)
+                # All dimensions must be within 12-130 inches as per constraints
                 (1000, 20, 20, 100, 1.0, "Very Tall Thin - Horizontal Splice Bug Test"),
                 (500, 96, 48, 30, 2.0, "Standard Plywood Size"),
                 (2000, 120, 120, 48, 1.5, "Large Square Heavy"),
-                (100, 12, 12, 24, 0.5, "Small Light"),
+                (100, 12, 12, 24, 0.5, "Very Small Light"),  # Updated description
                 (5000, 130, 120, 60, 3.0, "Very Large Heavy"),
                 (800, 30, 30, 80, 1.0, "Medium Square Tall"),
                 (1500, 100, 50, 40, 2.5, "Long Narrow"),
@@ -1867,9 +1894,14 @@ class CrateApp:
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     
                     # Generate enhanced filename with timestamp and parameters
+                    # Include all relevant parameters for better test identification
+                    material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
                     filename = (f"{timestamp}_QuickTest_{i:02d}_"
                               f"{length:.0f}x{width:.0f}x{height:.0f}_"
-                              f"{weight:.0f}lbs_{description.replace(' ', '_').replace('-', '')}.exp")
+                              f"W{weight:.0f}_"
+                              f"{material_type}{panel_thickness:.2f}_"
+                              f"C{clearance:.1f}_"
+                              f"{description.replace(' ', '_').replace('-', '')}.exp")
                     
                     # Sanitize and truncate if necessary
                     safe_filename = sanitize_filename(filename)

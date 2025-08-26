@@ -110,7 +110,7 @@ def run_quick_validation():
     # Test 3: Edge Case Handling
     print("\n[3/5] Testing edge cases...")
     edge_cases = [
-        {"name": "Minimum size", "width": 6, "height": 12},
+        {"name": "Minimum size", "width": 12, "height": 12},  # Changed from 6 to 12 (min constraint)
         {"name": "Maximum size", "width": 130, "height": 72},
         {"name": "Tall thin", "width": 20, "height": 100}
     ]
