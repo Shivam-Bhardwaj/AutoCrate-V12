@@ -1,118 +1,58 @@
+# Docker Compose for Local Development and Self-Hosting
+
 version: '3.8'
 
 services:
-  # Development environment
-  autocrate-dev:
+  # Python API Backend
+  api:
     build:
       context: .
-      target: development
-    container_name: autocrate-dev
-    volumes:
-      - .:/app
-      - autocrate-cache:/home/developer/.cache
-    environment:
-      - PYTHONPATH=/app
-      - DISPLAY=:99
+      dockerfile: api/Dockerfile
     ports:
-      - "8000:8000"  # For future web interface
-    networks:
-      - autocrate-network
-    profiles:
-      - dev
-
-  # Testing environment
-  autocrate-test:
-    build:
-      context: .
-      target: testing
-    container_name: autocrate-test
-    volumes:
-      - .:/app:ro  # Read-only for testing
-      - test-results:/app/test-results
+      - "8001:8000"
     environment:
-      - PYTHONPATH=/app
-      - DISPLAY=:99
-    command: >
-      bash -c "xvfb-run-safe python -m pytest tests/ 
-               --cov=. 
-               --cov-report=html:/app/test-results/coverage 
-               --cov-report=xml:/app/test-results/coverage.xml 
-               --junit-xml=/app/test-results/junit.xml 
-               -v"
-    networks:
-      - autocrate-network
-    profiles:
-      - test
-
-  # Production environment
-  autocrate-prod:
-    build:
-      context: .
-      target: production
-    container_name: autocrate-prod
+      - PYTHONUNBUFFERED=1
+      - CORS_ORIGINS=http://localhost:3000
     volumes:
-      - autocrate-data:/app/data
-      - autocrate-outputs:/app/outputs
+      - ./api:/app/api
+      - ./autocrate:/app/autocrate
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     environment:
-      - PYTHONPATH=/app
+      - NEXT_PUBLIC_API_URL=http://localhost:8001/api
+      - NODE_ENV=production
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+      - web
     restart: unless-stopped
-    networks:
-      - autocrate-network
-    profiles:
-      - prod
-
-  # Documentation generator
-  docs-generator:
-    build:
-      context: .
-      target: development
-    container_name: autocrate-docs
-    volumes:
-      - .:/app
-      - docs-output:/app/docs/_build
-    environment:
-      - PYTHONPATH=/app
-    command: >
-      bash -c "pip install --user sphinx sphinx-rtd-theme && 
-               sphinx-apidoc -o docs/api . && 
-               sphinx-build -b html docs docs/_build"
-    networks:
-      - autocrate-network
-    profiles:
-      - docs
-
-  # Code quality checker
-  quality-check:
-    build:
-      context: .
-      target: development
-    container_name: autocrate-quality
-    volumes:
-      - .:/app:ro
-    environment:
-      - PYTHONPATH=/app
-    command: >
-      bash -c "flake8 . --statistics && 
-               mypy *.py --ignore-missing-imports && 
-               black --check . && 
-               isort --check-only ."
-    networks:
-      - autocrate-network
-    profiles:
-      - quality
 
 volumes:
-  autocrate-cache:
-    driver: local
-  autocrate-data:
-    driver: local
-  autocrate-outputs:
-    driver: local
-  test-results:
-    driver: local
-  docs-output:
-    driver: local
-
-networks:
-  autocrate-network:
-    driver: bridge
+  postgres_data:

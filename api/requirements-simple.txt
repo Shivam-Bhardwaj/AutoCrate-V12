@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+numpy
+scipy
+reportlab
+openpyxl
+Pillow

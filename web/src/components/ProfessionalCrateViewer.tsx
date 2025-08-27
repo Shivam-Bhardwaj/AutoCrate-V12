@@ -790,12 +790,13 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
                 mipmapBlur
               />
               <Vignette offset={0.1} darkness={0.3} />
-              <SSAO
+              {/* SSAO temporarily disabled due to type issues */}
+              {/* <SSAO
                 samples={31}
                 radius={5}
                 intensity={30}
                 luminanceInfluence={0.1}
-              />
+              /> */}
               <DepthOfField
                 focusDistance={0.01}
                 focalLength={0.05}

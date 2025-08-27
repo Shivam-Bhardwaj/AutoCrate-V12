@@ -1,0 +1,33 @@
+# Render Blueprint for AutoCrate V12
+
+services:
+  # Python API Backend
+  - type: web
+    name: autocrate-api
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9
+      - key: CORS_ORIGINS
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true
+    rootDir: api
+
+  # Next.js Frontend
+  - type: web
+    name: autocrate-web
+    runtime: node
+    plan: free
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm start"
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_API_URL
+        value: https://autocrate-api.onrender.com/api
+    rootDir: web
+    autoDeploy: true

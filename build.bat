@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 echo ====================================
-echo   AutoCrate - Build & Final Testing
+echo   AutoCrate - Build and Final Testing
 echo ====================================
 echo.
 
