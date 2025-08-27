@@ -1,0 +1,9 @@
+{
+  "version": "1.0.1",
+  "deploymentNumber": 0,
+  "lastDeployment": null,
+  "environment": "development",
+  "buildNumber": "0",
+  "gitCommit": "",
+  "changelog": []
+}

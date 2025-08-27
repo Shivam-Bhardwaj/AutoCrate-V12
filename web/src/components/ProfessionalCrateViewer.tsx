@@ -204,50 +204,172 @@ const CrateComponent: React.FC<CrateComponentProps> = ({
         />
       </mesh>
       
-      {/* Dimension labels */}
+      {/* Dimension labels with improved visibility and 3D text */}
       {showDimensions && (
         <>
-          <Html position={[dimensions[0] / 2 + 2, 0, 0]} center>
+          {/* Length dimension - 3D Text */}
+          <Text
+            position={[dimensions[0] / 2 + 8, 0, 0]}
+            rotation={[0, Math.PI / 2, 0]}
+            fontSize={4}
+            color="#ff6b6b"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+            outlineWidth={0.2}
+            outlineColor="#ffffff"
+          >
+            {dimensions[0].toFixed(1)}"
+          </Text>
+          
+          {/* Width dimension - 3D Text */}
+          <Text
+            position={[0, dimensions[1] / 2 + 8, 0]}
+            rotation={[0, 0, 0]}
+            fontSize={4}
+            color="#4ecdc4"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+            outlineWidth={0.2}
+            outlineColor="#ffffff"
+          >
+            {dimensions[1].toFixed(1)}"
+          </Text>
+          
+          {/* Height dimension - 3D Text */}
+          <Text
+            position={[0, 0, dimensions[2] / 2 + 8]}
+            rotation={[0, 0, Math.PI / 2]}
+            fontSize={4}
+            color="#667eea"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+            outlineWidth={0.2}
+            outlineColor="#ffffff"
+          >
+            {dimensions[2].toFixed(1)}"
+          </Text>
+
+          {/* HTML labels for better readability */}
+          <Html 
+            position={[dimensions[0] / 2 + 12, 0, 0]} 
+            center
+            distanceFactor={3}
+            style={{ pointerEvents: 'none' }}
+          >
             <div style={{
-              background: 'rgba(0,0,0,0.8)',
+              background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
               color: 'white',
-              padding: '2px 6px',
-              borderRadius: '3px',
-              fontSize: '12px',
-              whiteSpace: 'nowrap'
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              fontFamily: 'Arial, sans-serif',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+              border: '3px solid white',
+              textAlign: 'center'
             }}>
-              {dimensions[0].toFixed(1)}"
+              LENGTH<br/>{dimensions[0].toFixed(1)}"
             </div>
           </Html>
-          <Html position={[0, dimensions[1] / 2 + 2, 0]} center>
+          
+          <Html 
+            position={[0, dimensions[1] / 2 + 12, 0]} 
+            center
+            distanceFactor={3}
+            style={{ pointerEvents: 'none' }}
+          >
             <div style={{
-              background: 'rgba(0,0,0,0.8)',
+              background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
               color: 'white',
-              padding: '2px 6px',
-              borderRadius: '3px',
-              fontSize: '12px',
-              whiteSpace: 'nowrap'
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              fontFamily: 'Arial, sans-serif',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+              border: '3px solid white',
+              textAlign: 'center'
             }}>
-              {dimensions[1].toFixed(1)}"
+              WIDTH<br/>{dimensions[1].toFixed(1)}"
             </div>
           </Html>
+          
+          <Html 
+            position={[0, 0, dimensions[2] / 2 + 12]} 
+            center
+            distanceFactor={3}
+            style={{ pointerEvents: 'none' }}
+          >
+            <div style={{
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              color: 'white',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              fontFamily: 'Arial, sans-serif',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+              border: '3px solid white',
+              textAlign: 'center'
+            }}>
+              HEIGHT<br/>{dimensions[2].toFixed(1)}"
+            </div>
+          </Html>
+
+          {/* Add dimension lines */}
+          <group>
+            {/* Length line */}
+            <mesh position={[0, -dimensions[1]/2 - 2, -dimensions[2]/2 - 2]}>
+              <boxGeometry args={[dimensions[0], 0.2, 0.2]} />
+              <meshBasicMaterial color="#ff6b6b" />
+            </mesh>
+            
+            {/* Width line */}
+            <mesh position={[dimensions[0]/2 + 2, 0, -dimensions[2]/2 - 2]}>
+              <boxGeometry args={[0.2, dimensions[1], 0.2]} />
+              <meshBasicMaterial color="#4ecdc4" />
+            </mesh>
+            
+            {/* Height line */}
+            <mesh position={[dimensions[0]/2 + 2, dimensions[1]/2 + 2, 0]}>
+              <boxGeometry args={[0.2, 0.2, dimensions[2]]} />
+              <meshBasicMaterial color="#667eea" />
+            </mesh>
+          </group>
         </>
       )}
       
       {/* Component label on hover */}
       {hovered && (
-        <Html position={[0, dimensions[1] / 2 + 5, 0]} center>
+        <Html 
+          position={[0, dimensions[1] / 2 + 6, 0]} 
+          center
+          distanceFactor={10}
+          style={{ 
+            pointerEvents: 'none',
+            zIndex: 1000
+          }}
+        >
           <div style={{
-            background: 'rgba(255,255,255,0.95)',
-            color: '#333',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            whiteSpace: 'nowrap'
+            background: 'linear-gradient(135deg, #fff, #f8f8f8)',
+            color: '#2c3e50',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            fontSize: '13px',
+            fontWeight: '600',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            whiteSpace: 'nowrap',
+            border: '1px solid rgba(0,0,0,0.1)',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            textTransform: 'capitalize'
           }}>
-            {type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')}
+            {type.replace(/_/g, ' ')}
           </div>
         </Html>
       )}
@@ -400,18 +522,74 @@ const CrateAssembly: React.FC<{
         />
       ))}
       
-      {/* Overall dimensions display */}
+      {/* Overall dimensions display with better visibility */}
       {showDimensions && !exploded && (
         <group>
-          <Text
-            position={[0, -dimensions.width/2 - 5, dimensions.height/2]}
-            fontSize={3}
-            color="red"
-            anchorX="center"
-            anchorY="middle"
+          <Html
+            position={[0, -dimensions.width/2 - 12, dimensions.height/2]}
+            center
+            distanceFactor={4}
+            style={{
+              transition: 'opacity 0.5s',
+              pointerEvents: 'none',
+              fontSize: '20px'
+            }}
           >
-            L: {dimensions.length}" × W: {dimensions.width}" × H: {dimensions.height}"
-          </Text>
+            <div style={{
+              background: 'linear-gradient(135deg, #1e3c72, #2a5298)',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              whiteSpace: 'nowrap',
+              border: '3px solid white',
+              fontFamily: 'Arial, sans-serif',
+              letterSpacing: '1px'
+            }}>
+              📏 L: {dimensions.length}" × W: {dimensions.width}" × H: {dimensions.height}"
+            </div>
+          </Html>
+
+          {/* Add floating dimension arrows */}
+          <group>
+            {/* Length arrow */}
+            <arrowHelper 
+              args={[
+                new THREE.Vector3(1, 0, 0),
+                new THREE.Vector3(-dimensions.length/2, -dimensions.width/2 - 8, -dimensions.height/2 - 8),
+                dimensions.length,
+                0xff6b6b,
+                dimensions.length * 0.2,
+                dimensions.length * 0.1
+              ]}
+            />
+            
+            {/* Width arrow */}
+            <arrowHelper 
+              args={[
+                new THREE.Vector3(0, 1, 0),
+                new THREE.Vector3(dimensions.length/2 + 8, -dimensions.width/2, -dimensions.height/2 - 8),
+                dimensions.width,
+                0x4ecdc4,
+                dimensions.width * 0.2,
+                dimensions.width * 0.1
+              ]}
+            />
+            
+            {/* Height arrow */}
+            <arrowHelper 
+              args={[
+                new THREE.Vector3(0, 0, 1),
+                new THREE.Vector3(dimensions.length/2 + 8, dimensions.width/2 + 8, -dimensions.height/2),
+                dimensions.height,
+                0x667eea,
+                dimensions.height * 0.2,
+                dimensions.height * 0.1
+              ]}
+            />
+          </group>
         </group>
       )}
     </group>
@@ -430,16 +608,16 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [exploded, setExploded] = useState(false);
-  const [showDimensions, setShowDimensions] = useState(true);
+  const [autoRotate, setAutoRotate] = useState(true);
   const [showWireframe, setShowWireframe] = useState(false);
+  const [material, setMaterial] = useState('oak');
+  const [environmentPreset, setEnvironmentPreset] = useState('studio');
+  const [postProcessing, setPostProcessing] = useState(false);
+  const [showDimensions, setShowDimensions] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
   const [showStats, setShowStats] = useState(false);
-  const [material, setMaterial] = useState('oak');
-  const [cameraPreset, setCameraPreset] = useState('perspective');
   const [lightIntensity, setLightIntensity] = useState(1);
-  const [postProcessing, setPostProcessing] = useState(true);
-  const [environmentPreset, setEnvironmentPreset] = useState('studio');
-  const [autoRotate, setAutoRotate] = useState(false);
+  const [cameraView, setCameraView] = useState('default');
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -456,7 +634,7 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
 
   // Handle view reset
   const handleReset = () => {
-    setCameraPreset('perspective');
+    setCameraView('default');
     setExploded(false);
     setAutoRotate(false);
   };
@@ -508,8 +686,8 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
           {/* View Presets */}
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <Select
-              value={cameraPreset}
-              onChange={(e) => setCameraPreset(e.target.value)}
+              value={cameraView}
+              onChange={(e) => setCameraView(e.target.value)}
               sx={{
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 color: 'white',
@@ -521,10 +699,8 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
                 }
               }}
             >
-              <MenuItem value="perspective">Perspective</MenuItem>
-              <MenuItem value="isometric">Isometric</MenuItem>
+              <MenuItem value="default">Default</MenuItem>
               <MenuItem value="front">Front</MenuItem>
-              <MenuItem value="side">Side</MenuItem>
               <MenuItem value="top">Top</MenuItem>
             </Select>
           </FormControl>
@@ -645,6 +821,51 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
             </Tooltip>
           </ButtonGroup>
 
+          {/* View Control Buttons */}
+          <ButtonGroup variant="contained" size="small">
+            <Tooltip title="Front View">
+              <IconButton
+                onClick={() => {
+                  setCameraView('front');
+                  // Camera position will be handled by a camera controller
+                }}
+                size="small"
+                sx={{ color: cameraView === 'front' ? '#1976D2' : 'white' }}
+              >
+                <ViewModule />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Top View">
+              <IconButton
+                onClick={() => setCameraView('top')}
+                size="small"
+                sx={{ color: cameraView === 'top' ? '#1976D2' : 'white' }}
+              >
+                <Straighten />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Toggle Exploded View">
+              <IconButton
+                onClick={() => setExploded(!exploded)}
+                color={exploded ? 'primary' : 'default'}
+                size="small"
+                sx={{ color: 'white' }}
+              >
+                <Animation />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Toggle Grid">
+              <IconButton
+                onClick={() => setShowGrid(!showGrid)}
+                color={showGrid ? 'primary' : 'default'}
+                size="small"
+                sx={{ color: 'white' }}
+              >
+                <GridOn />
+              </IconButton>
+            </Tooltip>
+          </ButtonGroup>
+
           {/* Fullscreen Toggle */}
           <IconButton
             onClick={() => setIsFullscreen(!isFullscreen)}
@@ -687,7 +908,7 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
         <Canvas
           shadows
           dpr={[1, 2]}
-          camera={{ position: [60, 40, 60], fov: 45 }}
+          camera={{ position: [120, 80, 120], fov: 45 }}
           gl={{
             antialias: true,
             toneMapping: THREE.ACESFilmicToneMapping,
@@ -700,11 +921,16 @@ const ProfessionalCrateViewer: React.FC<ProfessionalCrateViewerProps> = ({
             enableZoom={true}
             enableRotate={true}
             autoRotate={autoRotate}
-            autoRotateSpeed={2}
-            minDistance={20}
-            maxDistance={200}
-            minPolarAngle={0}
-            maxPolarAngle={Math.PI / 1.5}
+            autoRotateSpeed={1.5}
+            minDistance={50}
+            maxDistance={300}
+            minPolarAngle={Math.PI * 0.1}
+            maxPolarAngle={Math.PI * 0.45}
+            panSpeed={0.8}
+            rotateSpeed={0.5}
+            zoomSpeed={1.2}
+            target={[0, 0, 10]}
+            makeDefault
           />
 
           {/* Studio Lighting */}

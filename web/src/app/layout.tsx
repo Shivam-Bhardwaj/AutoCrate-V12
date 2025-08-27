@@ -5,7 +5,14 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 // import { LinkStatusProvider } from '@/contexts/LinkStatusContext' // Temporarily disabled
 
-const inter = Inter({ subsets: ['latin'] })
+// Configure Inter font with display swap for better loading
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  preload: true,
+  fallback: ['system-ui', 'Arial', 'sans-serif']
+})
 
 export const metadata: Metadata = {
   title: 'AutoCrate V12 - Professional Crate Design System',
@@ -18,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} font-sans antialiased`}>
         <ThemeProvider>
           {children}
         </ThemeProvider>
