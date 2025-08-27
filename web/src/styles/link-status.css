@@ -1,0 +1,241 @@
+/* Link Status Management Styles */
+
+/* Disabled link base styles */
+.link-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  position: relative;
+}
+
+/* Disabled button styles */
+.link-disabled button,
+button.link-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: #f5f5f5 !important;
+  color: #9ca3af !important;
+  border-color: #e5e7eb !important;
+}
+
+.dark .link-disabled button,
+.dark button.link-disabled {
+  background-color: #374151 !important;
+  color: #6b7280 !important;
+  border-color: #4b5563 !important;
+}
+
+/* Disabled link text and icon styles */
+.link-disabled a,
+a.link-disabled {
+  color: #9ca3af !important;
+  text-decoration: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dark .link-disabled a,
+.dark a.link-disabled {
+  color: #6b7280 !important;
+}
+
+/* Material-UI component overrides for disabled state */
+.link-disabled .MuiButton-root,
+.MuiButton-root.link-disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.link-disabled .MuiIconButton-root,
+.MuiIconButton-root.link-disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.link-disabled .MuiMenuItem-root,
+.MuiMenuItem-root.link-disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* Chip styling for disabled features */
+.link-disabled .MuiChip-root,
+.MuiChip-root.link-disabled {
+  opacity: 0.5 !important;
+  background-color: #f3f4f6 !important;
+  color: #9ca3af !important;
+}
+
+.dark .link-disabled .MuiChip-root,
+.dark .MuiChip-root.link-disabled {
+  background-color: #374151 !important;
+  color: #6b7280 !important;
+}
+
+/* Enhanced disabled state with strikethrough effect */
+.link-disabled-strikethrough::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #ef4444;
+  transform: translateY(-50%);
+  opacity: 0.7;
+}
+
+/* Coming soon badge */
+.coming-soon-badge {
+  position: relative;
+}
+
+.coming-soon-badge::before {
+  content: 'Coming Soon';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(45deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: scale(0.8);
+  animation: pulse-coming-soon 2s infinite;
+}
+
+@keyframes pulse-coming-soon {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(0.75);
+  }
+}
+
+/* In development badge */
+.in-development-badge {
+  position: relative;
+}
+
+.in-development-badge::before {
+  content: 'In Dev';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(45deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: scale(0.8);
+}
+
+/* Broken link indicator */
+.link-broken {
+  position: relative;
+}
+
+.link-broken::after {
+  content: '⚠';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  color: #ef4444;
+  font-size: 0.8rem;
+  z-index: 10;
+  animation: blink-warning 1.5s infinite;
+}
+
+@keyframes blink-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Accessibility enhancements */
+.link-disabled[aria-disabled="true"] {
+  outline: none;
+}
+
+.link-disabled:focus,
+.link-disabled button:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .link-disabled {
+    opacity: 0.7;
+  }
+  
+  .link-disabled button,
+  button.link-disabled {
+    border: 2px solid #6b7280 !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .coming-soon-badge::before {
+    animation: none;
+  }
+  
+  .link-broken::after {
+    animation: none;
+  }
+}
+
+/* Tooltip styling for disabled links */
+.disabled-link-tooltip {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  padding: 12px;
+  max-width: 280px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.disabled-link-tooltip .tooltip-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #f59e0b;
+}
+
+.disabled-link-tooltip .tooltip-reason {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.disabled-link-tooltip .tooltip-eta {
+  font-size: 0.75rem;
+  color: #d1d5db;
+  font-style: italic;
+}
+
+/* Print styles */
+@media print {
+  .link-disabled {
+    opacity: 0.7;
+  }
+  
+  .coming-soon-badge::before,
+  .in-development-badge::before,
+  .link-broken::after {
+    display: none;
+  }
+}

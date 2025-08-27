@@ -1,0 +1,591 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modern CSS Variables */
+:root {
+  /* Light Mode Colors */
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 255, 255, 255;
+  --primary-rgb: 59, 130, 246;
+  --secondary-rgb: 99, 102, 241;
+  --accent-rgb: 16, 185, 129;
+  --surface-rgb: 255, 255, 255;
+  --border-rgb: 226, 232, 240;
+  --shadow-rgb: 15, 23, 42;
+  
+  /* Professional Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Typography Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Borders */
+  --border-radius: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-xl: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Mode Colors */
+    --foreground-rgb: 248, 250, 252;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 17, 24, 39;
+    --primary-rgb: 96, 165, 250;
+    --secondary-rgb: 129, 140, 248;
+    --accent-rgb: 52, 211, 153;
+    --surface-rgb: 30, 41, 59;
+    --border-rgb: 51, 65, 85;
+    --shadow-rgb: 0, 0, 0;
+  }
+}
+
+/* Dark mode class overrides */
+.dark {
+  --foreground-rgb: 248, 250, 252;
+  --background-start-rgb: 15, 23, 42;
+  --background-end-rgb: 17, 24, 39;
+  --primary-rgb: 96, 165, 250;
+  --secondary-rgb: 129, 140, 248;
+  --accent-rgb: 52, 211, 153;
+  --surface-rgb: 30, 41, 59;
+  --border-rgb: 51, 65, 85;
+  --shadow-rgb: 0, 0, 0;
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+  font-feature-settings: 'cv03', 'cv04', 'cv11';
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Professional Typography */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Enhanced Focus Styles */
+*:focus {
+  outline: 2px solid rgb(var(--primary-rgb));
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Professional Button Styles */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  
+  .dark & {
+    @apply bg-gray-800 hover:bg-gray-700 text-gray-100;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500 dark:bg-gray-500;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Professional Engineering Color Palette */
+:root {
+  /* Engineering Blue Palette */
+  --eng-blue-50: rgb(239, 246, 255);
+  --eng-blue-100: rgb(219, 234, 254);
+  --eng-blue-500: rgb(59, 130, 246);
+  --eng-blue-600: rgb(37, 99, 235);
+  --eng-blue-700: rgb(29, 78, 216);
+  --eng-blue-900: rgb(30, 58, 138);
+  
+  /* Engineering Gray Palette */
+  --eng-gray-50: rgb(249, 250, 251);
+  --eng-gray-100: rgb(243, 244, 246);
+  --eng-gray-200: rgb(229, 231, 235);
+  --eng-gray-300: rgb(209, 213, 219);
+  --eng-gray-400: rgb(156, 163, 175);
+  --eng-gray-500: rgb(107, 114, 128);
+  --eng-gray-600: rgb(75, 85, 99);
+  --eng-gray-700: rgb(55, 65, 81);
+  --eng-gray-800: rgb(31, 41, 55);
+  --eng-gray-900: rgb(17, 24, 39);
+  
+  /* Status Colors */
+  --eng-success: rgb(16, 185, 129);
+  --eng-warning: rgb(245, 158, 11);
+  --eng-error: rgb(239, 68, 68);
+  --eng-info: rgb(59, 130, 246);
+}
+
+/* =======================================================================
+   RESPONSIVE DESIGN SYSTEM - Mobile-First, No-Scroll, Platform-Agnostic
+   ======================================================================= */
+
+/* Modern Viewport Units */
+:root {
+  /* True viewport dimensions - handles mobile address bars */
+  --vh-small: 1svh;    /* Small viewport height */
+  --vh-large: 1lvh;    /* Large viewport height */
+  --vh-dynamic: 1dvh;  /* Dynamic viewport height */
+  --vw-small: 1svw;
+  --vw-large: 1lvw;
+  --vw-dynamic: 1dvw;
+  
+  /* Responsive breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* Grid system variables */
+  --grid-gap: 1rem;
+  --grid-gap-sm: 0.5rem;
+  --grid-gap-lg: 1.5rem;
+  
+  /* Panel dimensions for consistent sizing */
+  --sidebar-width: 20rem;        /* 320px */
+  --sidebar-width-lg: 24rem;     /* 384px */
+  --header-height: 4rem;         /* 64px */
+  --footer-height: 3.5rem;       /* 56px */
+  
+  /* Touch targets */
+  --touch-target: 44px;
+  --touch-target-lg: 48px;
+}
+
+/* ============================
+   LAYOUT CONTAINERS
+   ============================ */
+
+/* No-scroll viewport container */
+.viewport-container {
+  height: 100dvh;
+  height: 100vh; /* fallback */
+  max-height: 100dvh;
+  max-height: 100vh; /* fallback */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smart grid system */
+.responsive-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  height: 100%;
+  min-height: 0; /* Important for CSS Grid in flexbox */
+}
+
+/* Three-panel desktop layout */
+.desktop-three-panel {
+  grid-template-columns: var(--sidebar-width) 1fr var(--sidebar-width-lg);
+  grid-template-areas: "controls viewer results";
+}
+
+/* Two-panel tablet layout */
+.tablet-two-panel {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 
+    "controls"
+    "viewer";
+}
+
+/* Single-column mobile layout */
+.mobile-single-column {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "controls";
+}
+
+/* ============================
+   RESPONSIVE BREAKPOINTS
+   ============================ */
+
+/* Mobile First - Base styles (0px and up) */
+/* All base styles apply to mobile */
+
+/* Small devices - Phones (640px and up) */
+@media (min-width: 640px) {
+  :root {
+    --grid-gap: 0.75rem;
+  }
+  
+  .responsive-grid {
+    gap: var(--grid-gap);
+  }
+}
+
+/* Medium devices - Tablets (768px and up) */
+@media (min-width: 768px) {
+  :root {
+    --grid-gap: 1rem;
+    --sidebar-width: 22rem;
+  }
+  
+  /* Switch to tablet layout */
+  .responsive-layout {
+    @apply tablet-two-panel;
+  }
+  
+  /* Show 3D viewer but smaller */
+  .viewer-3d-container {
+    display: block;
+    height: 50dvh; /* Half viewport height */
+    min-height: 400px;
+  }
+}
+
+/* Large devices - Desktops (1024px and up) */
+@media (min-width: 1024px) {
+  :root {
+    --grid-gap: 1.25rem;
+    --sidebar-width: 24rem;
+  }
+  
+  /* Full three-panel layout */
+  .responsive-layout {
+    @apply desktop-three-panel;
+  }
+  
+  /* Full height 3D viewer */
+  .viewer-3d-container {
+    height: 100%;
+    min-height: 600px;
+  }
+}
+
+/* Extra large devices - Large desktops (1280px and up) */
+@media (min-width: 1280px) {
+  :root {
+    --grid-gap: 1.5rem;
+    --sidebar-width-lg: 28rem;
+  }
+}
+
+/* Ultra wide displays (1536px and up) */
+@media (min-width: 1536px) {
+  :root {
+    --sidebar-width: 26rem;
+    --sidebar-width-lg: 30rem;
+  }
+}
+
+/* ============================
+   MOBILE-SPECIFIC STYLES
+   ============================ */
+
+/* Mobile phones - Hide complex features */
+@media (max-width: 767px) {
+  /* Hide 3D viewer completely on mobile */
+  .viewer-3d-container {
+    display: none !important;
+  }
+  
+  /* Mobile-optimized calculator */
+  .mobile-calculator {
+    display: block;
+  }
+  
+  .desktop-calculator {
+    display: none;
+  }
+  
+  /* Compact form controls */
+  .form-control-mobile {
+    @apply text-sm px-3 py-2;
+    min-height: var(--touch-target);
+  }
+  
+  /* Stack vertically with proper spacing */
+  .mobile-stack {
+    @apply flex-col space-y-4;
+  }
+  
+  /* Full width mobile elements */
+  .mobile-full-width {
+    @apply w-full;
+  }
+  
+  /* Hide on mobile */
+  .mobile-hide {
+    @apply hidden;
+  }
+  
+  /* Show only on mobile */
+  .mobile-show {
+    @apply block;
+  }
+  
+  /* Compact mobile spacing */
+  .mobile-compact {
+    @apply px-3 py-2 text-sm;
+  }
+  
+  /* Mobile-optimized panels */
+  .mobile-panel {
+    @apply rounded-lg p-4 mb-4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* ============================
+   TABLET-SPECIFIC STYLES
+   ============================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Show both calculator versions, let JS decide */
+  .tablet-adaptive {
+    display: block;
+  }
+  
+  /* Tablet-specific 3D viewer sizing */
+  .viewer-3d-tablet {
+    height: calc(100dvh - 200px);
+    min-height: 400px;
+    max-height: 600px;
+  }
+  
+  /* Tablet form sizing */
+  .tablet-form {
+    @apply grid grid-cols-2 gap-4;
+  }
+}
+
+/* ============================
+   DESKTOP-SPECIFIC STYLES
+   ============================ */
+
+@media (min-width: 1024px) {
+  /* Show full desktop calculator */
+  .desktop-calculator {
+    display: block;
+  }
+  
+  .mobile-calculator {
+    display: none;
+  }
+  
+  /* Full desktop layout */
+  .desktop-layout {
+    @apply desktop-three-panel;
+  }
+  
+  /* Desktop sidebar styles */
+  .sidebar-left {
+    grid-area: controls;
+    @apply overflow-y-auto;
+    max-height: calc(100dvh - var(--header-height) - var(--footer-height));
+  }
+  
+  .sidebar-right {
+    grid-area: results;
+    @apply overflow-y-auto;
+    max-height: calc(100dvh - var(--header-height) - var(--footer-height));
+  }
+  
+  .viewer-main {
+    grid-area: viewer;
+    @apply flex flex-col;
+    min-height: 0; /* Important for proper flexbox behavior */
+  }
+}
+
+/* ============================
+   TOUCH AND INTERACTION
+   ============================ */
+
+/* Touch-friendly targets */
+@media (pointer: coarse) {
+  .touch-target {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+  }
+  
+  .touch-target-lg {
+    min-height: var(--touch-target-lg);
+    min-width: var(--touch-target-lg);
+  }
+  
+  /* Larger touch areas for buttons */
+  .btn {
+    @apply touch-target px-4 py-3;
+  }
+}
+
+/* Mouse/trackpad users - smaller targets OK */
+@media (pointer: fine) {
+  .btn {
+    @apply px-3 py-2;
+  }
+}
+
+/* ============================
+   PERFORMANCE OPTIMIZATIONS
+   ============================ */
+
+/* Reduce animations on lower-end devices */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* GPU acceleration for smooth scrolling */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ============================
+   UTILITY CLASSES
+   ============================ */
+
+/* Responsive visibility utilities */
+.show-mobile {
+  @apply block;
+}
+
+@media (min-width: 768px) {
+  .show-mobile {
+    @apply hidden;
+  }
+}
+
+.show-tablet {
+  @apply hidden;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .show-tablet {
+    @apply block;
+  }
+}
+
+.show-desktop {
+  @apply hidden;
+}
+
+@media (min-width: 1024px) {
+  .show-desktop {
+    @apply block;
+  }
+}
+
+/* Responsive text sizing */
+.text-responsive {
+  @apply text-sm;
+}
+
+@media (min-width: 768px) {
+  .text-responsive {
+    @apply text-base;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive {
+    @apply text-lg;
+  }
+}
+
+/* Responsive spacing */
+.space-responsive {
+  @apply space-y-3;
+}
+
+@media (min-width: 768px) {
+  .space-responsive {
+    @apply space-y-4;
+  }
+}
+
+@media (min-width: 1024px) {
+  .space-responsive {
+    @apply space-y-6;
+  }
+}
+
+/* Utility Classes */
+.glass {
+  @apply backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-700/30;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm;
+}
+
+.card-elevated {
+  @apply card shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.smooth-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
