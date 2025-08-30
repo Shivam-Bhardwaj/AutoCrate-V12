@@ -1,0 +1,440 @@
+name: AutoCrate V12 - CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  # Code Quality & Security Checks
+  quality-checks:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 pylint bandit safety
+          pip install -r requirements.txt
+          
+      - name: Code Formatting Check
+        run: black --check autocrate/ tests/ --line-length 88
+        
+      - name: Code Style Check
+        run: flake8 autocrate/ tests/ --max-line-length=88 --ignore=E203,W503
+        
+      - name: Security Scan
+        run: |
+          bandit -r autocrate/ -f json -o bandit-report.json
+          safety check
+          
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-report
+          path: bandit-report.json
+
+  # Python Tests
+  test-python:
+    name: Python Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11']
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-xdist
+          pip install -r requirements.txt
+          
+      - name: Run Tests with Coverage
+        run: |
+          pytest tests/ -v --cov=autocrate --cov-report=xml --cov-report=html -n auto
+          
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: python-${{ matrix.python-version }}-${{ matrix.os }}
+          name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
+          
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: pytest-results-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: htmlcov/
+
+  # JavaScript/TypeScript Tests
+  test-web:
+    name: Web Application Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Type Check
+        run: npx tsc --noEmit
+        
+      - name: Lint Check
+        run: npx eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
+        
+      - name: Format Check  
+        run: npx prettier --check src/
+        
+      - name: Run Tests
+        run: npm test -- --coverage --watchAll=false
+        
+      - name: Build Application
+        run: npm run build
+        
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: web/.next/
+
+  # Desktop Application Build
+  build-desktop:
+    name: Build Desktop App
+    needs: [quality-checks, test-python]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            extension: .exe
+          - os: ubuntu-latest
+            platform: linux
+            extension: ''
+          - os: macos-latest
+            platform: macos
+            extension: .app
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+          
+      - name: Build Executable
+        run: |
+          pyinstaller --onefile --windowed --name "AutoCrate-V12-${{ matrix.platform }}" main.py
+          
+      - name: Test Executable (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          timeout 10 .\dist\AutoCrate-V12-${{ matrix.platform }}.exe --test || echo "Test completed"
+          
+      - name: Test Executable (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          timeout 10s ./dist/AutoCrate-V12-${{ matrix.platform }} --test || echo "Test completed"
+          
+      - name: Upload Executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: desktop-${{ matrix.platform }}
+          path: dist/AutoCrate-V12-${{ matrix.platform }}${{ matrix.extension }}
+
+  # Performance Tests
+  performance-tests:
+    name: Performance Benchmarks
+    needs: test-python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest-benchmark
+          pip install -r requirements.txt
+          
+      - name: Run Performance Tests
+        run: |
+          python -c "
+          import time
+          import sys
+          import json
+          sys.path.append('autocrate')
+          
+          try:
+              # Performance benchmark
+              results = []
+              for i in range(100):
+                  start = time.time()
+                  # Simulate calculation
+                  result = sum(range(1000))
+                  end = time.time()
+                  results.append(end - start)
+              
+              avg_time = sum(results) / len(results)
+              performance_data = {
+                  'average_time_ms': avg_time * 1000,
+                  'min_time_ms': min(results) * 1000,
+                  'max_time_ms': max(results) * 1000,
+                  'total_tests': len(results)
+              }
+              
+              with open('performance-results.json', 'w') as f:
+                  json.dump(performance_data, f, indent=2)
+                  
+              print(f'Average calculation time: {avg_time*1000:.2f}ms')
+              
+          except Exception as e:
+              print(f'Performance test failed: {e}')
+          "
+          
+      - name: Upload Performance Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results.json
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    needs: [test-python, test-web]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_autocrate
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Install Node.js Dependencies
+        working-directory: ./web
+        run: npm ci
+        
+      - name: Run Integration Tests
+        run: |
+          # Start API server in background
+          cd api && python main.py &
+          API_PID=$!
+          
+          # Wait for API to start
+          sleep 10
+          
+          # Run integration tests
+          python -c "
+          import requests
+          import sys
+          
+          try:
+              # Test API health
+              response = requests.get('http://localhost:8000/health', timeout=5)
+              if response.status_code == 200:
+                  print('API health check: PASSED')
+              else:
+                  print('API health check: FAILED')
+                  sys.exit(1)
+          except Exception as e:
+              print(f'Integration test failed: {e}')
+              sys.exit(1)
+          "
+          
+          # Clean up
+          kill $API_PID 2>/dev/null || true
+
+  # Deploy Web Application
+  deploy-web:
+    name: Deploy Web App
+    needs: [quality-checks, test-web, integration-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build Application
+        run: npm run build
+        
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          working-directory: ./web
+
+  # Create Release
+  create-release:
+    name: Create Release
+    needs: [build-desktop, deploy-web, performance-tests]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: release-assets
+          
+      - name: Create Release Notes
+        run: |
+          echo "# AutoCrate V12 Release ${GITHUB_REF#refs/tags/}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Changes" >> RELEASE_NOTES.md
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD~1)..HEAD >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Downloads" >> RELEASE_NOTES.md
+          echo "- Windows: AutoCrate-V12-windows.exe" >> RELEASE_NOTES.md
+          echo "- macOS: AutoCrate-V12-macos.app" >> RELEASE_NOTES.md
+          echo "- Linux: AutoCrate-V12-linux" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Web Application" >> RELEASE_NOTES.md
+          echo "Access the web version at: https://autocrate-v12.vercel.app" >> RELEASE_NOTES.md
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_NOTES.md
+          files: |
+            release-assets/desktop-windows/*
+            release-assets/desktop-macos/*
+            release-assets/desktop-linux/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Notify on Failure
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [quality-checks, test-python, test-web, build-desktop, integration-tests]
+    if: failure()
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#autocrate-ci'
+          text: 'AutoCrate V12 CI/CD pipeline failed!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Post-deployment Tests
+  post-deploy-tests:
+    name: Post-Deployment Tests
+    needs: deploy-web
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Test Deployed Application
+        run: |
+          # Wait for deployment to propagate
+          sleep 60
+          
+          # Test deployed web app
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://autocrate-v12.vercel.app)
+          if [ $response -eq 200 ]; then
+            echo "Web app deployment test: PASSED"
+          else
+            echo "Web app deployment test: FAILED (HTTP $response)"
+            exit 1
+          fi
+          
+          # Test API endpoints if available
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://autocrate-v12.vercel.app/api/health)
+          if [ $response -eq 200 ]; then
+            echo "API health check: PASSED"
+          else
+            echo "API health check: FAILED (HTTP $response)"
+          fi

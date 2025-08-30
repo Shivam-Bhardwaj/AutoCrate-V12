@@ -362,13 +362,13 @@ class AutoCrateTestAgent:
             test_name = f"nx_generation_{test_case['name']}"
             try:
                 # Import and test the NX expression generator
-                from autocrate.nx_expressions_generator import generate_nx_expressions
+                from autocrate.nx_expressions_generator import generate_crate_expressions_logic
                 
                 test_start = time.time()
                 
                 # Generate expressions
                 output_file = self.report_dir / f"test_{test_case['name']}.exp"
-                result = generate_nx_expressions(
+                result = generate_crate_expressions_logic(
                     crate_width=test_case['width'],
                     crate_length=test_case['length'],
                     crate_height=test_case['height'],
@@ -1211,7 +1211,7 @@ class AutoCrateTestAgent:
         
         for suite_name, result in results.items():
             pass_rate = (result.passed / result.total_tests * 100) if result.total_tests > 0 else 0
-            status = "✓" if pass_rate == 100 else "✗" if pass_rate < 50 else "!"
+            status = "[PASS]" if pass_rate == 100 else "[FAIL]" if pass_rate < 50 else "[WARN]"
             print(f"{status} {suite_name}: {result.passed}/{result.total_tests} passed ({pass_rate:.1f}%)")
         
         print("\n" + "-" * 40)
@@ -1253,11 +1253,11 @@ def main():
     # Check if all tests passed
     total_failed = sum(r.failed + r.errors for r in results.values())
     if total_failed == 0:
-        print("\n✓ All automated tests PASSED!")
+        print("\n[SUCCESS] All automated tests PASSED!")
         print("Please proceed with manual testing using the instructions in the report.")
         return 0
     else:
-        print(f"\n✗ {total_failed} tests FAILED or had ERRORS.")
+        print(f"\n[ERROR] {total_failed} tests FAILED or had ERRORS.")
         print("Please review the test report and fix issues before proceeding.")
         return 1
 

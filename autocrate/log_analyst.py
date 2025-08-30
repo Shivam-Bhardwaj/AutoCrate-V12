@@ -74,7 +74,7 @@ class LogAnalysisAgent:
         Analyze the most recent runs and return comprehensive insights.
         """
         try:
-            print("🔍 AutoCrate Log Analysis Agent Starting...")
+            print("AutoCrate Log Analysis Agent Starting...")
         except UnicodeEncodeError:
             print("AutoCrate Log Analysis Agent Starting...")
         
@@ -88,7 +88,7 @@ class LogAnalysisAgent:
         report = self._create_analysis_report()
         
         try:
-            print(f"✅ Analysis complete. Found {len(self.sessions)} sessions with {len(self.insights)} insights.")
+            print(f"[COMPLETE] Analysis complete. Found {len(self.sessions)} sessions with {len(self.insights)} insights.")
         except UnicodeEncodeError:
             print(f"Analysis complete. Found {len(self.sessions)} sessions with {len(self.insights)} insights.")
         return report
@@ -136,7 +136,7 @@ class LogAnalysisAgent:
         )[:max_sessions]
         
         try:
-            print(f"📁 Found {len(debug_files)} recent log files")
+            print(f"Found {len(debug_files)} recent log files")
         except UnicodeEncodeError:
             print(f"Found {len(debug_files)} recent log files")
         
@@ -186,7 +186,7 @@ class LogAnalysisAgent:
             
         except Exception as e:
             try:
-                print(f"⚠️ Error parsing {log_file}: {e}")
+                print(f"[WARNING] Error parsing {log_file}: {e}")
             except UnicodeEncodeError:
                 print(f"Error parsing {log_file}: {e}")
             return None
@@ -232,7 +232,7 @@ class LogAnalysisAgent:
             
         except Exception as e:
             try:
-                print(f"⚠️ Error loading performance data: {e}")
+                print(f"[WARNING] Error loading performance data: {e}")
             except UnicodeEncodeError:
                 print(f"Error loading performance data: {e}")
     
@@ -255,7 +255,7 @@ class LogAnalysisAgent:
                                 session.errors.append(error_data)
         except Exception as e:
             try:
-                print(f"⚠️ Error loading error details: {e}")
+                print(f"[WARNING] Error loading error details: {e}")
             except UnicodeEncodeError:
                 print(f"Error loading error details: {e}")
     
@@ -466,14 +466,14 @@ class LogAnalysisAgent:
     def _generate_quick_summary(self, session: SessionInfo) -> str:
         """Generate a human-readable quick summary."""
         if session.error_count > 0:
-            return f"❌ Last run had {session.error_count} errors. Check error logs for details."
+            return f"[ERROR] Last run had {session.error_count} errors. Check error logs for details."
         elif session.warning_count > 0:
-            return f"⚠️ Last run completed with {session.warning_count} warnings. System functional but check logs."
+            return f"[WARNING] Last run completed with {session.warning_count} warnings. System functional but check logs."
         elif session.last_operation:
             duration_text = f" in {session.duration_seconds:.2f}s" if session.duration_seconds else ""
-            return f"✅ Last run successful. Completed {session.last_operation}{duration_text}."
+            return f"[SUCCESS] Last run successful. Completed {session.last_operation}{duration_text}."
         else:
-            return "✅ Last run completed successfully."
+            return "[SUCCESS] Last run completed successfully."
     
     def _parse_timestamp_from_session_id(self, session_id: str) -> datetime.datetime:
         """Parse timestamp from session ID format: YYYYMMDD_HHMMSS_PID"""
@@ -500,29 +500,29 @@ def print_last_run_summary():
     summary = analyze_last_run()
     
     print("\n" + "="*60)
-    print("🔍 AUTOCRATE - LAST RUN ANALYSIS")
+    print("AUTOCRATE - LAST RUN ANALYSIS")
     print("="*60)
     
     if summary['status'] == 'no_sessions':
-        print("❌ No previous runs found")
+        print("[ERROR] No previous runs found")
         return
     
-    print(f"📅 Session: {summary['session_id']}")
-    print(f"⏰ Time: {summary['timestamp']}")
-    print(f"📊 Quick Summary: {summary['quick_summary']}")
+    print(f"Session: {summary['session_id']}")
+    print(f"Time: {summary['timestamp']}")
+    print(f"Quick Summary: {summary['quick_summary']}")
     
     if summary['errors'] > 0:
-        print(f"❌ Errors: {summary['errors']}")
+        print(f"[ERROR] Errors: {summary['errors']}")
     if summary['warnings'] > 0:
-        print(f"⚠️ Warnings: {summary['warnings']}")
+        print(f"[WARNING] Warnings: {summary['warnings']}")
     if summary['duration']:
-        print(f"⏱️ Duration: {summary['duration']:.2f}s")
+        print(f"Duration: {summary['duration']:.2f}s")
     
     # Show insights
     if summary['insights']:
-        print("\n💡 Key Insights:")
+        print("\nKey Insights:")
         for insight in summary['insights'][:3]:  # Top 3 insights
-            icon = {'success': '✅', 'error': '❌', 'warning': '⚠️', 'trend': '📈'}.get(insight['type'], '•')
+            icon = {'success': '[SUCCESS]', 'error': '[ERROR]', 'warning': '[WARNING]', 'trend': '[TREND]'}.get(insight['type'], '-')
             print(f"   {icon} {insight['title']}: {insight['message']}")
     
     print("="*60)
@@ -530,11 +530,11 @@ def print_last_run_summary():
 if __name__ == "__main__":
     # Run analysis when script is executed directly
     print_last_run_summary()
-    print("\n🔍 Running full analysis...")
+    print("\nRunning full analysis...")
     full_analysis = analyze_recent_runs()
     
     if full_analysis.get('recommendations'):
-        print("\n📋 Recommendations:")
+        print("\nRecommendations:")
         for rec in full_analysis['recommendations']:
-            priority_icon = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}.get(rec['priority'], '•')
+            priority_icon = {'high': '[HIGH]', 'medium': '[MEDIUM]', 'low': '[LOW]'}.get(rec['priority'], '-')
             print(f"   {priority_icon} {rec['title']}: {rec['action']}")

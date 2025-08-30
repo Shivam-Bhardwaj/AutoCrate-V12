@@ -63,26 +63,8 @@ export default function VersionInfo() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check for updates periodically
-    const checkForUpdates = async () => {
-      try {
-        // In production, this would fetch from your API
-        const response = await fetch('/api/version', { cache: 'no-store' });
-        if (response.ok) {
-          const remoteVersion = await response.json();
-          if (remoteVersion.deploymentNumber > versionInfo.deploymentNumber) {
-            setUpdateAvailable(true);
-          }
-        }
-      } catch (error) {
-        console.debug('Version check failed:', error);
-      }
-    };
-
-    checkForUpdates();
-    const interval = setInterval(checkForUpdates, 60000); // Check every minute
-
-    return () => clearInterval(interval);
+    // Update checking disabled in offline mode
+    // No external API calls
   }, [versionInfo]);
 
   const handleRefresh = () => {

@@ -64,6 +64,7 @@
 }
 
 /* Dark mode class overrides */
+[data-theme="dark"],
 .dark {
   --foreground-rgb: 248, 250, 252;
   --background-start-rgb: 15, 23, 42;
@@ -74,6 +75,37 @@
   --surface-rgb: 30, 41, 59;
   --border-rgb: 51, 65, 85;
   --shadow-rgb: 0, 0, 0;
+}
+
+/* Force MUI components to respect dark mode */
+[data-theme="dark"] .MuiPaper-root {
+  background-color: rgb(33, 43, 54) !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+[data-theme="dark"] .MuiCard-root {
+  background-color: rgb(33, 43, 54) !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+[data-theme="dark"] .MuiTypography-root {
+  color: inherit !important;
+}
+
+[data-theme="dark"] .MuiTypography-colorTextSecondary {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="dark"] .MuiOutlinedInput-root {
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+[data-theme="dark"] .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.23) !important;
+}
+
+[data-theme="dark"] .MuiInputLabel-root {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Base Styles - Zero Scroll */

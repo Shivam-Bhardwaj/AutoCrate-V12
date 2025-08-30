@@ -1,0 +1,139 @@
+site_name: AutoCrate V12 Documentation
+site_description: Professional Crate Design System - Technical Documentation
+site_author: AutoCrate Development Team
+site_url: https://autocrate-docs.github.io
+
+# Repository
+repo_name: Shivam-Bhardwaj/AutoCrate-V12
+repo_url: https://github.com/Shivam-Bhardwaj/AutoCrate-V12
+edit_uri: edit/main/docs/
+
+# Configuration
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  
+  font:
+    text: Roboto
+    code: Roboto Mono
+  
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.annotate
+    - content.code.copy
+    - toc.integrate
+
+# Plugins
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("autocrate")
+          selection:
+            new_path_syntax: yes
+
+# Markdown Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - tables
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+# Navigation
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: quickstart.md
+    - Configuration: configuration.md
+  - User Guide:
+    - Desktop Application: user-guide/desktop.md
+    - Web Application: user-guide/web.md
+    - CAD Integration: user-guide/cad-integration.md
+    - Materials & Standards: user-guide/materials.md
+  - Developer Guide:
+    - Architecture: dev-guide/architecture.md
+    - API Reference: dev-guide/api.md
+    - Testing: dev-guide/testing.md
+    - Contributing: dev-guide/contributing.md
+  - Technical Reference:
+    - Calculation Engine: tech-ref/calculations.md
+    - NX Expressions: tech-ref/nx-expressions.md
+    - File Formats: tech-ref/file-formats.md
+    - Security: tech-ref/security.md
+  - Deployment:
+    - Desktop Build: deployment/desktop.md
+    - Web Deployment: deployment/web.md
+    - CI/CD Pipeline: deployment/cicd.md
+  - Appendix:
+    - ASTM Standards: appendix/astm.md
+    - Troubleshooting: appendix/troubleshooting.md
+    - Changelog: CHANGELOG.md
+    - License: LICENSE.md
+
+# Extra
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Shivam-Bhardwaj/AutoCrate-V12
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/shivambhardwaj
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX  # Replace with actual GA4 property ID
+
+# CSS Customization
+extra_css:
+  - stylesheets/extra.css
+
+# JavaScript Customization  
+extra_javascript:
+  - javascripts/extra.js
+
+# Copyright
+copyright: Copyright &copy; 2024 AutoCrate Development Team. Educational Use Only.

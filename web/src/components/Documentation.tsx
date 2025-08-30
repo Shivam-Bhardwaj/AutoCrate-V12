@@ -85,18 +85,22 @@ export function Documentation({ open, onClose }: DocumentationProps) {
         </IconButton>
       </DialogTitle>
       
-      <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
-        <div style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
-          <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-            <Tab icon={<Info />} label="Overview" />
-            <Tab icon={<Build />} label="Features" />
-            <Tab icon={<Engineering />} label="Technical Specs" />
-            <Tab icon={<Security />} label="Compliance" />
-            <Tab icon={<Psychology />} label="AI Development" />
-          </Tabs>
-        </div>
+      <DialogContent dividers sx={{ p: 0, display: 'flex', flexDirection: 'column' }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange} 
+          variant="scrollable" 
+          scrollButtons="auto"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab icon={<Info />} label="Overview" />
+          <Tab icon={<Build />} label="Features" />
+          <Tab icon={<Engineering />} label="Technical Specs" />
+          <Tab icon={<Security />} label="Compliance" />
+          <Tab icon={<Psychology />} label="AI Development" />
+        </Tabs>
         
-        <div style={{ height: 'calc(80vh - 140px)', overflow: 'auto' }}>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
           <TabPanel value={tabValue} index={0}>
             <Card sx={{ mb: 2 }}>
               <CardContent>
@@ -156,7 +160,7 @@ export function Documentation({ open, onClose }: DocumentationProps) {
             <Card sx={{ mb: 2 }}>
               <CardContent>
                 <Typography variant="h6" color="primary" gutterBottom>
-                  🎯 Intelligent Design System
+                  Intelligent Design System
                 </Typography>
                 <List dense>
                   <ListItem><ListItemText primary="Smart Material Optimization" secondary="Minimizes plywood waste through intelligent layout algorithms" /></ListItem>
@@ -169,7 +173,7 @@ export function Documentation({ open, onClose }: DocumentationProps) {
             <Card sx={{ mb: 2 }}>
               <CardContent>
                 <Typography variant="h6" color="primary" gutterBottom>
-                  🔧 Professional Output
+                  Professional Output
                 </Typography>
                 <List dense>
                   <ListItem><ListItemText primary="NX Expression Files (.exp)" secondary="Ready-to-import parametric models for Siemens NX" /></ListItem>
@@ -182,7 +186,7 @@ export function Documentation({ open, onClose }: DocumentationProps) {
             <Card>
               <CardContent>
                 <Typography variant="h6" color="primary" gutterBottom>
-                  📊 Advanced Analytics
+                  Advanced Analytics
                 </Typography>
                 <List dense>
                   <ListItem><ListItemText primary="Material Efficiency Analysis" secondary="Waste percentage and optimization recommendations" /></ListItem>

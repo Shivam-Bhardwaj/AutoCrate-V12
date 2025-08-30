@@ -1,11 +1,21 @@
 import datetime
 import math
 import os
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import traceback # Added for robust error handling
+import traceback  # For robust error handling
 import sys
-import os
+import tempfile
+import re
+
+# Conditionally import tkinter to avoid issues in non-GUI environments
+if os.environ.get('CI') != 'true':
+    try:
+        import tkinter as tk
+        from tkinter import ttk, filedialog, messagebox
+    except ImportError:
+        # This will allow the script to run in environments without tkinter
+        tk = None
+else:
+    tk = None
 
 # Setup proper import path for PyInstaller and development
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,22 +31,23 @@ try:
     logger = get_logger("AutoCrate.NX_Generator")
     logger.info("NX Expressions Generator module loading...")
     
-    # Run startup analysis
-    try:
-        from startup_analyzer import run_startup_analysis
-        startup_result = run_startup_analysis(enable_console_output=True)
-        if logger and startup_result.get('status') != 'no_sessions':
-            logger.info("Startup analysis completed", {
-                'previous_run_status': startup_result.get('status'),
-                'previous_errors': startup_result.get('errors', 0),
-                'previous_warnings': startup_result.get('warnings', 0)
-            })
-    except ImportError:
-        if logger:
-            logger.debug("Startup analyzer not available")
-    except Exception as e:
-        if logger:
-            logger.warning(f"Startup analysis failed: {e}")
+    # Run startup analysis only if not in test mode
+    if os.getenv('AUTOCRATE_TEST_MODE', '0') != '1':
+        try:
+            from startup_analyzer import run_startup_analysis
+            startup_result = run_startup_analysis(enable_console_output=True)
+            if logger and startup_result.get('status') != 'no_sessions':
+                logger.info("Startup analysis completed", {
+                    'previous_run_status': startup_result.get('status'),
+                    'previous_errors': startup_result.get('errors', 0),
+                    'previous_warnings': startup_result.get('warnings', 0)
+                })
+        except ImportError:
+            if logger:
+                logger.debug("Startup analyzer not available")
+        except Exception as e:
+            if logger:
+                logger.warning(f"Startup analysis failed: {e}")
         
 except ImportError as e:
     print(f"Warning: Debug logging not available: {e}")
@@ -329,6 +340,8 @@ def generate_crate_expressions_logic(
             return False, "Side clearance cannot be negative."
         if panel_thickness_in <=0: 
             return False, "Panel thickness must be positive."
+        # ASTM D6251-17 compliance: 1/4" (0.25") plywood is standard for many crate applications
+        # Thinner panels require appropriate cleat spacing for structural integrity
         if cleat_thickness_in <0: # Allow 0 for no cleats, though logic might need adjustment
             return False, "Cleat thickness cannot be negative."
         if cleat_member_actual_width_in <=0: 
@@ -368,6 +381,7 @@ def generate_crate_expressions_logic(
         crate_overall_width_od_in = product_width_in + (2 * clearance_each_side_in)
         skid_model_length_in = product_length_in + (2 * clearance_each_side_in) # Skids run along Y
         crate_overall_length_od_in = skid_model_length_in
+        
         
         # === PANEL BOUNDING BOX CALCULATIONS (Corrected Assembly Logic) ===
         panel_assembly_overall_thickness = panel_thickness_in + cleat_thickness_in 
@@ -414,6 +428,8 @@ def generate_crate_expressions_logic(
         # Step 2: Left/Right Panels - Calculate material needed for vertical cleat spacing
         
         # Calculate material needed based on current end panel dimensions
+        # from panel_calculations import (get_panel_type, get_panel_dimensions, get_cleat_data, get_skid_data,
+    #                                 get_floorboard_data, get_top_panel_details)
         left_right_material_needed = calculate_vertical_cleat_material_needed(
             end_panel_calc_length, end_panel_calc_height, cleat_member_actual_width_in
         )
@@ -1689,7 +1705,11 @@ class CrateApp:
         # Crate Inputs Section
         crate_frame = ttk.LabelFrame(main_frame, text="Crate & Panel Specifications", padding="10")
         crate_frame.grid(row=1, column=0, columnspan=2, pady=10, sticky="ew")
-        ttk.Label(crate_frame, text="Panel Thickness (in):").grid(row=0, column=0, sticky="w", pady=2); self.panel_thickness_entry = ttk.Entry(crate_frame, width=25); self.panel_thickness_entry.grid(row=0, column=1, sticky="ew", pady=2); self.panel_thickness_entry.insert(0, "0.25")
+        ttk.Label(crate_frame, text="Panel Thickness (in):").grid(row=0, column=0, sticky="w", pady=2)
+        self.panel_thickness_var = tk.StringVar(value="0.25")
+        self.panel_thickness_combo = ttk.Combobox(crate_frame, textvariable=self.panel_thickness_var, width=23, state="readonly")
+        self.panel_thickness_combo['values'] = ("0.25", "0.375", "0.5", "0.625", "0.75", "1.0")
+        self.panel_thickness_combo.grid(row=0, column=1, sticky="ew", pady=2)
         ttk.Label(crate_frame, text="Cleat Thickness (in):").grid(row=1, column=0, sticky="w", pady=2); self.cleat_thickness_entry = ttk.Entry(crate_frame, width=25); self.cleat_thickness_entry.grid(row=1, column=1, sticky="ew", pady=2); self.cleat_thickness_entry.insert(0, "0.75")
         ttk.Label(crate_frame, text="Cleat Member Width (in):").grid(row=2, column=0, sticky="w", pady=2); self.cleat_member_width_entry = ttk.Entry(crate_frame, width=25); self.cleat_member_width_entry.grid(row=2, column=1, sticky="ew", pady=2); self.cleat_member_width_entry.insert(0, "3.5")
         ttk.Label(crate_frame, text="Product Height (in):").grid(row=3, column=0, sticky="w", pady=2); self.product_height_entry = ttk.Entry(crate_frame, width=25); self.product_height_entry.grid(row=3, column=1, sticky="ew", pady=2); self.product_height_entry.insert(0, "30.0")
@@ -1756,7 +1776,7 @@ class CrateApp:
             product_length = validate_numeric_input(self.length_entry.get(), 12, 130, "Product Length")
             product_width = validate_numeric_input(self.width_entry.get(), 12, 130, "Product Width")
             clearance = validate_numeric_input(self.clearance_entry.get(), 0.1, 50, "Clearance")
-            panel_thickness = validate_numeric_input(self.panel_thickness_entry.get(), 0.1, 5, "Panel Thickness")
+            panel_thickness = validate_numeric_input(self.panel_thickness_var.get(), 0.1, 5, "Panel Thickness")
             cleat_thickness = validate_numeric_input(self.cleat_thickness_entry.get(), 0.1, 5, "Cleat Thickness")
             cleat_member_width = validate_numeric_input(self.cleat_member_width_entry.get(), 0.5, 20, "Cleat Member Width")
             product_height = validate_numeric_input(self.product_height_entry.get(), 12, 130, "Product Height")
@@ -1790,7 +1810,9 @@ class CrateApp:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
             # Determine material type based on panel thickness
-            material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+            # Use PLY for plywood at any thickness, OSB designation is based on material choice
+            # 1/4" (0.25) plywood is standard for many crate applications per ASTM D6251
+            material_type = "PLY" if panel_thickness >= 0.25 else "OSB"
             
             # Generate enhanced filename with more parameters
             # Include: timestamp, dimensions, weight, material type, panel thickness, clearance
@@ -1874,7 +1896,7 @@ class CrateApp:
             self.log_message(f"Generating {len(test_cases)} test cases...")
             
             # Use current GUI settings for common parameters
-            panel_thickness = float(self.panel_thickness_entry.get())
+            panel_thickness = float(self.panel_thickness_var.get())
             cleat_thickness = float(self.cleat_thickness_entry.get()) 
             cleat_member_width = float(self.cleat_member_width_entry.get())
             clearance_above = float(self.clearance_above_entry.get())
@@ -1895,7 +1917,9 @@ class CrateApp:
                     
                     # Generate enhanced filename with timestamp and parameters
                     # Include all relevant parameters for better test identification
-                    material_type = "PLY" if panel_thickness >= 0.5 else "OSB"
+                    # Use PLY for plywood at any thickness, OSB designation is based on material choice
+                    # 1/4" (0.25) plywood is standard for many crate applications per ASTM D6251
+                    material_type = "PLY" if panel_thickness >= 0.25 else "OSB"
                     filename = (f"{timestamp}_QuickTest_{i:02d}_"
                               f"{length:.0f}x{width:.0f}x{height:.0f}_"
                               f"W{weight:.0f}_"

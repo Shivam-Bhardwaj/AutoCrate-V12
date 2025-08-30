@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Web Cleat Calculation</title>
+</head>
+<body>
+    <h1>Testing Vertical Cleat Material Calculation</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Simplified version of the calculation
+        function calculatePlywoodLayout(panelWidth, panelHeight) {
+            const PLYWOOD_WIDTH = 48;
+            const PLYWOOD_HEIGHT = 96;
+            const pieces = [];
+            
+            const sheetsAcross = Math.ceil(panelWidth / PLYWOOD_WIDTH);
+            const sheetsDown = Math.ceil(panelHeight / PLYWOOD_HEIGHT);
+            
+            for (let row = 0; row < sheetsDown; row++) {
+                for (let col = 0; col < sheetsAcross; col++) {
+                    const x = col * PLYWOOD_WIDTH;
+                    const y = row * PLYWOOD_HEIGHT;
+                    const width = Math.min(PLYWOOD_WIDTH, panelWidth - x);
+                    const height = Math.min(PLYWOOD_HEIGHT, panelHeight - y);
+                    
+                    pieces.push({
+                        x: x,
+                        y: y,
+                        width: width,
+                        height: height,
+                        active: 1
+                    });
+                }
+            }
+            
+            return pieces;
+        }
+        
+        function calculateVerticalCleatMaterialNeeded(panelWidth, panelHeight, cleatMemberWidth) {
+            const MIN_CLEAT_SPACING = 0.25;
+            
+            // Generate plywood layout
+            const plywoodSheets = calculatePlywoodLayout(panelWidth, panelHeight);
+            
+            // Extract vertical splice positions
+            const verticalSplices = [];
+            for (const sheet of plywoodSheets) {
+                if (sheet.active === 1 && sheet.x > 0 && sheet.x < panelWidth) {
+                    verticalSplices.push(sheet.x);
+                }
+            }
+            
+            console.log(`Panel ${panelWidth} x ${panelHeight}: splices at`, verticalSplices);
+            
+            if (verticalSplices.length === 0) {
+                return 0;
+            }
+            
+            // Calculate edge cleat positions
+            const rightEdgeCleatCenterline = panelWidth - (cleatMemberWidth / 2.0);
+            
+            // Check if any splice is too close to the right edge cleat
+            let materialNeeded = 0.0;
+            
+            for (const spliceX of verticalSplices) {
+                const rightClearance = rightEdgeCleatCenterline - spliceX - cleatMemberWidth;
+                console.log(`  Splice at ${spliceX}: clearance = ${rightClearance}`);
+                
+                if (rightClearance < MIN_CLEAT_SPACING) {
+                    let extensionNeeded = MIN_CLEAT_SPACING - rightClearance + cleatMemberWidth;
+                    extensionNeeded = Math.ceil(extensionNeeded / 0.25) * 0.25;
+                    console.log(`    CONFLICT! Need ${extensionNeeded} material`);
+                    materialNeeded = Math.max(materialNeeded, extensionNeeded);
+                }
+            }
+            
+            return materialNeeded;
+        }
+        
+        // Test cases
+        const results = document.getElementById('results');
+        
+        function test(panelWidth, panelHeight, expected) {
+            const result = calculateVerticalCleatMaterialNeeded(panelWidth, panelHeight, 3.5);
+            const pass = Math.abs(result - expected) < 0.01;
+            
+            results.innerHTML += `
+                <p>
+                    Panel ${panelWidth}" x ${panelHeight}": 
+                    Result = ${result}", Expected = ${expected}" 
+                    <span style="color: ${pass ? 'green' : 'red'}">${pass ? 'PASS' : 'FAIL'}</span>
+                </p>
+            `;
+        }
+        
+        // Run tests
+        test(95.5, 33, 0);      // End panel initial
+        test(100, 56.5, 5.0);   // Top panel that causes the issue
+        test(100.5, 33, 4.5);   // End panel after adjustment
+        test(56.5, 33.5, 0);    // Front panel
+    </script>
+</body>
+</html>

@@ -49,46 +49,68 @@ def generate_full_nx_expression_content(
     crate_internal_width = product_width + 2 * clearance
     crate_internal_height = product_height + clearance
     
-    # Panel assembly dimensions - CORRECTED TO MATCH LOCAL VERSION
-    # Front/Back panels span the full width of the crate
-    front_panel_width = crate_internal_length + 2 * cleat_thickness
-    # Panel height accounts for skid height, floorboard, and product clearance
-    front_panel_height = crate_internal_height + cleat_width
+    # Panel assembly dimensions - MATCH LOCAL VERSION EXACTLY
+    # Calculate panel total thickness (cleat + plywood)
+    panel_total_thickness = cleat_thickness + panel_thickness
     
-    # Side panels fit between front and back panels
-    side_panel_width = crate_internal_width  
-    side_panel_height = crate_internal_height + cleat_width
+    # Front/Back panels calculation from local version
+    front_panel_width = product_width + (2 * clearance) + (2 * panel_total_thickness)
+    front_panel_height = crate_internal_height + cleat_width  # This stays the same
+    back_panel_width = front_panel_width  # Back panel same as front
+    back_panel_height = front_panel_height
     
-    # Top panel dimensions
-    top_panel_length = crate_internal_length + 2 * panel_thickness
-    top_panel_width = crate_internal_width + 2 * panel_thickness
+    # Left/Right panels (End panels) fit between front and back
+    left_panel_width = crate_internal_width + 2 * panel_thickness
+    left_panel_height = front_panel_height
+    right_panel_width = left_panel_width
+    right_panel_height = left_panel_height
     
-    # Calculate all panel components
+    # Top panel covers everything
+    top_panel_length = crate_internal_length + 2 * (cleat_thickness + panel_thickness)
+    top_panel_width = front_panel_width  # Should match front panel width
+    
+    # Calculate all panel components - match local version parameter names
     front_components = calculate_front_panel_components(
-        front_panel_width, front_panel_height, 
-        panel_thickness, cleat_thickness, cleat_width, True
+        front_panel_assembly_width=front_panel_width,
+        front_panel_assembly_height=front_panel_height,
+        panel_sheathing_thickness=panel_thickness,
+        cleat_material_thickness=cleat_thickness,
+        cleat_material_member_width=cleat_width,
+        include_klimps=True
     )
     
     back_components = calculate_back_panel_components(
-        front_panel_width, front_panel_height,
-        panel_thickness, cleat_thickness, cleat_width
+        back_panel_assembly_width=back_panel_width,
+        back_panel_assembly_height=back_panel_height,
+        panel_sheathing_thickness=panel_thickness,
+        cleat_material_thickness=cleat_thickness,
+        cleat_material_member_width=cleat_width
     )
     
     left_components = calculate_left_panel_components(
-        side_panel_width, side_panel_height,
-        panel_thickness, cleat_thickness, cleat_width
+        left_panel_assembly_length=left_panel_width,
+        left_panel_assembly_height=left_panel_height,
+        panel_sheathing_thickness=panel_thickness,
+        cleat_material_thickness=cleat_thickness,
+        cleat_material_member_width=cleat_width
     )
     
-    # Right panel uses same logic as left panel
+    # Right panel uses left panel logic
     right_components = calculate_left_panel_components(
-        side_panel_width, side_panel_height,
-        panel_thickness, cleat_thickness, cleat_width
+        left_panel_assembly_length=right_panel_width,
+        left_panel_assembly_height=right_panel_height,
+        panel_sheathing_thickness=panel_thickness,
+        cleat_material_thickness=cleat_thickness,
+        cleat_material_member_width=cleat_width
     )
     
     if include_top:
         top_components = calculate_top_panel_components(
-            top_panel_length, top_panel_width,
-            panel_thickness, cleat_thickness, cleat_width
+            top_panel_assembly_width=top_panel_width,
+            top_panel_assembly_length=top_panel_length,
+            panel_sheathing_thickness=panel_thickness,
+            cleat_material_thickness=cleat_thickness,
+            cleat_material_member_width=cleat_width
         )
     else:
         top_components = None
@@ -174,7 +196,7 @@ def generate_full_nx_expression_content(
     lines.append("// =========== CALCULATED CRATE DIMENSIONS ===========")
     # Overall dimensions - external measurements
     crate_external_width = front_panel_width  # Width is along the front panel
-    crate_external_length = side_panel_width + 2 * panel_thickness  # Length includes panel thickness
+    crate_external_length = top_panel_length  # Use top panel length for overall length
     lines.append(f"[Inch]crate_overall_width_OD = {crate_external_width:.3f}")
     lines.append(f"[Inch]crate_overall_length_OD = {crate_external_length:.3f}")
     lines.append("")
@@ -188,13 +210,13 @@ def generate_full_nx_expression_content(
         lines.append(f"[Inch]Skid_Actual_Length = {front_panel_width:.3f}")
         lines.append(f"CALC_Skid_Count = {skid_data.get('skid_count', 3)}")
         
-        # Calculate skid pitch
+        # Calculate skid pitch using correct dimension
         if skid_data.get('skid_count', 3) > 1:
-            skid_pitch = (side_panel_width + 2 * panel_thickness - skid_data.get('skid_width', 3.5)) / (skid_data.get('skid_count', 3) - 1)
+            skid_pitch = skid_data.get('skid_pitch', 0)
         else:
             skid_pitch = 0
         lines.append(f"[Inch]CALC_Skid_Pitch = {skid_pitch:.4f}")
-        lines.append(f"[Inch]X_Master_Skid_Origin_Offset = {-side_panel_width/2:.4f}")
+        lines.append(f"[Inch]X_Master_Skid_Origin_Offset = {skid_data.get('first_skid_pos', 0):.4f}")
         lines.append("")
     
     # ============ FLOORBOARD PARAMETERS ============
@@ -233,105 +255,82 @@ def generate_full_nx_expression_content(
                 lines.append(f"[Inch]FB_Inst_{i}_Y_Pos_Abs = 0.001")
         lines.append("")
     
-    # ============ FRONT PANEL VARIABLES ============
-    lines.append("// =========== FRONT PANEL (FP) ===========")
+    # ============ OVERALL PANEL ASSEMBLY DIMENSIONS ============
+    lines.append("\n// --- OVERALL PANEL ASSEMBLY DIMENSIONS (Informational) ---")
     lines.append(f"[Inch]PANEL_Front_Assy_Overall_Width = {front_panel_width:.3f}")
     lines.append(f"[Inch]PANEL_Front_Assy_Overall_Height = {front_panel_height:.3f}")
-    lines.append(f"[Inch]PANEL_Front_Assy_Overall_Depth = {cleat_thickness:.3f}")
-    lines.append(f"[Inch]FP_Panel_Assembly_Width = {front_panel_width:.3f}")
-    lines.append(f"[Inch]FP_Panel_Assembly_Height = {front_panel_height:.3f}")
-    lines.append(f"[Inch]FP_Panel_Assembly_Depth = {cleat_thickness:.3f}")
+    lines.append(f"[Inch]PANEL_Front_Assy_Overall_Depth = {panel_total_thickness:.3f}")
+    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Width = {back_panel_width:.3f}")
+    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Height = {back_panel_height:.3f}")
+    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Depth = {panel_total_thickness:.3f}")
+    lines.append(f"[Inch]PANEL_End_Assy_Overall_Width = {left_panel_width:.3f} // For Left & Right End Panels")
+    lines.append(f"[Inch]PANEL_End_Assy_Overall_Height = {left_panel_height:.3f}")
+    lines.append(f"[Inch]PANEL_End_Assy_Overall_Depth_Thickness = {panel_total_thickness:.3f}")
+    lines.append(f"[Inch]PANEL_Top_Assy_Overall_Width = {top_panel_width:.3f}")
+    lines.append(f"[Inch]PANEL_Top_Assy_Overall_Length = {top_panel_length:.3f}")
+    lines.append(f"[Inch]PANEL_Top_Assy_Overall_Depth_Thickness = {panel_total_thickness:.3f}")
+
+    # ============ FRONT PANEL VARIABLES ============
+    lines.append("\n// =========== FRONT PANEL (FP) ===========")
+    lines.append(f"[Inch]FP_Panel_Assembly_Width = PANEL_Front_Assy_Overall_Width")
+    lines.append(f"[Inch]FP_Panel_Assembly_Height = PANEL_Front_Assy_Overall_Height")
+    lines.append(f"[Inch]FP_Panel_Assembly_Depth = PANEL_Front_Assy_Overall_Depth")
     lines.append("")
-    
-    lines.append(f"[Inch]FP_Plywood_Width = {front_panel_width:.3f}")
-    lines.append(f"[Inch]FP_Plywood_Height = {front_panel_height:.3f}")
+    lines.append(f"[Inch]FP_Plywood_Width = {front_components['plywood']['width']:.3f}")
+    lines.append(f"[Inch]FP_Plywood_Height = {front_components['plywood']['height']:.3f}")
     lines.append(f"[Inch]FP_Plywood_Thickness = {panel_thickness:.3f}")
     lines.append("")
-    
-    # Front panel cleats
-    add_panel_cleats_and_components(lines, "FP", front_components, 
-                                   front_panel_width, front_panel_height,
-                                   cleat_thickness, cleat_width, panel_thickness)
-    
+    add_panel_cleats_and_components(lines, "FP", front_components, front_panel_width, front_panel_height, cleat_thickness, cleat_width, panel_thickness)
+
     # ============ BACK PANEL VARIABLES ============
-    lines.append("// =========== BACK PANEL (BP) ===========")
-    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Width = {front_panel_width:.3f}")
-    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Height = {front_panel_height:.3f}")
-    lines.append(f"[Inch]PANEL_Back_Assy_Overall_Depth = {cleat_thickness:.3f}")
-    lines.append(f"[Inch]BP_Panel_Assembly_Width = {front_panel_width:.3f}")
-    lines.append(f"[Inch]BP_Panel_Assembly_Height = {front_panel_height:.3f}")
-    lines.append(f"[Inch]BP_Panel_Assembly_Depth = {cleat_thickness:.3f}")
+    lines.append("\n// =========== BACK PANEL (BP) ===========")
+    lines.append(f"[Inch]BP_Panel_Assembly_Width = PANEL_Back_Assy_Overall_Width")
+    lines.append(f"[Inch]BP_Panel_Assembly_Height = PANEL_Back_Assy_Overall_Height")
+    lines.append(f"[Inch]BP_Panel_Assembly_Depth = PANEL_Back_Assy_Overall_Depth")
     lines.append("")
-    
-    lines.append(f"[Inch]BP_Plywood_Width = {front_panel_width:.3f}")
-    lines.append(f"[Inch]BP_Plywood_Height = {front_panel_height:.3f}")
+    # Note: Back panel components are not fully implemented in this service, using front for now
+    lines.append(f"[Inch]BP_Plywood_Width = {back_components['plywood']['width']:.3f}")
+    lines.append(f"[Inch]BP_Plywood_Height = {back_components['plywood']['height']:.3f}")
     lines.append(f"[Inch]BP_Plywood_Thickness = {panel_thickness:.3f}")
     lines.append("")
-    
-    # Back panel cleats
-    add_panel_cleats_and_components(lines, "BP", back_components,
-                                   front_panel_width, front_panel_height,
-                                   cleat_thickness, cleat_width, panel_thickness)
-    
-    # ============ TOP PANEL VARIABLES ============
-    if include_top:
-        lines.append("// =========== TOP PANEL (TP) ===========")
-        lines.append(f"[Inch]PANEL_Top_Assy_Overall_Width = {top_panel_width:.3f}")
-        lines.append(f"[Inch]PANEL_Top_Assy_Overall_Length = {top_panel_length:.3f}")
-        lines.append(f"[Inch]PANEL_Top_Assy_Overall_Depth_Thickness = {cleat_thickness:.3f}")
-        lines.append(f"[Inch]TP_Panel_Assembly_Width = {top_panel_width:.3f}")
-        lines.append(f"[Inch]TP_Panel_Assembly_Length = {top_panel_length:.3f}")
-        lines.append(f"[Inch]TP_Panel_Assembly_Depth = {cleat_thickness:.3f}")
-        lines.append("")
-        
-        lines.append(f"[Inch]TP_Plywood_Width = {top_panel_width:.3f}")
-        lines.append(f"[Inch]TP_Plywood_Length = {top_panel_length:.3f}")
-        lines.append(f"[Inch]TP_Plywood_Thickness = {panel_thickness:.3f}")
-        lines.append("")
-        
-        # Top panel specific cleats
-        add_top_panel_cleats(lines, top_components, top_panel_length, top_panel_width,
-                           cleat_thickness, cleat_width, panel_thickness)
-    
+    add_panel_cleats_and_components(lines, "BP", back_components, back_panel_width, back_panel_height, cleat_thickness, cleat_width, panel_thickness)
+
     # ============ LEFT PANEL VARIABLES ============
-    lines.append("// =========== LEFT PANEL (LP) ===========")
-    lines.append(f"[Inch]LP_Panel_Assembly_Length = {side_panel_width:.3f}")
-    lines.append(f"[Inch]LP_Panel_Assembly_Height = {side_panel_height:.3f}")
-    lines.append(f"[Inch]LP_Panel_Assembly_Depth = {cleat_thickness:.3f}")
+    lines.append("\n// =========== LEFT PANEL (LP) ===========")
+    lines.append(f"[Inch]LP_Panel_Assembly_Width = PANEL_End_Assy_Overall_Width")
+    lines.append(f"[Inch]LP_Panel_Assembly_Height = PANEL_End_Assy_Overall_Height")
+    lines.append(f"[Inch]LP_Panel_Assembly_Depth = PANEL_End_Assy_Overall_Depth_Thickness")
     lines.append("")
-    
-    lines.append(f"[Inch]LP_Plywood_Length = {side_panel_width:.3f}")
-    lines.append(f"[Inch]LP_Plywood_Height = {side_panel_height:.3f}")
+    lines.append(f"[Inch]LP_Plywood_Length = {left_components['plywood']['length']:.3f}") # Corrected from width
+    lines.append(f"[Inch]LP_Plywood_Height = {left_components['plywood']['height']:.3f}")
     lines.append(f"[Inch]LP_Plywood_Thickness = {panel_thickness:.3f}")
     lines.append("")
-    
-    # Left panel cleats
-    add_panel_cleats_and_components(lines, "LP", left_components,
-                                   side_panel_width, side_panel_height,
-                                   cleat_thickness, cleat_width, panel_thickness)
-    
+    add_panel_cleats_and_components(lines, "LP", left_components, left_panel_width, left_panel_height, cleat_thickness, cleat_width, panel_thickness)
+
     # ============ RIGHT PANEL VARIABLES ============
-    lines.append("// =========== RIGHT PANEL (RP) ===========")
-    lines.append(f"[Inch]RP_Panel_Assembly_Length = {side_panel_width:.3f}")
-    lines.append(f"[Inch]RP_Panel_Assembly_Height = {side_panel_height:.3f}")
-    lines.append(f"[Inch]RP_Panel_Assembly_Depth = {cleat_thickness:.3f}")
+    lines.append("\n// =========== RIGHT PANEL (RP) ===========")
+    lines.append(f"[Inch]RP_Panel_Assembly_Width = PANEL_End_Assy_Overall_Width")
+    lines.append(f"[Inch]RP_Panel_Assembly_Height = PANEL_End_Assy_Overall_Height")
+    lines.append(f"[Inch]RP_Panel_Assembly_Depth = PANEL_End_Assy_Overall_Depth_Thickness")
     lines.append("")
-    
-    lines.append(f"[Inch]RP_Plywood_Length = {side_panel_width:.3f}")
-    lines.append(f"[Inch]RP_Plywood_Height = {side_panel_height:.3f}")
+    lines.append(f"[Inch]RP_Plywood_Length = {right_components['plywood']['length']:.3f}") # Corrected from width
+    lines.append(f"[Inch]RP_Plywood_Height = {right_components['plywood']['height']:.3f}")
     lines.append(f"[Inch]RP_Plywood_Thickness = {panel_thickness:.3f}")
     lines.append("")
-    
-    # Right panel cleats
-    add_panel_cleats_and_components(lines, "RP", right_components,
-                                   side_panel_width, side_panel_height,
-                                   cleat_thickness, cleat_width, panel_thickness)
-    
-    # ============ END PANEL REFERENCE ============
-    lines.append("// =========== END PANEL (EP) REFERENCE ===========")
-    lines.append(f"[Inch]PANEL_End_Assy_Overall_Length_Face = {side_panel_width:.3f}")
-    lines.append(f"[Inch]PANEL_End_Assy_Overall_Height = {side_panel_height:.3f}")
-    lines.append(f"[Inch]PANEL_End_Assy_Overall_Depth_Thickness = {cleat_thickness:.3f}")
+    add_panel_cleats_and_components(lines, "RP", right_components, right_panel_width, right_panel_height, cleat_thickness, cleat_width, panel_thickness)
+
+    # ============ TOP PANEL VARIABLES ============
+    lines.append("\n// =========== TOP PANEL (TP) ===========")
+    lines.append(f"[Inch]TP_Panel_Assembly_Width = PANEL_Top_Assy_Overall_Width")
+    lines.append(f"[Inch]TP_Panel_Assembly_Length = PANEL_Top_Assy_Overall_Length")
+    lines.append(f"[Inch]TP_Panel_Assembly_Depth = PANEL_Top_Assy_Overall_Depth_Thickness")
+    lines.append("")
+    if top_components:
+        lines.append(f"[Inch]TP_Plywood_Width = {top_components['plywood']['width']:.3f}")
+        lines.append(f"[Inch]TP_Plywood_Length = {top_components['plywood']['length']:.3f}")
+        lines.append(f"[Inch]TP_Plywood_Thickness = {panel_thickness:.3f}")
+        lines.append("")
+        add_top_panel_cleats(lines, top_components, top_panel_length, top_panel_width, cleat_thickness, cleat_width, panel_thickness)
     lines.append("")
     
     # Footer
@@ -368,6 +367,8 @@ def add_panel_cleats_and_components(lines: List[str], prefix: str, components: D
     inter_v_cleats_info = components.get('intermediate_vertical_cleats', {}) if components else {}
     inter_v_cleat_count = inter_v_cleats_info.get('count', 0)
     inter_v_cleat_positions = inter_v_cleats_info.get('positions_x_centerline', [])
+    inter_v_cleat_positions_left = inter_v_cleats_info.get('positions_x_left_edge', [])
+    inter_v_cleat_suppress_flags = inter_v_cleats_info.get('suppress_flags', [])
     lines.append(f"{prefix}_Intermediate_Vertical_Cleat_Count = {inter_v_cleat_count}")
     if inter_v_cleat_count > 0:
         lines.append(f"[Inch]{prefix}_Intermediate_Vertical_Cleat_Length = {inter_v_cleats_info.get('length', panel_height - 2 * cleat_width):.3f}")
@@ -382,15 +383,34 @@ def add_panel_cleats_and_components(lines: List[str], prefix: str, components: D
     
     # Intermediate vertical cleat instances (1-7)
     for i in range(1, 8):
-        if i <= len(inter_v_cleat_positions):
-            x_pos_centerline = inter_v_cleat_positions[i-1]
-            lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = 1")  # 1=show
-            lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = {x_pos_centerline:.3f}")
-            lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = {x_pos_centerline - cleat_thickness/2:.3f}")
+        # End panels (LP/RP) use explicit left-edge positions and per-instance suppress flags
+        if prefix in ("LP", "RP"):
+            if i <= inter_v_cleat_count:
+                suppress_flag = inter_v_cleat_suppress_flags[i-1] if (i-1) < len(inter_v_cleat_suppress_flags) else 1
+                lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = {suppress_flag}")
+                x_pos_centerline = inter_v_cleat_positions[i-1] if (i-1) < len(inter_v_cleat_positions) else 0.0
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = {x_pos_centerline:.3f}")
+                # Prefer explicit left-edge position; fall back to derived if missing
+                if (i-1) < len(inter_v_cleat_positions_left):
+                    x_pos_left_edge = inter_v_cleat_positions_left[i-1]
+                else:
+                    x_pos_left_edge = x_pos_centerline - (cleat_width / 2.0)
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = {x_pos_left_edge:.3f}")
+            else:
+                lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = 0")  # 0=hide
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = 0.001")
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = 0.001")
         else:
-            lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = 0")  # 0=hide
-            lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = 0.001")
-            lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = 0.001")
+            # Front/Back panels compute left-edge from centerline and member width
+            if i <= len(inter_v_cleat_positions):
+                x_pos_centerline = inter_v_cleat_positions[i-1]
+                lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = 1")  # 1=show
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = {x_pos_centerline:.3f}")
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = {x_pos_centerline - (cleat_width/2):.3f}")
+            else:
+                lines.append(f"{prefix}_Inter_VC_Inst_{i}_Suppress_Flag = 0")  # 0=hide
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_Centerline = 0.001")
+                lines.append(f"[Inch]{prefix}_Inter_VC_Inst_{i}_X_Pos_From_Left_Edge = 0.001")
     lines.append("")
     
     # Intermediate horizontal cleats

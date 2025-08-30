@@ -6,364 +6,459 @@ import { ResultsPanel } from '@/components/ResultsPanel'
 import { BOMPanel } from '@/components/BOMPanel'
 import { Documentation } from '@/components/Documentation'
 import LogViewer from '@/components/LogViewer'
-import CrateVisualization from '@/components/CrateVisualization'
-import ProfessionalCrateViewer from '@/components/ProfessionalCrateViewer'
-import { Paper, Alert, IconButton, Tooltip, ToggleButton, ToggleButtonGroup } from '@mui/material'
-import { Brightness4, Brightness7, Help, GitHub, LightMode, DarkMode, Inventory2, BugReport, ViewInAr, ViewModule } from '@mui/icons-material'
+// import ProfessionalCrateViewer from '@/components/ProfessionalCrateViewer-fixed'
+// import SimpleCrateViewer from '@/components/SimpleCrateViewer'
+import Basic3DViewer from '@/components/Basic3DViewer'
+import VersionInfo from '@/components/VersionInfo'
+import { 
+  IconButton, 
+  Tooltip, 
+  Tabs, 
+  Tab,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Box,
+  AppBar,
+  Toolbar,
+  Dialog,
+  Button,
+  Divider,
+  Stack
+} from '@mui/material'
+import { 
+  Help, 
+  GitHub, 
+  LightMode, 
+  DarkMode, 
+  Inventory2, 
+  BugReport,
+  Calculate,
+  ViewInAr,
+  Description,
+  Engineering,
+  CheckCircle,
+  Warning,
+  AttachMoney,
+  Build
+} from '@mui/icons-material'
 import { useCalculationStore } from '@/store/calculationStore'
-import { createTheme, ThemeProvider, CssBaseline, Box, AppBar, Toolbar, Typography, Chip, Button, Dialog } from '@mui/material'
+import { useTheme } from '@/components/ThemeProvider'
 import { useWebLogger } from '@/hooks/useWebLogger'
-import { logger } from '@/services/logger'
 
-export default function HomePage() {
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme')
-      return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    }
-    return false
-  })
-  const [docOpen, setDocOpen] = useState(false)
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+      style={{ height: '100%' }}
+    >
+      {value === index && children}
+    </div>
+  );
+}
+
+export default function OptimizedHomePage() {
+  const { mode, toggleTheme } = useTheme()
+  const darkMode = mode === 'dark'
+  const [docOpen, setDocOpen] = useState(false);
   const [logViewerOpen, setLogViewerOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<'basic' | 'professional'>('professional')
+  const [bottomTabIndex, setBottomTabIndex] = useState(0)
   const results = useCalculationStore((state) => state.calculationResult)
   const { logUserInteraction, logInfo } = useWebLogger('HomePage')
 
   // Initialize logger on mount
   useEffect(() => {
-    // Logger automatically loads persisted logs in constructor
     logInfo('Application started', { darkMode, hasResults: !!results })
   }, [])
 
-  // Log theme changes
-  useEffect(() => {
-    logUserInteraction('theme-changed', 'theme-toggle', { darkMode })
-  }, [darkMode, logUserInteraction])
 
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light',
-      primary: { main: '#1976D2' },
-      secondary: { main: '#FF6B35' },
-      background: {
-        default: darkMode ? '#0A0E1A' : '#F5F7FA',
-        paper: darkMode ? '#1A1F2E' : '#FFFFFF',
-      },
-      text: {
-        primary: darkMode ? '#E1E4E8' : '#2C3E50',
-        secondary: darkMode ? '#A0A8B3' : '#64748B',
-      }
-    },
-    typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-      h6: { fontWeight: 600 }
-    },
-    components: {
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            boxShadow: darkMode 
-              ? '0 4px 6px rgba(0, 0, 0, 0.3)' 
-              : '0 1px 3px rgba(0, 0, 0, 0.1)',
-            backgroundColor: darkMode ? '#1A1F2E' : '#FFFFFF'
-          }
-        }
-      },
-      MuiAccordion: {
-        styleOverrides: {
-          root: {
-            backgroundColor: darkMode ? '#1A1F2E' : '#FFFFFF',
-            '&:before': {
-              backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
-            }
-          }
-        }
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            backgroundColor: darkMode ? '#1A1F2E' : '#FFFFFF'
-          }
-        }
-      }
-    }
-  })
+  // Compact results display component
+  const CompactResults = () => {
+    if (!results) return null;
+    
+    const { panels, materials_summary, compliance, crate_dimensions } = results;
+    const materialCost = materials_summary?.plywood_sheets ? materials_summary.plywood_sheets * 45 : 0;
+    const laborCost = Math.round(materialCost * 0.4);
+    const totalCost = materialCost + laborCost;
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode
-    setDarkMode(newMode)
-    localStorage.setItem('theme', newMode ? 'dark' : 'light')
-    logUserInteraction('clicked', 'theme-toggle', { newMode })
-  }
+    return (
+      <Grid container spacing={2} sx={{ height: '100%' }}>
+        {/* Key Metrics */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="subtitle2" gutterBottom fontWeight={600}>
+                Key Metrics
+              </Typography>
+              <Stack spacing={1.5}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AttachMoney fontSize="small" color="primary" />
+                    <Typography variant="body2">Cost</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={600}>${totalCost}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Engineering fontSize="small" color="primary" />
+                    <Typography variant="body2">Weight</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={600}>
+                    {materials_summary?.estimated_weight_lbs || 0} lbs
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Build fontSize="small" color="primary" />
+                    <Typography variant="body2">Sheets</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={600}>
+                    {materials_summary?.plywood_sheets || 0}
+                  </Typography>
+                </Box>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Dimensions */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="subtitle2" gutterBottom fontWeight={600}>
+                External Dimensions
+              </Typography>
+              <Stack spacing={1.5}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Length</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {typeof crate_dimensions?.external_length === 'number' 
+                      ? crate_dimensions.external_length.toFixed(2) 
+                      : '0.00'}"
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Width</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {typeof crate_dimensions?.external_width === 'number' 
+                      ? crate_dimensions.external_width.toFixed(2) 
+                      : '0.00'}"
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Height</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {typeof crate_dimensions?.external_height === 'number' 
+                      ? crate_dimensions.external_height.toFixed(2) 
+                      : '0.00'}"
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Volume</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {typeof crate_dimensions?.external_length === 'number' &&
+                     typeof crate_dimensions?.external_width === 'number' &&
+                     typeof crate_dimensions?.external_height === 'number'
+                      ? ((crate_dimensions.external_length * 
+                          crate_dimensions.external_width * 
+                          crate_dimensions.external_height) / 1728).toFixed(1)
+                      : '0.0'} ft³
+                  </Typography>
+                </Box>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Compliance */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="subtitle2" gutterBottom fontWeight={600}>
+                Compliance Status
+              </Typography>
+              <Stack spacing={1.5}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {compliance?.astm_d6251 ? (
+                    <>
+                      <CheckCircle fontSize="small" color="success" />
+                      <Typography variant="body2">ASTM D6251-17</Typography>
+                    </>
+                  ) : (
+                    <>
+                      <Warning fontSize="small" color="warning" />
+                      <Typography variant="body2">Review Required</Typography>
+                    </>
+                  )}
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Safety Factor</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {compliance?.safety_factor || 1.5}x
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Max Load</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {compliance?.max_load || 0} lbs
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" color="textSecondary">Standards</Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {compliance?.standards_met?.length || 0} met
+                  </Typography>
+                </Box>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Panel Status */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="subtitle2" gutterBottom fontWeight={600}>
+                Panel Status
+              </Typography>
+              <Stack spacing={1}>
+                {Object.entries(panels || {}).slice(0, 5).map(([name, panel]: [string, any]) => (
+                  <Box key={name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                      {name}
+                    </Typography>
+                    {panel.error ? (
+                      <Warning fontSize="small" color="error" />
+                    ) : (
+                      <CheckCircle fontSize="small" color="success" />
+                    )}
+                  </Box>
+                ))}
+                <Divider />
+                <Typography variant="caption" color="textSecondary">
+                  All panels optimized
+                </Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    );
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh',
+      overflow: 'hidden',
+      bgcolor: 'background.default' 
+    }}>
+      {/* Compact Header */}
+      <AppBar 
+        position="fixed" 
+        elevation={1}
+        sx={{ 
+          bgcolor: 'background.paper',
+          borderBottom: 1,
+          borderColor: 'divider',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          height: 56
+        }}
+      >
+        <Toolbar sx={{ minHeight: 56, height: 56 }}>
+          <Inventory2 sx={{ mr: 2, color: 'primary.main' }} />
+          <Typography variant="h6" sx={{ flexGrow: 0, mr: 3, color: 'text.primary' }}>
+            AutoCrate
+          </Typography>
+          <Typography variant="body2" sx={{ flexGrow: 1, color: 'text.secondary' }}>
+            Professional NX Expression Generator v12.0.2
+          </Typography>
+          
+          <Stack direction="row" spacing={1}>
+            <Chip 
+              label="ASTM D6251-17" 
+              size="small" 
+              color="primary" 
+              variant="outlined"
+            />
+            <Tooltip title="Toggle Theme">
+              <IconButton onClick={toggleTheme} size="small">
+                {darkMode ? <LightMode /> : <DarkMode />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Debug Logs">
+              <IconButton onClick={() => setLogViewerOpen(true)} size="small">
+                <BugReport />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Documentation">
+              <IconButton onClick={() => setDocOpen(true)} size="small">
+                <Help />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="GitHub">
+              <IconButton 
+                href="https://github.com/your-repo/autocrate" 
+                target="_blank" 
+                size="small"
+              >
+                <GitHub />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Toolbar>
+      </AppBar>
+
+      {/* Main Content - No Scrolling */}
       <Box sx={{ 
+        mt: '56px',
+        flex: 1, 
         display: 'flex', 
-        flexDirection: 'column', 
-        height: '100vh', 
-        bgcolor: 'background.default' 
+        flexDirection: 'column',
+        overflow: 'hidden',
+        height: 'calc(100vh - 56px)'
       }}>
-        {/* Header */}
-        <AppBar 
-          position="fixed" 
-          elevation={1}
-          sx={{ 
-            height: { xs: 56, sm: 60 }, 
-            bgcolor: 'background.paper',
-            borderBottom: 1,
+        <Grid container sx={{ height: '100%', overflow: 'hidden' }}>
+          {/* Left Column - Calculator */}
+          <Grid item xs={12} md={3} sx={{ 
+            height: '100%',
+            borderRight: 1,
             borderColor: 'divider',
-            color: 'text.primary'
-          }}
-        >
-          <Toolbar sx={{ height: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Inventory2 color="primary" sx={{ fontSize: { xs: 24, sm: 28 } }} />
-              <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                AutoCrate V12
-              </Typography>
-              <Chip 
-                label="PRO" 
-                size="small" 
-                color="primary" 
-                sx={{ display: { xs: 'none', sm: 'flex' } }}
-              />
-            </Box>
-            
-            <Box sx={{ flexGrow: 1 }} />
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
-              <ToggleButtonGroup
-                value={viewMode}
-                exclusive
-                onChange={(e, newMode) => {
-                  if (newMode) {
-                    setViewMode(newMode)
-                    logUserInteraction('view-mode-changed', 'view-toggle', { newMode })
-                  }
-                }}
-                size="small"
-                sx={{ 
-                  mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  '& .MuiToggleButton-root': {
-                    color: 'text.secondary',
-                    '&.Mui-selected': {
-                      color: 'primary.main'
-                    }
-                  }
-                }}
-              >
-                <ToggleButton value="basic">
-                  <Tooltip title="Basic View">
-                    <ViewModule />
-                  </Tooltip>
-                </ToggleButton>
-                <ToggleButton value="professional">
-                  <Tooltip title="Professional 3D">
-                    <ViewInAr />
-                  </Tooltip>
-                </ToggleButton>
-              </ToggleButtonGroup>
-              
-              <Tooltip title={darkMode ? 'Light Mode' : 'Dark Mode'}>
-                <IconButton onClick={toggleDarkMode} color="inherit" size="small">
-                  {darkMode ? <LightMode /> : <DarkMode />}
-                </IconButton>
-              </Tooltip>
-              
-              <Tooltip title="Debug Logs">
-                <IconButton 
-                  onClick={() => {
-                    setLogViewerOpen(true)
-                    logUserInteraction('clicked', 'log-viewer-button')
-                  }}
-                  color="inherit" 
-                  size="small"
-                >
-                  <BugReport />
-                </IconButton>
-              </Tooltip>
-              
-              <Button 
-                startIcon={<Help sx={{ display: { xs: 'none', sm: 'block' } }} />}
-                onClick={() => {
-                  setDocOpen(true)
-                  logUserInteraction('clicked', 'docs-button')
-                }}
-                color="inherit"
-                size="small"
-                sx={{ minWidth: { xs: 40, sm: 'auto' } }}
-              >
-                <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>Docs</Typography>
-                <Help sx={{ display: { xs: 'block', sm: 'none' }, fontSize: 20 }} />
-              </Button>
-              
-              <Tooltip title="View on GitHub">
-                <IconButton 
-                  href="https://github.com/yourusername/autocrate-v12" 
-                  target="_blank"
-                  color="inherit"
-                  size="small"
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
-                >
-                  <GitHub />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Toolbar>
-        </AppBar>
-        
-        {/* Main Content */}
-        <Box 
-          component="main" 
-          sx={{ 
-            pt: { xs: '56px', sm: '60px' },
-            flex: 1,
-            display: 'flex',
-            flexDirection: { xs: 'column', lg: 'row' },
-            gap: 2,
-            p: { xs: 1, sm: 2 },
-            overflow: { xs: 'auto', lg: 'hidden' }
-          }}
-        >
-          {/* Input Panel */}
-          <Box sx={{ 
-            width: { xs: '100%', lg: '30%' },
-            minHeight: { xs: 'auto', lg: '100%' },
-            display: 'flex',
-            flexDirection: 'column'
+            overflow: 'auto',
+            '&::-webkit-scrollbar': { display: 'none' },
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none'
           }}>
             <Calculator />
-          </Box>
-          
-          {/* 3D Viewer */}
-          <Box sx={{ 
-            width: { xs: '100%', md: '100%', lg: '40%' },
-            height: { xs: 400, md: 500, lg: '100%' },
-            display: { xs: 'block', sm: 'block' }
-          }}>
-            {viewMode === 'professional' ? (
-              <ProfessionalCrateViewer crateData={results} />
-            ) : (
-              <CrateVisualization 
-                crateData={results}
-                width={800}
-                height={600}
-              />
-            )}
-          </Box>
-          
-          {/* Results Panel */}
-          <Box sx={{ 
-            width: { xs: '100%', lg: '30%' },
-            minHeight: { xs: 'auto', lg: '100%' },
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            {results ? (
-              <>
-                {/* Results Panel */}
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    transition: 'all 0.2s ease-in-out',
-                    backgroundColor: 'background.paper'
-                  }}
-                >
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold">Calculation Results</h3>
-                  </div>
-                  <div className="p-4">
-                    <ResultsPanel results={results} />
-                  </div>
-                </Paper>
+          </Grid>
 
-                {/* BOM Panel */}
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    transition: 'all 0.2s ease-in-out',
-                    backgroundColor: 'background.paper'
-                  }}
+          {/* Middle Column - 3D Viewer */}
+          <Grid item xs={12} md={6} sx={{ 
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+          }}>
+            {/* 3D Viewer - Fixed Height */}
+            <Box sx={{ 
+              height: '60%',
+              minHeight: 400,
+              position: 'relative',
+              borderBottom: 1,
+              borderColor: 'divider'
+            }}>
+              <Basic3DViewer crateData={results} />
+            </Box>
+
+            {/* Bottom Section - Tabs with Results */}
+            <Box sx={{ 
+              height: '40%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}>
+              <Paper sx={{ 
+                borderBottom: 1, 
+                borderColor: 'divider',
+                bgcolor: 'background.paper'
+              }}>
+                <Tabs 
+                  value={bottomTabIndex} 
+                  onChange={(e, newValue) => setBottomTabIndex(newValue)}
+                  variant="fullWidth"
+                  sx={{ minHeight: 40 }}
                 >
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold">Bill of Materials</h3>
-                  </div>
-                  <div className="p-4">
-                    <BOMPanel results={results} />
-                  </div>
-                </Paper>
-              </>
-            ) : (
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 12, 
-                  textAlign: 'center', 
-                  transition: 'all 0.2s ease-in-out',
-                  backgroundColor: 'background.paper'
-                }}
-              >
-                <div className={`text-8xl mb-6 text-gray-300`}>
-                  📦
-                </div>
-                <h3 className="text-2xl font-medium mb-4">Ready to Design</h3>
-                <p className="text-lg text-gray-600">
-                  Enter your product specifications to begin professional crate design.
-                </p>
+                  <Tab 
+                    label="Results" 
+                    icon={<ViewInAr />} 
+                    iconPosition="start"
+                    sx={{ minHeight: 40 }}
+                  />
+                  <Tab 
+                    label="BOM" 
+                    icon={<Inventory2 />} 
+                    iconPosition="start"
+                    sx={{ minHeight: 40 }}
+                  />
+                  <Tab 
+                    label="Docs" 
+                    icon={<Description />} 
+                    iconPosition="start"
+                    sx={{ minHeight: 40 }}
+                  />
+                </Tabs>
               </Paper>
-            )}
-          </Box>
-        </Box>
-        
-        {/* Footer - Only on desktop */}
-        <Box 
-          component="footer"
-          sx={{ 
-            display: { xs: 'none', lg: 'flex' },
-            height: 40,
-            px: 3,
-            borderTop: 1,
+              
+              <Box sx={{ 
+                flex: 1, 
+                overflow: 'auto',
+                p: 2,
+                '&::-webkit-scrollbar': { display: 'none' },
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none'
+              }}>
+                <TabPanel value={bottomTabIndex} index={0}>
+                  <CompactResults />
+                </TabPanel>
+                <TabPanel value={bottomTabIndex} index={1}>
+                  <BOMPanel results={results} />
+                </TabPanel>
+                <TabPanel value={bottomTabIndex} index={2}>
+                  <Typography variant="body2" sx={{ p: 2 }}>
+                    ASTM D6251-17 Compliant Wooden Crate Design System
+                  </Typography>
+                </TabPanel>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Right Column - Quick Actions & Stats */}
+          <Grid item xs={12} md={3} sx={{ 
+            height: '100%',
+            borderLeft: 1,
             borderColor: 'divider',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            bgcolor: 'background.paper'
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            &copy; 2024 AutoCrate V12 • ASTM D6251-17 Compliant
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Typography variant="caption" color="text.secondary">
-              Version 12.0.0
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Engineering Grade
-            </Typography>
-          </Box>
-        </Box>
-        
-        {/* Documentation Modal */}
-        <Documentation 
-          open={docOpen} 
-          onClose={() => setDocOpen(false)} 
-        />
-        
-        {/* Log Viewer Dialog */}
-        <Dialog
-          open={logViewerOpen}
-          onClose={() => setLogViewerOpen(false)}
-          maxWidth="xl"
-          fullWidth
-          PaperProps={{
-            sx: { height: '90vh' }
-          }}
-        >
-          <LogViewer />
-        </Dialog>
+            overflow: 'auto',
+            '&::-webkit-scrollbar': { display: 'none' },
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none'
+          }}>
+            <ResultsPanel results={results} />
+          </Grid>
+        </Grid>
       </Box>
-    </ThemeProvider>
-  )
+
+      {/* Dialogs */}
+      <Documentation 
+        open={docOpen} 
+        onClose={() => setDocOpen(false)}
+      />
+      
+      <Dialog 
+        open={logViewerOpen} 
+        onClose={() => setLogViewerOpen(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <LogViewer />
+      </Dialog>
+      
+      {/* Version Info Component */}
+      <VersionInfo />
+    </Box>
+  );
 }

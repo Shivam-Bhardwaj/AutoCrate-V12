@@ -104,31 +104,87 @@ export function BOMPanel({ results }: BOMPanelProps) {
 
   const handleExport = async (format: string) => {
     try {
-      if (format === 'excel' || format === 'csv') {
-        // Generate BOM data client-side
-        const exportData = {
-          items: bomData,
-          totals: {
-            subtotal: totalCost,
-            margin: totalCost * 0.25,
-            total: totalCost * 1.25
-          },
-          meta: {
-            generated: new Date().toISOString(),
-            version: '12.0.0'
-          }
-        }
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      if (format === 'csv') {
+        // Generate CSV data
+        let csvContent = 'Category,Description,Quantity,Unit,Unit Cost,Total Cost\n'
         
-        // Create download link
+        bomData.forEach(item => {
+          csvContent += `"${item.category}","${item.description}",${item.quantity},"${item.unit}",${item.unit_cost || 0},${item.total_cost || 0}\n`
+        })
+        
+        // Add summary rows
+        const labor = calculateLabor()
+        const subtotal = totalCost + labor
+        const overhead = subtotal * 0.15
+        const margin = subtotal * 1.15 * 0.25
+        const recommendedPrice = calculateMarkup(subtotal)
+        
+        csvContent += '\n'
+        csvContent += 'Summary,,,,\n'
+        csvContent += `Materials Cost,,,,,${totalCost.toFixed(2)}\n`
+        csvContent += `Labor (4 hours @ $35/hr),,,,,${labor.toFixed(2)}\n`
+        csvContent += `Subtotal,,,,,${subtotal.toFixed(2)}\n`
+        csvContent += `Overhead (15%),,,,,${overhead.toFixed(2)}\n`
+        csvContent += `Margin (25%),,,,,${margin.toFixed(2)}\n`
+        csvContent += `Recommended Price,,,,,${recommendedPrice.toFixed(2)}\n`
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `BOM_${new Date().toISOString().slice(0,10)}.json`
+        link.download = `BOM_${new Date().toISOString().slice(0,10)}.csv`
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
+        
+      } else if (format === 'excel') {
+        // Generate Excel-compatible CSV (can be opened in Excel)
+        let excelContent = 'sep=,\n' // Excel separator hint
+        excelContent += 'Bill of Materials\n'
+        excelContent += `Generated: ${new Date().toLocaleString()}\n`
+        excelContent += `Project ID: ${results.request_id?.substring(0, 8) || 'N/A'}\n\n`
+        excelContent += 'Category,Description,Quantity,Unit,Unit Cost,Total Cost\n'
+        
+        bomData.forEach(item => {
+          excelContent += `"${item.category}","${item.description}",${item.quantity},"${item.unit}",`
+          excelContent += `${item.unit_cost ? '$' + item.unit_cost.toFixed(2) : '-'},`
+          excelContent += `${item.total_cost ? '$' + item.total_cost.toFixed(2) : '-'}\n`
+        })
+        
+        // Add summary section
+        const labor = calculateLabor()
+        const subtotal = totalCost + labor
+        const overhead = subtotal * 0.15
+        const margin = subtotal * 1.15 * 0.25
+        const recommendedPrice = calculateMarkup(subtotal)
+        
+        excelContent += '\n'
+        excelContent += 'Cost Summary\n'
+        excelContent += `Materials Cost,,,,,=$${totalCost.toFixed(2)}\n`
+        excelContent += `Labor (4 hours @ $35/hr),,,,,=$${labor.toFixed(2)}\n`
+        excelContent += `Subtotal,,,,,=$${subtotal.toFixed(2)}\n`
+        excelContent += `Overhead (15%),,,,,=$${overhead.toFixed(2)}\n`
+        excelContent += `Margin (25%),,,,,=$${margin.toFixed(2)}\n`
+        excelContent += `Recommended Price,,,,,=$${recommendedPrice.toFixed(2)}\n`
+        
+        excelContent += '\n'
+        excelContent += 'Material Optimization Suggestions\n'
+        excelContent += '- Consider using cutoffs from Sheet 1 for smaller cleats\n'
+        excelContent += '- Bulk purchase of screws can reduce cost by 15%\n'
+        excelContent += '- Alternative: 1/2" plywood for internal cleats (save ~$20)\n'
+        excelContent += '- Group cutting patterns to minimize waste (est. 18% reduction)\n'
+        
+        const blob = new Blob([excelContent], { type: 'text/csv;charset=utf-8;' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `BOM_Excel_${new Date().toISOString().slice(0,10)}.csv`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        
       } else if (format === 'print') {
         window.print()
       }

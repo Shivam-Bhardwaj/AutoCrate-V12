@@ -1,9 +1,120 @@
 {
-  "version": "1.0.1",
-  "deploymentNumber": 0,
-  "lastDeployment": null,
-  "environment": "development",
-  "buildNumber": "0",
-  "gitCommit": "",
-  "changelog": []
+  "version": "1.1.0",
+  "deploymentNumber": 14,
+  "lastDeployment": "2025-08-28T23:54:39.064Z",
+  "environment": "production",
+  "buildNumber": "1756425279065",
+  "gitCommit": "b57a32e",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "deployment": 14,
+      "date": "2025-08-28T23:54:39.064Z",
+      "changes": [
+        "revert to vercel"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 12,
+      "date": "2025-08-28T22:39:13.081Z",
+      "changes": [
+        "none"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 10,
+      "date": "2025-08-27T23:59:09.345Z",
+      "changes": [
+        "new"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 9,
+      "date": "2025-08-27T23:42:49.056Z",
+      "changes": [
+        "security updated"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 8,
+      "date": "2025-08-27T23:29:54.471Z",
+      "changes": [
+        "new expressions"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 7,
+      "date": "2025-08-27T23:20:00.256Z",
+      "changes": [
+        "download button"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 6,
+      "date": "2025-08-27T23:09:43.589Z",
+      "changes": [
+        "tested the changes"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 5,
+      "date": "2025-08-27T22:52:34.186Z",
+      "changes": [
+        "updated changelog management"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.1.0",
+      "deployment": 4,
+      "date": "2025-08-27T22:51:16.084Z",
+      "changes": [
+        "Unified calculation engine via Python API",
+        "Zero drift between web and desktop",
+        "Version 1.1.0 major feature release"
+      ],
+      "commit": "local"
+    },
+    {
+      "version": "1.0.1",
+      "deployment": 2,
+      "date": "2025-08-27T22:46:46.637Z",
+      "changes": [
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator",
+        "used same python file for NX expressions generator"
+      ],
+      "commit": "b57a32e"
+    },
+    {
+      "version": "1.0.1",
+      "deployment": 1,
+      "date": "2025-08-27T11:19:04.956Z",
+      "changes": [
+        "UI UPDATE",
+        "UI UPDATE",
+        "UI UPDATE"
+      ],
+      "commit": "b57a32e"
+    }
+  ],
+  "gitBranch": "main"
 }

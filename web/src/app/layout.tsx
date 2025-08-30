@@ -25,11 +25,27 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} font-sans antialiased`}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className={`${inter.className} font-sans antialiased`} suppressHydrationWarning>
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Fix visibility issue on load
+            if (typeof window !== 'undefined') {
+              window.addEventListener('load', function() {
+                document.querySelectorAll('[style*="visibility"]').forEach(function(el) {
+                  el.style.visibility = 'visible';
+                });
+              });
+              // Also fix immediately
+              document.querySelectorAll('[style*="visibility"]').forEach(function(el) {
+                el.style.visibility = 'visible';
+              });
+            }
+          `
+        }} />
       </body>
     </html>
   )

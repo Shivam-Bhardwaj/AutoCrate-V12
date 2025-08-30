@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, Typography, Grid, Chip, LinearProgress, Button, Box } from '@mui/material'
-import { Check, Warning, Info, Download, Description } from '@mui/icons-material'
+import { Card, CardContent, Typography, Grid, Chip, LinearProgress, Button, Box, Divider, Alert } from '@mui/material'
+import { Check, Warning, Info, Download, Description, Engineering, LocalShipping, AttachMoney, Build, PictureAsPdf } from '@mui/icons-material'
 import { useCalculationStore } from '@/store/calculationStore'
-import { generateNXExpression } from '@/lib/autocrate-calculations'
+import { generatePdf } from '@/lib/pdfGenerator'
+import { generateNXExpression } from '@/lib/autocrate-calculations-fixed'
+import { generateNXExpressions } from '@/services/python-api'
 // import { ManagedLink, // useMultipleLinks removed } from './ManagedLink' // Temporarily disabled
 
 interface ResultsPanelProps {
@@ -21,195 +23,281 @@ export function ResultsPanel({ results }: ResultsPanelProps) {
   const { panels, materials_summary, compliance, crate_dimensions } = results
 
   const handleDownloadNXExpression = async () => {
+    console.log('=== Download NX Expression Button Clicked ===')
+    console.log('Current results:', results)
+    
+    if (!results) {
+      console.warn('No results available - calculation needs to be run first')
+      alert('Please calculate crate dimensions first')
+      return
+    }
+    
     setDownloading(true)
+    console.log('Starting NX expression generation...')
+    
     try {
-      console.log('Generating NX expression client-side...')
+      // Try to use Python API first for exact desktop compatibility
+      console.log('Attempting to use Python API for NX generation...')
       
-      // Generate NX expression content directly in browser
-      const nxContent = generateNXExpression(results)
+      // Prepare parameters for Python API
+      const params = {
+        productLength: results.inputs?.product_length || 96,
+        productWidth: results.inputs?.product_width || 48,
+        productHeight: results.inputs?.product_height || 30,
+        productWeight: results.inputs?.product_weight || 1000,
+        quantity: results.inputs?.quantity || 1,
+        panelThickness: results.inputs?.panel_thickness || 0.75,
+        cleatThickness: results.inputs?.cleat_thickness || 1.5,
+        cleatMemberWidth: results.inputs?.cleat_member_width || 3.5,
+        clearance: results.inputs?.clearance || 2,
+        clearanceAbove: results.inputs?.clearance_above || 0.5,
+        groundClearance: results.inputs?.ground_clearance || 0,
+        floorboardThickness: results.inputs?.floorboard_thickness || 0.75,
+        skidHeight: results.inputs?.skid_height || 3.5,
+        safetyFactor: results.inputs?.safety_factor || 1.5,
+        panelGradeCode: "ASTM",
+        assemblyTimeCode: 2.0
+      }
       
-      // Create blob from the content
-      const blob = new Blob([nxContent], { type: 'text/plain' })
+      let nxContent: string
+      let filename: string
       
-      // Create download link
+      try {
+        // Try Python API
+        const apiResult = await generateNXExpressions(params)
+        if (apiResult.success && apiResult.expressions) {
+          console.log('✓ Using Python API for exact desktop compatibility')
+          nxContent = apiResult.expressions
+          filename = apiResult.filename || `Crate_${Math.round(results.crate_dimensions.external_length)}x${Math.round(results.crate_dimensions.external_width)}x${Math.round(results.crate_dimensions.external_height)}_${new Date().toISOString().replace(/[:.]/g, '').slice(0, 15)}.exp`
+        } else {
+          throw new Error('Python API not available')
+        }
+      } catch (apiError) {
+        // Fallback to local TypeScript function
+        console.log('Python API not available, using local TypeScript function...')
+        nxContent = generateNXExpression(results)
+        const now = new Date()
+        const timestamp = now.toISOString().replace(/[:.]/g, '').slice(0, 15)
+        filename = `Crate_${Math.round(results.crate_dimensions.external_length)}x${Math.round(results.crate_dimensions.external_width)}x${Math.round(results.crate_dimensions.external_height)}_${timestamp}.exp`
+      }
+      
+      console.log(`Creating download file: ${filename}, size: ${nxContent.length} bytes`)
+      
+      // Create blob and download
+      const blob = new Blob([nxContent], { type: 'text/plain;charset=utf-8' })
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      
-      // Generate a valid, sortable filename with timestamp
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = (now.getMonth() + 1).toString().padStart(2, '0');
-      const day = now.getDate().toString().padStart(2, '0');
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      const filename = `${year}${month}${day}_${hours}${minutes}${seconds}_Crate.exp`;
-      
       link.download = filename
+      link.style.display = 'none'
       document.body.appendChild(link)
+      console.log('Triggering download...')
       link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
       
-    } catch (error) {
-      console.error('Download failed:', error)
-      alert('Failed to download NX expression file. Please try again.')
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        console.log('Download cleanup complete')
+      }, 100)
+      
+      console.log('✓ NX expression file downloaded successfully')
+    } catch (error: any) {
+      console.error('❌ Failed to generate NX expression:', error)
+      console.error('Error stack:', error.stack)
+      alert(`Failed to generate NX expression file: ${error.message || 'Unknown error'}`)
     } finally {
       setDownloading(false)
+      console.log('=== Download process complete ===')
     }
   }
 
-  return (
-    <div className="space-y-4">
-      {/* Download Section */}
-      <Card>
-        <CardContent>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Export Options</Typography>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Download />}
-                onClick={handleDownloadNXExpression}
-                disabled={downloading}
-              >
-                {downloading ? 'Generating...' : 'Download NX Expression File'}
-              </Button>
-              <Button
-                variant="outlined"
-                startIcon={<Description />}
-                disabled
-                title="PDF Report feature coming soon"
-              >
-                PDF Report (Coming Soon)
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+  // Calculate cost estimates (example calculations)
+  const materialCost = materials_summary?.plywood_sheets ? materials_summary.plywood_sheets * 45 : 0
+  const laborCost = Math.round(materialCost * 0.4)
+  const totalCost = materialCost + laborCost
+  const leadTime = materials_summary?.plywood_sheets > 10 ? 5 : 3
 
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Crate Dimensions
+  return (
+    <div className="space-y-3">
+      {/* Quick Actions */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          startIcon={<Download />}
+          onClick={handleDownloadNXExpression}
+          disabled={!results || downloading}
+          sx={{ textTransform: 'none' }}
+          data-download-nx="true"
+        >
+          {downloading ? 'Generating...' : 'Download NX File'}
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          startIcon={<PictureAsPdf />}
+          onClick={() => generatePdf(results)}
+          disabled={!results || downloading}
+          sx={{ textTransform: 'none' }}
+        >
+          PDF Report
+        </Button>
+      </Box>
+
+      {/* Key Metrics Card */}
+      <Card elevation={0}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+            Key Metrics
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="textSecondary">External Length</Typography>
-              <Typography variant="h6">
-                {crate_dimensions?.external_length?.toFixed(2)}"
-              </Typography>
+            <Grid item xs={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <AttachMoney fontSize="small" color="primary" />
+                <Box>
+                  <Typography variant="caption" color="textSecondary">Est. Cost</Typography>
+                  <Typography variant="body1" fontWeight="600">${totalCost}</Typography>
+                </Box>
+              </Box>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="textSecondary">External Width</Typography>
-              <Typography variant="h6">
-                {crate_dimensions?.external_width?.toFixed(2)}"
-              </Typography>
+            <Grid item xs={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocalShipping fontSize="small" color="primary" />
+                <Box>
+                  <Typography variant="caption" color="textSecondary">Lead Time</Typography>
+                  <Typography variant="body1" fontWeight="600">{leadTime} days</Typography>
+                </Box>
+              </Box>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="textSecondary">External Height</Typography>
-              <Typography variant="h6">
-                {crate_dimensions?.external_height?.toFixed(2)}"
-              </Typography>
+            <Grid item xs={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Engineering fontSize="small" color="primary" />
+                <Box>
+                  <Typography variant="caption" color="textSecondary">Weight</Typography>
+                  <Typography variant="body1" fontWeight="600">{materials_summary?.estimated_weight_lbs || 0} lbs</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Build fontSize="small" color="primary" />
+                <Box>
+                  <Typography variant="caption" color="textSecondary">Sheets</Typography>
+                  <Typography variant="body1" fontWeight="600">{materials_summary?.plywood_sheets || 0}</Typography>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Panel Summary
+      {/* Dimensions Card */}
+      <Card elevation={0}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+            External Dimensions
           </Typography>
-          <div className="space-y-2">
-            {Object.entries(panels || {}).map(([name, panel]: [string, any]) => (
-              <div key={name} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                <Typography variant="body1" className="capitalize">
-                  {name} Panel
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2" color="textSecondary">Length</Typography>
+            <Typography variant="body2" fontWeight="500">
+              {typeof crate_dimensions?.external_length === 'number' ? crate_dimensions.external_length.toFixed(2) : '0.00'}"
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2" color="textSecondary">Width</Typography>
+            <Typography variant="body2" fontWeight="500">
+              {typeof crate_dimensions?.external_width === 'number' ? crate_dimensions.external_width.toFixed(2) : '0.00'}"
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="body2" color="textSecondary">Height</Typography>
+            <Typography variant="body2" fontWeight="500">
+              {typeof crate_dimensions?.external_height === 'number' ? crate_dimensions.external_height.toFixed(2) : '0.00'}"
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Compliance Status */}
+      <Card elevation={0}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+            Compliance Status
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            {compliance?.astm_d6251 ? (
+              <><Check fontSize="small" color="success" />
+              <Typography variant="body2">ASTM D6251-17 Compliant</Typography></>
+            ) : (
+              <><Warning fontSize="small" color="warning" />
+              <Typography variant="body2">Review Required</Typography></>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="caption" color="textSecondary">Safety Factor</Typography>
+            <Typography variant="caption" fontWeight="500">{compliance?.safety_factor || 1.5}x</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="caption" color="textSecondary">Max Load</Typography>
+            <Typography variant="caption" fontWeight="500">{compliance?.max_load || 0} lbs</Typography>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Panel Status */}
+      <Card elevation={0}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+            Panel Status
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            {Object.entries(panels || {}).slice(0, 6).map(([name, panel]: [string, any]) => (
+              <Box key={name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="caption" sx={{ textTransform: 'capitalize' }}>
+                  {name}
                 </Typography>
                 {panel.error ? (
-                  <Chip icon={<Warning />} label="Error" color="error" size="small" />
+                  <Warning fontSize="small" color="error" />
                 ) : (
-                  <Chip icon={<Check />} label="Calculated" color="success" size="small" />
+                  <Check fontSize="small" color="success" />
                 )}
-              </div>
+              </Box>
             ))}
-          </div>
+          </Box>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Materials Summary
+      {/* Cost Breakdown */}
+      <Card elevation={0}>
+        <CardContent sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+            Cost Breakdown
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">Plywood Sheets</Typography>
-              <Typography variant="h4">{materials_summary?.plywood_sheets || 0}</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">Total Area</Typography>
-              <Typography variant="h4">{materials_summary?.total_area_sqft || 0} ft²</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">Lumber Length</Typography>
-              <Typography variant="h4">{materials_summary?.lumber_length_ft || 0} ft</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">Est. Weight</Typography>
-              <Typography variant="h4">{materials_summary?.estimated_weight_lbs || 0} lbs</Typography>
-            </Grid>
-          </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="caption" color="textSecondary">Materials</Typography>
+            <Typography variant="caption" fontWeight="500">${materialCost}</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="caption" color="textSecondary">Labor (Est.)</Typography>
+            <Typography variant="caption" fontWeight="500">${laborCost}</Typography>
+          </Box>
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="body2" fontWeight="600">Total Estimate</Typography>
+            <Typography variant="body2" fontWeight="600" color="primary">${totalCost}</Typography>
+          </Box>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Compliance & Standards
-          </Typography>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Typography variant="body1">ASTM D6251-17</Typography>
-              {compliance?.astm_d6251 ? (
-                <Chip icon={<Check />} label="Compliant" color="success" size="small" />
-              ) : (
-                <Chip icon={<Warning />} label="Review Required" color="warning" size="small" />
-              )}
-            </div>
-            <div className="flex items-center justify-between">
-              <Typography variant="body1">Safety Factor</Typography>
-              <Typography variant="h6">{compliance?.safety_factor || 1.5}x</Typography>
-            </div>
-            <div className="flex items-center justify-between">
-              <Typography variant="body1">Max Load Capacity</Typography>
-              <Typography variant="h6">{compliance?.max_load || 0} lbs</Typography>
-            </div>
-            <div className="mt-3">
-              <Typography variant="body2" color="textSecondary">Standards Met:</Typography>
-              <div className="flex gap-2 mt-1">
-                {compliance?.standards_met?.map((standard: string) => (
-                  <Chip key={standard} label={standard} size="small" variant="outlined" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-green-50 dark:bg-green-900">
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Info color="info" />
-            <Typography variant="body2">
-              Design optimized for minimum material waste while maintaining structural integrity
-            </Typography>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Optimization Note */}
+      <Alert severity="success" sx={{ py: 1 }}>
+        <Typography variant="caption">
+          Design optimized for minimum waste
+        </Typography>
+      </Alert>
     </div>
   )
 }

@@ -79,6 +79,10 @@ class AutoCrateLogger:
         
     def _setup_console_handler(self):
         """Setup console handler for immediate feedback."""
+        # Do not add console handler in test mode to prevent hanging
+        if os.getenv('AUTOCRATE_TEST_MODE', '0') == '1':
+            return
+
         console_handler = logging.StreamHandler(sys.stdout)
         
         # Set console level based on environment
@@ -216,7 +220,7 @@ class AutoCrateLogger:
         }
         
         # Log to main log
-        status_icon = {'PASS': '✅', 'FAIL': '❌', 'SKIP': '⏭️', 'ERROR': '💥'}.get(status, '❓')
+        status_icon = {'PASS': '[PASS]', 'FAIL': '[FAIL]', 'SKIP': '[SKIP]', 'ERROR': '[ERROR]'}.get(status, '[UNKNOWN]')
         self.info(f"TEST {status_icon} {test_name} ({test_data['duration_ms']}ms)", test_data)
         
         # Save to separate test log
@@ -244,7 +248,7 @@ class AutoCrateLogger:
             'timestamp': datetime.datetime.now().isoformat()
         }
         
-        status_icon = '✅' if failed == 0 else '❌'
+        status_icon = '[PASS]' if failed == 0 else '[FAIL]'
         self.info(f"TEST SUITE {status_icon} {suite_name}: {passed}/{total_tests} passed ({pass_rate:.1f}%)", summary)
 
     def finalize_session(self):

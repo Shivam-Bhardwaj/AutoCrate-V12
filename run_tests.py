@@ -217,7 +217,7 @@ class ContinuousTestRunner:
                 all_passed, critical_failures = self.check_test_results(results)
                 
                 if critical_failures:
-                    print("\n⚠ CRITICAL FAILURES DETECTED:")
+                    print("\n[WARNING] CRITICAL FAILURES DETECTED:")
                     for failure in critical_failures:
                         print(f"  • {failure}")
                 

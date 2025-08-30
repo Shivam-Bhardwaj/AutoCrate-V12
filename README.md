@@ -1,19 +1,22 @@
-# AutoCrate v12 - AI Development Showcase
+# AutoCrate v12 - Professional Crate Design Tool
 
-**Professional CAD Automation Tool for Custom Shipping Crate Design**  
-*A Demonstration of AI-Assisted Software Development*
+**Professional CAD Automation for Custom Shipping Crate Design**  
+*Desktop and Web Versions for Maximum Flexibility*
 
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen)](https://github.com/Shivam-Bhardwaj/AutoCrate-V12)
 [![License](https://img.shields.io/badge/license-Educational%20Use-orange.svg)](LICENSE)
-[![AI Collaboration](https://img.shields.io/badge/AI-Collaboration%20Demo-blue.svg)](https://claude.ai/code)
-[![Code Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](coverage.html)
+[![Web Version](https://img.shields.io/badge/Web-Vercel%20Deployed-blue)](https://autocrate-v12.vercel.app/)
+[![Desktop Version](https://img.shields.io/badge/Download-Desktop%20App-green)](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/releases)
 
 ## Overview
 
-AutoCrate is a sophisticated Python application that automates the design and manufacturing data generation for custom shipping crates. Built for professional manufacturing environments, it seamlessly integrates with Siemens NX CAD software to produce parametric 3D models and technical drawings.
+AutoCrate is a professional CAD automation tool for designing custom shipping crates. It's available in two versions to suit different workflows:
 
-> **AI Development Showcase**: This project demonstrates the power of AI-assisted software development, where advanced engineering calculations, comprehensive testing, and professional documentation were created through human-AI collaboration. The engineering rules are based on ASTM standards and industry best practices.
+1. **Desktop Application** - Full-featured standalone app with CAD integration
+2. **Web Application** - Cloud-based version for quick access and sharing
+
+Built for manufacturing environments, it generates parametric 3D models, technical drawings, and manufacturing specifications that integrate with Siemens NX CAD software.
 
 ### Important Notice
 - **Educational Use Only**: This software is provided for educational and demonstration purposes
@@ -37,13 +40,15 @@ AutoCrate is a sophisticated Python application that automates the design and ma
 
 ## Quick Start
 
-### Prerequisites
-- Python 3.8 or higher
-- Windows (primary support)
-- Siemens NX (for CAD model generation)
+### Desktop Version
+1. **Download** the latest release for your OS from [Releases](https://github.com/Shivam-Bhardwaj/AutoCrate-V12/releases)
+2. **Run** the installer or executable
+3. **Launch** AutoCrate from your applications menu
 
-### Installation
+### Web Version
+Access the web application at: [https://autocrate-v12.vercel.app/](https://autocrate-v12.vercel.app/)
 
+### Development Setup
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Shivam-Bhardwaj/AutoCrate-V12.git
@@ -106,22 +111,19 @@ AutoCrate follows a sophisticated workflow to generate complete crate designs:
 ![Design Process](docs/screenshots/design-workflow.png)
 *AutoCrate's intelligent design workflow*
 
-## Architecture
+## Architecture Overview
 
-AutoCrate is built with a modern, maintainable architecture:
+AutoCrate is built with a unified codebase that powers both desktop and web versions:
 
 ```
-autocrate/
-├── __init__.py                     # Package initialization
-├── nx_expressions_generator.py     # Main application logic
-├── front_panel_logic.py           # Front panel calculations
-├── back_panel_logic.py            # Back panel calculations
-├── left_panel_logic.py            # Left panel calculations
-├── right_panel_logic.py           # Right panel calculations
-├── top_panel_logic.py             # Top panel calculations
-├── end_panel_logic.py             # End panel calculations
-├── skid_logic.py                  # Skid sizing and layout
-├── floorboard_logic.py            # Floorboard calculations
+AutoCrate/
+├── main.py                    # Desktop application entry point
+├── api/                       # API server implementation (used by web version)
+│   └── nx_expression_service.py  # Core calculation engine
+├── autocrate/                 # Shared core modules
+│   ├── nx_expressions_generator.py  # NX expressions generation
+│   └── panel_calculations/    # Panel-specific calculations
+└── tests/                     # Test suite
 ├── plywood_layout_generator.py    # Plywood optimization
 ├── test_agent.py                  # AI-powered automated testing agent
 ├── debug_logger.py                # Comprehensive logging system

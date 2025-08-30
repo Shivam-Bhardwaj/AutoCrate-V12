@@ -61,7 +61,7 @@ class StartupAnalyzer:
             if self.logger:
                 self.logger.error("Startup analysis failed", e)
             elif self.enable_console_output:
-                print(f"⚠️ {error_msg}")
+                print(f"WARNING: {error_msg}")
             
             return {'status': 'analysis_error', 'message': error_msg}
     
@@ -76,7 +76,7 @@ class StartupAnalyzer:
         
         print("\n" + "="*50)
         try:
-            print("🔍 PREVIOUS RUN SUMMARY")
+            print("PREVIOUS RUN SUMMARY")
         except UnicodeEncodeError:
             print("PREVIOUS RUN SUMMARY")
         print("="*50)
@@ -84,18 +84,18 @@ class StartupAnalyzer:
         # Status indicator
         if last_run['status'] == 'success':
             try:
-                print("✅ Last run completed successfully")
+                print("[SUCCESS] Last run completed successfully")
             except UnicodeEncodeError:
                 print("Last run completed successfully")
         else:
             try:
-                print("⚠️ Issues detected in last run")
+                print("[WARNING] Issues detected in last run")
             except UnicodeEncodeError:
                 print("Issues detected in last run")
         
         # Quick stats
         try:
-            print(f"📅 Last run: {last_run['timestamp'][:19]}")  # Remove milliseconds
+            print(f"Last run: {last_run['timestamp'][:19]}")  # Remove milliseconds
         except UnicodeEncodeError:
             print(f"Last run: {last_run['timestamp'][:19]}")  # Remove milliseconds
         if last_run.get('duration'):
@@ -105,19 +105,19 @@ class StartupAnalyzer:
                 print(f"Duration: {last_run['duration']:.2f}s")
         if last_run.get('operations'):
             try:
-                print(f"🔧 Operations: {last_run['operations']}")
+                print(f"Operations: {last_run['operations']}")
             except UnicodeEncodeError:
                 print(f"Operations: {last_run['operations']}")
         
         # Issues
         if last_run.get('errors', 0) > 0:
             try:
-                print(f"❌ Errors: {last_run['errors']}")
+                print(f"[ERROR] Errors: {last_run['errors']}")
             except UnicodeEncodeError:
                 print(f"Errors: {last_run['errors']}")
         if last_run.get('warnings', 0) > 0:
             try:
-                print(f"⚠️ Warnings: {last_run['warnings']}")
+                print(f"[WARNING] Warnings: {last_run['warnings']}")
             except UnicodeEncodeError:
                 print(f"Warnings: {last_run['warnings']}")
         
@@ -127,12 +127,12 @@ class StartupAnalyzer:
             critical_insights = [i for i in insights if i['type'] in ['error', 'warning']]
             if critical_insights:
                 try:
-                    print("\n💡 Key Issues:")
+                    print("\nKey Issues:")
                 except UnicodeEncodeError:
                     print("\nKey Issues:")
                 for insight in critical_insights[:2]:  # Top 2 critical insights
                     try:
-                        icon = '❌' if insight['type'] == 'error' else '⚠️'
+                        icon = '[ERROR]' if insight['type'] == 'error' else '[WARNING]'
                         print(f"   {icon} {insight['title']}")
                     except UnicodeEncodeError:
                         icon = '[X]' if insight['type'] == 'error' else '[!]'
@@ -143,7 +143,7 @@ class StartupAnalyzer:
         # Show recovery suggestions if there were errors
         if last_run.get('errors', 0) > 0:
             try:
-                print("🔧 Suggestions:")
+                print("Suggestions:")
             except UnicodeEncodeError:
                 print("Suggestions:")
             print("   • Check logs/ directory for detailed error information")
@@ -251,24 +251,24 @@ def run_startup_analysis(enable_console_output: bool = True) -> dict:
 def quick_status_check() -> str:
     """
     Get a one-line status of the previous run.
-    Returns: "✅ OK", "⚠️ WARNINGS", "❌ ERRORS", or "❓ UNKNOWN"
+    Returns: "[OK]", "[WARNINGS]", "[ERRORS]", or "[UNKNOWN]"
     """
     try:
         if not LogAnalysisAgent:
-            return "❓ UNKNOWN"
+            return "[UNKNOWN]"
         
         last_run = analyze_last_run()
         
         if last_run['status'] == 'no_sessions':
-            return "🆕 FIRST RUN"
+            return "[FIRST RUN]"
         elif last_run.get('errors', 0) > 0:
-            return f"❌ ERRORS ({last_run['errors']})"
+            return f"[ERRORS] ({last_run['errors']})"
         elif last_run.get('warnings', 0) > 0:
-            return f"⚠️ WARNINGS ({last_run['warnings']})"
+            return f"[WARNINGS] ({last_run['warnings']})"
         else:
-            return "✅ OK"
+            return "[OK]"
     except:
-        return "❓ UNKNOWN"
+        return "[UNKNOWN]"
 
 # Auto-run analysis if this module is imported
 if __name__ != "__main__":
@@ -280,15 +280,15 @@ if __name__ != "__main__":
         try:
             # Run quick analysis on import
             status = quick_status_check()
-            if status not in ["✅ OK", "🆕 FIRST RUN"]:
-                print(f"\n⚠️ AutoCrate Status: {status}")
+            if status not in ["[OK]", "[FIRST RUN]"]:
+                print(f"\nAutoCrate Status: {status}")
                 print("   Run 'python -m autocrate.log_analyst' for detailed analysis\n")
         except:
             pass  # Silently ignore errors during auto-analysis
 
 if __name__ == "__main__":
     # Full analysis when run directly
-    print("🔍 AutoCrate Startup Analyzer")
+    print("AutoCrate Startup Analyzer")
     print("="*40)
     
     analyzer = StartupAnalyzer(enable_console_output=True)
@@ -297,20 +297,20 @@ if __name__ == "__main__":
     # Check for critical issues
     critical_issues = analyzer.check_for_critical_issues()
     if critical_issues:
-        print("\n🚨 Critical Issues Found:")
+        print("\n[CRITICAL] Issues Found:")
         for issue in critical_issues:
-            severity_icon = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}.get(issue['severity'], '•')
+            severity_icon = {'high': '[HIGH]', 'medium': '[MEDIUM]', 'low': '[LOW]'}.get(issue['severity'], '-')
             print(f"   {severity_icon} {issue['message']}")
             print(f"      → {issue['action']}")
     
     # Show recommendations
     recommendations = analyzer.get_startup_recommendations()
     if recommendations:
-        print("\n📋 Recommendations:")
+        print("\nRecommendations:")
         for rec in recommendations:
-            priority_icon = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}.get(rec['priority'], '•')
+            priority_icon = {'high': '[HIGH]', 'medium': '[MEDIUM]', 'low': '[LOW]'}.get(rec['priority'], '-')
             print(f"   {priority_icon} {rec['title']}: {rec['action']}")
             if 'command' in rec:
                 print(f"      Command: {rec['command']}")
     
-    print("\n✅ Startup analysis complete.")
+    print("\n[COMPLETE] Startup analysis complete.")

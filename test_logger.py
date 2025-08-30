@@ -19,7 +19,7 @@ def create_test_log():
         f.write("QUICK TEST TEMPLATE:\n")
         f.write("Test: [what you're testing]\n")
         f.write("Input: L_W_H_weight\n") 
-        f.write("Result: ✅/❌/⚠️\n")
+        f.write("Result: [PASS/FAIL/WARN]\n")
         f.write("Screenshot: [filename]\n")
         f.write("Notes: [one line]\n")
         f.write("\n" + "-"*30 + "\n\n")
@@ -35,7 +35,7 @@ def create_test_log():
         for test_name, dimensions in common_tests:
             f.write(f"Test: {test_name}\n")
             f.write(f"Input: {dimensions}\n")
-            f.write("Result: [✅/❌/⚠️]\n")
+            f.write("Result: [PASS/FAIL/WARN]\n")
             f.write("Screenshot: []\n")
             f.write("Notes: []\n")
             f.write("\n" + "-"*30 + "\n\n")

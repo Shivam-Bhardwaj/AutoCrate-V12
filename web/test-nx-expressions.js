@@ -54,7 +54,7 @@ try {
   console.log('\n=== NX Expression File ===');
   console.log('Total lines generated:', lineCount);
   console.log('Expected lines (desktop): ~767');
-  console.log('Match status:', lineCount > 500 ? 'COMPREHENSIVE ✓' : 'LIMITED ✗');
+  console.log('Match status:', lineCount > 500 ? 'COMPREHENSIVE [OK]' : 'LIMITED [FAIL]');
   
   // Check for key sections
   const hasSkidParams = nxExpression.includes('SKID PARAMETERS');
@@ -64,14 +64,14 @@ try {
   const hasPlywoodLayout = nxExpression.includes('Plywood_1_Active');
   
   console.log('\n=== Section Verification ===');
-  console.log('Skid Parameters:', hasSkidParams ? '✓' : '✗');
-  console.log('Floorboard Instances:', hasFloorboardInstances ? '✓' : '✗');
-  console.log('Intermediate Cleats:', hasIntermediateCleats ? '✓' : '✗');
-  console.log('Klimps (Clamps):', hasKlimps ? '✓' : '✗');
-  console.log('Plywood Layouts:', hasPlywoodLayout ? '✓' : '✗');
+  console.log('Skid Parameters:', hasSkidParams ? '[OK]' : '[FAIL]');
+  console.log('Floorboard Instances:', hasFloorboardInstances ? '[OK]' : '[FAIL]');
+  console.log('Intermediate Cleats:', hasIntermediateCleats ? '[OK]' : '[FAIL]');
+  console.log('Klimps (Clamps):', hasKlimps ? '[OK]' : '[FAIL]');
+  console.log('Plywood Layouts:', hasPlywoodLayout ? '[OK]' : '[FAIL]');
   
   const allSections = hasSkidParams && hasFloorboardInstances && hasIntermediateCleats && hasKlimps && hasPlywoodLayout;
-  console.log('\nOverall Status:', allSections ? 'COMPREHENSIVE MATCH ✓' : 'MISSING SECTIONS ✗');
+  console.log('\nOverall Status:', allSections ? 'COMPREHENSIVE MATCH [OK]' : 'MISSING SECTIONS [FAIL]');
   
   // Save sample output for comparison
   const fs = require('fs');

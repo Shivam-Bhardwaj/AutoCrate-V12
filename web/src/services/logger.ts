@@ -396,6 +396,24 @@ class Logger {
     this.addLog(entry)
   }
 
+  // API call logging method
+  logApiCall(method: string, url: string, status: number, responseTime: number, data?: any) {
+    if (this.isLogging) return
+    const entry = this.createLogEntry(
+      status >= 400 ? LogLevel.ERROR : LogLevel.INFO,
+      `API ${method} ${url} - ${status}`,
+      'api',
+      {
+        method,
+        url,
+        status,
+        responseTime,
+        ...data
+      }
+    )
+    this.addLog(entry)
+  }
+
   // Configuration methods
   setConsoleOutput(enabled: boolean) {
     this.enableConsoleOutput = enabled
